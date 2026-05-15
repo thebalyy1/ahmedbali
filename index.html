@@ -778,5 +778,28 @@ document.getElementById("readerPage")
 });
 </script>
 
+<script>
+let secretClicks = 0;
+
+document.getElementById("secretLogo")
+.addEventListener("click",()=>{
+
+secretClicks++;
+
+if(secretClicks >= 3){
+
+window.location.href = "admin.html";
+
+secretClicks = 0;
+
+}
+
+setTimeout(()=>{
+secretClicks = 0;
+},1500);
+
+});
+</script>
+  
 </body>
 </html>
