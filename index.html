@@ -192,7 +192,7 @@ footer{border-top:1px solid var(--border);padding:35px 6%;text-align:center;colo
         <h3>إضافة مقال</h3>
         <input type="text" id="articleTitle" placeholder="عنوان المقال"/>
         <textarea id="articleContent" placeholder="محتوى المقال" style="height:200px;"></textarea>
-        <input type="text" id="articleImage" placeholder="رابط صورة المقال"/>
+        <input type="file" id="articleImage" accept="image/*"/>
         <select id="articlePrivate">
           <option value="false">مقال عام</option>
           <option value="true">مقال برايفيت</option>
@@ -319,17 +319,22 @@ function saveSettings(){
 function publishArticle(){
   const title = document.getElementById("articleTitle").value;
   const content = document.getElementById("articleContent").value;
-  const image = document.getElementById("articleImage").value;
+  const imageFile = document.getElementById("articleImage").files[0];
   const isPrivate = document.getElementById("articlePrivate").value === "true";
-  if(!title || !content || !image){ alert("اكمل بيانات المقال"); return; }
-  siteData.articles.unshift({
-    title, content, image, reads:0, private:isPrivate,
-    date:new Date().toLocaleDateString("ar-EG",{year:"numeric",month:"long",day:"numeric"})
-  });
-  saveData(); renderSite(); showSuccess();
-  document.getElementById("articleTitle").value="";
-  document.getElementById("articleContent").value="";
-  document.getElementById("articleImage").value="";
+  if(!title || !content || !imageFile){ alert("اكمل بيانات المقال واختر صورة"); return; }
+  const reader = new FileReader();
+  reader.onload = function(e){
+    siteData.articles.unshift({
+      title, content, reads:0, private:isPrivate,
+      image: e.target.result,
+      date:new Date().toLocaleDateString("ar-EG",{year:"numeric",month:"long",day:"numeric"})
+    });
+    saveData(); renderSite(); showSuccess();
+    document.getElementById("articleTitle").value="";
+    document.getElementById("articleContent").value="";
+    document.getElementById("articleImage").value="";
+  };
+  reader.readAsDataURL(imageFile);
 }
 
 function renderManageArticles(){
