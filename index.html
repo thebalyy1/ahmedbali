@@ -14,10 +14,6 @@
   import { getDatabase, ref, set, get, update, remove, onValue, push }
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-  // ======================================================
-  //  ضع هنا بيانات Firebase بتاعتك
-  //  اتبع الخطوات في التعليمات أسفل الصفحة
-  // ======================================================
   const firebaseConfig = {
     apiKey:            "AIzaSyCMyu8DSBA5vddBD8i_rDVvXPOkmlWtqNA",
     authDomain:        "ahmed-bali.firebaseapp.com",
@@ -31,7 +27,7 @@
 
   const app = initializeApp(firebaseConfig);
   const db  = getDatabase(app);
-  // ── Helpers ──────────────────────────────────────────
+
   function compressImage(file, maxWidth, quality){
     return new Promise(resolve => {
       const img = new Image();
@@ -50,17 +46,14 @@
     });
   }
 
-  // ── Read live ─────────────────────────────────────────
   onValue(ref(db, "site"), snapshot => {
     const data = snapshot.val();
     window._siteData = data || {};
     if(window.renderSite) window.renderSite(data || {});
-    // Hide loader even if database is empty
     const loader = document.getElementById("loaderOverlay");
     if(loader) loader.classList.add("hidden");
   });
 
-  // ── Expose to window ──────────────────────────────────
   window._firebase = { db, ref, set, get, update, remove, push, compressImage };
 </script>
 
@@ -200,6 +193,19 @@ footer{border-top:1px solid var(--border);padding:35px 6%;text-align:center;colo
 }
 @keyframes spin{to{transform:rotate(360deg);}}
 
+/* ── TOAST NOTIFICATION ── */
+.toast{
+  position:fixed;top:28px;left:50%;transform:translateX(-50%) translateY(-100px);
+  background:#1a1a1a;border:1.5px solid var(--gold);border-radius:16px;
+  padding:18px 32px;font-family:'Cairo',sans-serif;font-size:1.05rem;
+  color:#fff;z-index:999999;transition:transform .4s cubic-bezier(.34,1.56,.64,1);
+  display:flex;align-items:center;gap:12px;box-shadow:0 8px 40px rgba(0,0,0,.6);
+  white-space:nowrap;
+}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.toast-icon{font-size:1.4rem;}
+.toast-text{font-weight:600;}
+
 /* ── ADMIN PANEL ── */
 .admin-panel{
   position:fixed;inset:0;background:rgba(0,0,0,.75);
@@ -253,9 +259,6 @@ textarea.admin-input{resize:vertical;}
 }
 .admin-btn:hover{opacity:.85;}
 .admin-btn.danger{background:#e05252;color:#fff;}
-
-.success-message{margin-top:12px;color:#79ff9f;display:none;font-size:.95rem;}
-.error-message{margin-top:12px;color:#ff7979;display:none;font-size:.95rem;}
 
 /* ── MANAGE ARTICLES ── */
 .article-manage{
@@ -321,6 +324,12 @@ textarea.admin-input{resize:vertical;}
 <!-- Loading -->
 <div class="loader-overlay" id="loaderOverlay">
   <div class="spinner"></div>
+</div>
+
+<!-- Toast Notification -->
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toastIcon">✅</span>
+  <span class="toast-text" id="toastText"></span>
 </div>
 
 <nav>
@@ -453,9 +462,6 @@ textarea.admin-input{resize:vertical;}
       <div class="admin-tab-content" id="tab-manage">
         <div id="manageArticles"></div>
       </div>
-
-      <div class="success-message" id="successMessage">✓ تم الحفظ بنجاح</div>
-      <div class="error-message"   id="errorMessage">✗ حدث خطأ، حاول مرة أخرى</div>
     </div>
   </div>
 </div>
@@ -484,36 +490,47 @@ textarea.admin-input{resize:vertical;}
 
     <button class="admin-btn" onclick="saveEdit()">💾 حفظ التعديلات</button>
     <button class="admin-btn danger" onclick="closeEditModal()">إلغاء</button>
-
-    <div class="success-message" id="editSuccess">✓ تم التعديل بنجاح</div>
   </div>
 </div>
 
 <script type="module">
 // ─────────────────────────────────────────────────────────────────────────────
-//  Main JS — runs after Firebase module above has set window._firebase
+//  Main JS
 // ─────────────────────────────────────────────────────────────────────────────
 
-// Wait for Firebase to be ready
 function waitForFirebase(cb, tries=0){
   if(window._firebase){ cb(); }
   else if(tries < 50){ setTimeout(()=> waitForFirebase(cb, tries+1), 100); }
-  else{ document.getElementById("articlesGrid").innerHTML =
-    '<p style="text-align:center;color:#ff7979;padding:40px">⚠️ تعذّر الاتصال بقاعدة البيانات — تأكد من إعداد Firebase</p>';
+  else{
+    document.getElementById("articlesGrid").innerHTML =
+      '<p style="text-align:center;color:#ff7979;padding:40px">⚠️ تعذّر الاتصال بقاعدة البيانات</p>';
     document.getElementById("loaderOverlay").classList.add("hidden");
   }
 }
 
+// ── Toast helper ──────────────────────────────────────
+let toastTimer = null;
+window.showToast = function(text, icon="✅"){
+  const toast = document.getElementById("toast");
+  document.getElementById("toastIcon").textContent = icon;
+  document.getElementById("toastText").textContent = text;
+  toast.classList.add("show");
+  if(toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> toast.classList.remove("show"), 3000);
+};
+
+// ── Close admin & go home ─────────────────────────────
+function closeAdminAndGoHome(){
+  document.getElementById("adminPanel").classList.remove("active");
+  document.getElementById("editModalOverlay").classList.remove("active");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
 waitForFirebase(()=>{
-  const { db, ref, set, get, update, remove, push,
-          storage, sRef, compressImage, uploadImageToStorage } = window._firebase;
+  const { db, ref, set, get, update, remove, push, compressImage } = window._firebase;
 
-  // Hide loader once data arrives (onValue fires in the module above)
-  const origRender = window.renderSite;
-
-  // ── Admin state ──────────────────────────────────────
   let loggedIn = false;
-  let editingKey = null;   // Firebase key of article being edited
+  let editingKey = null;
 
   // ── Render ───────────────────────────────────────────
   window.renderSite = function(data){
@@ -523,7 +540,6 @@ waitForFirebase(()=>{
     document.getElementById("aboutText").innerText = data.about || "";
     document.getElementById("heroBio").innerText   = data.bio   || "";
 
-    // Avatar — stored as a public URL in Firebase Storage
     if(data.avatarUrl){
       const img = `<img src="${data.avatarUrl}" alt="أحمد بالي">`;
       document.getElementById("avatarFrame").innerHTML  = img;
@@ -569,7 +585,6 @@ waitForFirebase(()=>{
     renderArticles(window._siteData || {});
   };
 
-  // ── Article array helper (sorted newest first) ───────
   function articlesArray(data){
     if(!data || !data.articles) return [];
     return Object.entries(data.articles)
@@ -582,8 +597,6 @@ waitForFirebase(()=>{
     const snap = await get(ref(db, `site/articles/${key}`));
     if(!snap.exists()) return;
     const a = snap.val();
-
-    // Increment reads
     await update(ref(db, `site/articles/${key}`), { reads: (a.reads||0)+1 });
 
     document.getElementById("readerTitle").innerText   = a.title;
@@ -592,7 +605,6 @@ waitForFirebase(()=>{
     document.getElementById("authorMeta").innerHTML    =
       `تاريخ النشر: ${a.date}<br>عدد القراءات: ${(a.reads||0)+1}`;
 
-    // Next article
     const all = articlesArray(window._siteData || {}).filter(x => !x.private);
     const idx = all.findIndex(x => x._key === key);
     const next = all[idx+1];
@@ -629,7 +641,6 @@ waitForFirebase(()=>{
       loggedIn = true;
       document.getElementById("loginSection").style.display  = "none";
       document.getElementById("adminContent").style.display  = "block";
-      // Pre-fill settings
       const snap2 = await get(ref(db,"site"));
       const d = snap2.val() || {};
       document.getElementById("aboutInput").value = d.about || "";
@@ -663,7 +674,6 @@ waitForFirebase(()=>{
     if(bio)   updates["site/bio"]   = bio;
     if(newPw) updates["site/password"] = newPw;
 
-    // Avatar - خزّن كـ base64 مباشرةً
     const file = document.getElementById("avatarUpload").files[0];
     if(file){
       const compressed = await compressImage(file, 400, 0.75);
@@ -672,7 +682,17 @@ waitForFirebase(()=>{
 
     const { update: fbUpdate } = window._firebase;
     await fbUpdate(ref(db), updates);
-    hideLoader(); showSuccess();
+    hideLoader();
+
+    // رسالة مخصصة للصورة
+    if(file){
+      showToast("تم رفع الصورة الشخصية ✨");
+    } else {
+      showToast("تم حفظ الإعدادات");
+    }
+
+    // إغلاق اللوحة والرجوع للرئيسية
+    setTimeout(closeAdminAndGoHome, 1200);
   };
 
   // ── Publish article ───────────────────────────────────
@@ -695,10 +715,15 @@ waitForFirebase(()=>{
       date: new Date().toLocaleDateString("ar-EG",{year:"numeric",month:"long",day:"numeric"})
     });
 
-    hideLoader(); showSuccess();
-    document.getElementById("articleTitle").value  = "";
+    hideLoader();
+    showToast("تم نشر المقال 🚀");
+
+    document.getElementById("articleTitle").value   = "";
     document.getElementById("articleContent").value = "";
-    document.getElementById("articleImage").value  = "";
+    document.getElementById("articleImage").value   = "";
+
+    // إغلاق اللوحة والرجوع للرئيسية
+    setTimeout(closeAdminAndGoHome, 1200);
   };
 
   // ── Manage articles ───────────────────────────────────
@@ -733,7 +758,6 @@ waitForFirebase(()=>{
     document.getElementById("editContent").value = a.content;
     document.getElementById("editPrivate").value = String(!!a.private);
     document.getElementById("editImage").value   = "";
-    document.getElementById("editSuccess").style.display = "none";
     document.getElementById("editModalOverlay").classList.add("active");
   };
 
@@ -757,30 +781,34 @@ waitForFirebase(()=>{
     }
     await update(ref(db, `site/articles/${editingKey}`), updates);
     hideLoader();
-    document.getElementById("editSuccess").style.display = "block";
-    setTimeout(closeEditModal, 1200);
+    showToast("تم تعديل المقال ✏️");
+
+    // إغلاق المودال واللوحة والرجوع للرئيسية
+    setTimeout(()=>{
+      closeEditModal();
+      closeAdminAndGoHome();
+    }, 1200);
   };
 
   window.deleteArticle = async function(key){
     if(!confirm("هل تريد حذف المقال؟")) return;
     showLoader();
     await remove(ref(db, `site/articles/${key}`));
-    hideLoader(); showSuccess();
+    hideLoader();
+    showToast("تم حذف المقال 🗑️");
+
+    // إغلاق اللوحة والرجوع للرئيسية
+    setTimeout(closeAdminAndGoHome, 1200);
   };
 
   window.togglePrivate = async function(key, current){
     await update(ref(db, `site/articles/${key}`), { private: !current });
-    showSuccess();
+    showToast(current ? "تم جعل المقال عاماً 🌐" : "تم جعل المقال برايفيت 🔒");
   };
 
   // ── UI helpers ────────────────────────────────────────
   function showLoader(){ document.getElementById("loaderOverlay").classList.remove("hidden"); }
   function hideLoader(){ document.getElementById("loaderOverlay").classList.add("hidden"); }
-  function showSuccess(){
-    const m = document.getElementById("successMessage");
-    m.style.display = "block";
-    setTimeout(()=>{ m.style.display="none"; }, 2500);
-  }
 });
 </script>
 </body>
