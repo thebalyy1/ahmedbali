@@ -438,6 +438,85 @@ transform:rotate(360deg);
 }
 }
 
+/* Password Modal */
+.pass-overlay{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.85);
+z-index:99999;
+display:flex;
+align-items:center;
+justify-content:center;
+display:none;
+}
+
+.pass-overlay.active{
+display:flex;
+}
+
+.pass-box{
+background:#171717;
+border:1px solid var(--gold);
+border-radius:20px;
+padding:40px;
+width:360px;
+text-align:center;
+}
+
+.pass-box h3{
+color:var(--gold);
+margin-bottom:20px;
+font-size:1.4rem;
+}
+
+.pass-box input{
+width:100%;
+padding:14px;
+background:#111;
+border:1px solid rgba(255,255,255,.15);
+border-radius:10px;
+color:#fff;
+font-family:'Cairo',sans-serif;
+font-size:1rem;
+outline:none;
+text-align:right;
+margin-bottom:12px;
+}
+
+.pass-box input[type="password"]{
+letter-spacing:3px;
+}
+
+.pass-box button{
+width:100%;
+padding:13px;
+border:none;
+border-radius:10px;
+font-family:'Cairo',sans-serif;
+font-size:1rem;
+font-weight:700;
+cursor:pointer;
+margin-bottom:10px;
+}
+
+.pass-confirm{
+background:var(--gold);
+color:#111;
+}
+
+.pass-cancel{
+background:transparent;
+color:var(--muted);
+border:1px solid rgba(255,255,255,.1) !important;
+}
+
+.pass-error{
+color:#ff5555;
+font-size:.9rem;
+margin-top:6px;
+display:none;
+}
+
 @media(max-width:900px){
 
 .article-card{
@@ -465,6 +544,18 @@ font-size:2rem;
 
 <div class="loader-overlay" id="loaderOverlay">
 <div class="spinner"></div>
+</div>
+
+<!-- Password Modal -->
+<div class="pass-overlay" id="passOverlay">
+  <div class="pass-box">
+    <h3>🔐 لوحة التحكم</h3>
+    <input type="email" id="emailInput" placeholder="البريد الإلكتروني" onkeydown="if(event.key==='Enter') confirmPass()" style="letter-spacing:0" />
+    <input type="password" id="passInput" placeholder="كلمة المرور" onkeydown="if(event.key==='Enter') confirmPass()" />
+    <div class="pass-error" id="passError">البريد أو كلمة المرور غير صحيحة</div>
+    <button class="pass-confirm" onclick="confirmPass()" id="loginBtn">دخول</button>
+    <button class="pass-cancel" onclick="closePassModal()">إلغاء</button>
+  </div>
 </div>
 
 <nav>
@@ -779,25 +870,80 @@ document.getElementById("readerPage")
 </script>
 
 <script>
+// ============================================
+// SECRET LOGO — 3 CLICKS → LOGIN MODAL
+// ============================================
 let secretClicks = 0;
+let secretTimer = null;
 
-document.getElementById("secretLogo")
-.addEventListener("click",()=>{
+document.getElementById("secretLogo").addEventListener("click", () => {
+  secretClicks++;
+  clearTimeout(secretTimer);
 
-secretClicks++;
+  if (secretClicks >= 3) {
+    secretClicks = 0;
+    openPassModal();
+  } else {
+    secretTimer = setTimeout(() => {
+      secretClicks = 0;
+    }, 1500);
+  }
+});
 
-if(secretClicks >= 3){
-
-window.location.href = "index.html";
-
-secretClicks = 0;
-
+function openPassModal() {
+  document.getElementById("emailInput").value = "";
+  document.getElementById("passInput").value = "";
+  document.getElementById("passError").style.display = "none";
+  document.getElementById("passOverlay").classList.add("active");
+  setTimeout(() => document.getElementById("emailInput").focus(), 100);
 }
 
-setTimeout(()=>{
-secretClicks = 0;
-},1500);
+window.closePassModal = function() {
+  document.getElementById("passOverlay").classList.remove("active");
+};
 
+window.confirmPass = async function() {
+  const email = document.getElementById("emailInput").value.trim();
+  const password = document.getElementById("passInput").value;
+  const btn = document.getElementById("loginBtn");
+  const errEl = document.getElementById("passError");
+
+  if (!email || !password) {
+    errEl.innerText = "من فضلك أدخل البريد وكلمة المرور";
+    errEl.style.display = "block";
+    return;
+  }
+
+  btn.innerText = "جاري التحقق...";
+  btn.disabled = true;
+  errEl.style.display = "none";
+
+  function waitAuth(cb, tries = 0) {
+    if (window._firebase) cb();
+    else if (tries < 50) setTimeout(() => waitAuth(cb, tries + 1), 100);
+  }
+
+  waitAuth(async () => {
+    const { auth, signInWithEmailAndPassword } = window._firebase;
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      document.getElementById("passOverlay").classList.remove("active");
+      window.location.href = "index.html";
+    } catch (err) {
+      errEl.innerText = "البريد أو كلمة المرور غير صحيحة";
+      errEl.style.display = "block";
+      document.getElementById("passInput").value = "";
+      document.getElementById("passInput").focus();
+    } finally {
+      btn.innerText = "دخول";
+      btn.disabled = false;
+    }
+  });
+};
+
+// إغلاق المودال عند الضغط خارجه
+document.getElementById("passOverlay").addEventListener("click", function(e) {
+  if (e.target === this) closePassModal();
 });
 </script>
   
