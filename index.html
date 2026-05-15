@@ -11,9 +11,8 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, get, update, remove, onValue, push }
+import { getDatabase, ref, get, update, remove, onValue, push, set }
 from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
 from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
@@ -35,39 +34,25 @@ window.currentLang = localStorage.getItem("siteLang") || "ar";
 
 window.langData = {
   ar:{
-    about:"عن الموقع",
-    articles:"المقالات",
-    search:"ابحث عن المقالات...",
-    read:"قراءة المقال →",
-    next:"المقال التالي",
-    noArticles:"لا توجد مقالات",
-    loading:"جاري تحميل المقالات...",
-    share:"مشاركة المقال",
-    external:"رابط العمل الفني أو المقال",
-    critic:"مشاهدة الرابط",
+    about:"عن الموقع", articles:"المقالات",
+    search:"ابحث عن المقالات...", read:"قراءة المقال →",
+    noArticles:"لا توجد مقالات", loading:"جاري تحميل المقالات...",
+    share:"مشاركة المقال", critic:"مشاهدة الرابط",
     hero:"مخرج وروائي وسيناريست وناقد فني مصري"
   },
   en:{
-    about:"About",
-    articles:"Articles",
-    search:"Search articles...",
-    read:"Read Article →",
-    next:"Next Article",
-    noArticles:"No articles found",
-    loading:"Loading articles...",
-    share:"Share Article",
-    external:"External Link",
-    critic:"Open Link",
+    about:"About", articles:"Articles",
+    search:"Search articles...", read:"Read Article →",
+    noArticles:"No articles found", loading:"Loading articles...",
+    share:"Share Article", critic:"Open Link",
     hero:"Egyptian Director, Novelist, Screenwriter & Critic"
   }
 };
 
 function applyLanguage(){
   const t = window.langData[window.currentLang];
-
   document.documentElement.lang = window.currentLang;
   document.documentElement.dir = window.currentLang === "ar" ? "rtl" : "ltr";
-
   document.getElementById("aboutNav").innerText = t.about;
   document.getElementById("articlesNav").innerText = t.articles;
   document.getElementById("aboutTitle").innerText = t.about;
@@ -75,7 +60,6 @@ function applyLanguage(){
   document.getElementById("searchInput").placeholder = t.search;
   document.getElementById("heroTitle").innerText = t.hero;
   document.getElementById("langBtn").innerText = window.currentLang === "ar" ? "EN" : "AR";
-
   if(window.renderSite) window.renderSite(window._siteData || {});
 }
 
@@ -85,851 +69,914 @@ window.toggleLanguage = function(){
   applyLanguage();
 };
 
-function compressImage(file,maxWidth,quality){
+function compressImage(file, maxWidth, quality){
   return new Promise(resolve=>{
     const img = new Image();
     const url = URL.createObjectURL(file);
-
     img.onload = ()=>{
-      const scale = Math.min(1,maxWidth/img.width);
-      const w = Math.round(img.width*scale);
-      const h = Math.round(img.height*scale);
-
+      const scale = Math.min(1, maxWidth / img.width);
+      const w = Math.round(img.width * scale);
+      const h = Math.round(img.height * scale);
       const c = document.createElement("canvas");
-      c.width = w;
-      c.height = h;
-
-      c.getContext("2d").drawImage(img,0,0,w,h);
-
+      c.width = w; c.height = h;
+      c.getContext("2d").drawImage(img, 0, 0, w, h);
       URL.revokeObjectURL(url);
-
-      resolve(c.toDataURL("image/jpeg",quality));
+      resolve(c.toDataURL("image/jpeg", quality));
     };
-
     img.src = url;
   });
 }
 
-onValue(ref(db,"site"),snapshot=>{
+onValue(ref(db,"site"), snapshot=>{
   window._siteData = snapshot.val() || {};
-
-  if(window.renderSite){
-    window.renderSite(window._siteData);
-  }
-
+  if(window.renderSite) window.renderSite(window._siteData);
   applyLanguage();
-
   const loader = document.getElementById("loaderOverlay");
   if(loader) loader.classList.add("hidden");
 });
 
-onAuthStateChanged(auth,user=>{
+onAuthStateChanged(auth, user=>{
   window._currentUser = user || null;
-
-  if(window.onAuthChange){
-    window.onAuthChange(user);
-  }
+  if(window.onAuthChange) window.onAuthChange(user);
 });
 
-window._firebase = {
-  db,ref,get,update,remove,push,
-  auth,signInWithEmailAndPassword,
-  signOut,compressImage
-};
+window._firebase = { db, ref, get, update, remove, push, set, auth, signInWithEmailAndPassword, signOut, compressImage };
 </script>
 
 <style>
 :root{
---gold:#C9A84C;
---bg:#0d0d0d;
---card:#171717;
---text:#f3f3f3;
---muted:#a5a5a5;
---border:rgba(255,255,255,.08);
+  --gold:#C9A84C;
+  --bg:#0d0d0d;
+  --card:#171717;
+  --text:#f3f3f3;
+  --muted:#a5a5a5;
+  --border:rgba(255,255,255,.08);
+  --red:#e05555;
+  --green:#4caf7d;
 }
+*{ margin:0; padding:0; box-sizing:border-box; }
+body{ font-family:'Cairo',sans-serif; background:var(--bg); color:var(--text); overflow-x:hidden; }
+a{ text-decoration:none; color:inherit; }
+img{ max-width:100%; display:block; }
 
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-}
-
-body{
-font-family:'Cairo',sans-serif;
-background:var(--bg);
-color:var(--text);
-overflow-x:hidden;
-}
-
-a{
-text-decoration:none;
-color:inherit;
-}
-
-img{
-max-width:100%;
-display:block;
-}
-
+/* NAV */
 nav{
-height:72px;
-display:flex;
-align-items:center;
-justify-content:space-between;
-padding:0 6%;
-border-bottom:1px solid var(--border);
-background:#0d0d0d;
-position:sticky;
-top:0;
-z-index:999;
+  height:72px; display:flex; align-items:center; justify-content:space-between;
+  padding:0 6%; border-bottom:1px solid var(--border); background:#0d0d0d;
+  position:sticky; top:0; z-index:999;
 }
+.logo{ font-size:1.6rem; font-weight:900; cursor:pointer; user-select:none; }
+.nav-links{ display:flex; align-items:center; gap:18px; }
+.nav-links a{ color:var(--muted); }
+.lang-btn{ background:var(--gold); color:#111; border:none; padding:8px 14px; border-radius:10px; font-weight:700; cursor:pointer; font-family:'Cairo',sans-serif; }
 
-.logo{
-font-size:1.6rem;
-font-weight:900;
-cursor:pointer;
-}
+/* HERO */
+.hero{ padding:90px 6% 60px; display:flex; flex-direction:column; align-items:center; text-align:center; }
+.avatar-frame{ width:240px; height:240px; border-radius:50%; overflow:hidden; border:3px solid var(--gold); display:flex; align-items:center; justify-content:center; background:#111; }
+.avatar-frame img{ width:100%; height:100%; object-fit:cover; }
+.hero-name{ font-size:4rem; font-weight:900; margin-top:25px; }
+.hero-title{ margin-top:10px; color:var(--gold); font-size:1.2rem; }
+.hero-bio{ max-width:850px; line-height:2.3; margin-top:28px; color:#d2d2d2; }
 
-.nav-links{
-display:flex;
-align-items:center;
-gap:18px;
-}
+/* ABOUT */
+.about{ padding:70px 6%; text-align:center; }
+.about h2{ color:var(--gold); margin-bottom:20px; }
 
-.nav-links a{
-color:var(--muted);
-}
-
-.lang-btn{
-background:var(--gold);
-color:#111;
-border:none;
-padding:8px 14px;
-border-radius:10px;
-font-weight:700;
-cursor:pointer;
-}
-
-.hero{
-padding:90px 6% 60px;
-display:flex;
-flex-direction:column;
-align-items:center;
-text-align:center;
-}
-
-.avatar-frame{
-width:240px;
-height:240px;
-border-radius:50%;
-overflow:hidden;
-border:3px solid var(--gold);
-}
-
-.hero-name{
-font-size:4rem;
-font-weight:900;
-margin-top:25px;
-}
-
-.hero-title{
-margin-top:10px;
-color:var(--gold);
-font-size:1.2rem;
-}
-
-.hero-bio{
-max-width:850px;
-line-height:2.3;
-margin-top:28px;
-color:#d2d2d2;
-}
-
-.about{
-padding:70px 6%;
-text-align:center;
-}
-
-.about h2{
-color:var(--gold);
-margin-bottom:20px;
-}
-
-.search-box{
-padding:30px 6%;
-display:flex;
-justify-content:center;
-}
-
+/* SEARCH */
+.search-box{ padding:30px 6%; display:flex; justify-content:center; }
 .admin-input{
-width:100%;
-padding:16px;
-background:#161616;
-border:1px solid var(--border);
-border-radius:12px;
-color:#fff;
-outline:none;
-font-family:'Cairo',sans-serif;
+  width:100%; padding:16px; background:#161616;
+  border:1px solid var(--border); border-radius:12px;
+  color:#fff; outline:none; font-family:'Cairo',sans-serif; font-size:1rem;
 }
+.admin-input:focus{ border-color:rgba(201,168,76,.4); }
 
-.articles{
-padding:20px 6% 80px;
-}
-
-.section-title{
-text-align:center;
-margin-bottom:30px;
-font-size:2rem;
-}
-
-.articles-grid{
-display:flex;
-flex-direction:column;
-gap:22px;
-}
-
+/* ARTICLES */
+.articles{ padding:20px 6% 80px; }
+.section-title{ text-align:center; margin-bottom:30px; font-size:2rem; }
+.articles-grid{ display:flex; flex-direction:column; gap:22px; }
 .article-card{
-background:var(--card);
-border:1px solid var(--border);
-border-radius:20px;
-overflow:hidden;
-display:flex;
-cursor:pointer;
-transition:.3s;
+  background:var(--card); border:1px solid var(--border); border-radius:20px;
+  overflow:hidden; display:flex; cursor:pointer; transition:.3s;
 }
+.article-card:hover{ transform:translateY(-4px); border-color:rgba(201,168,76,.3); }
+.article-thumb{ width:290px; min-width:290px; height:210px; background-size:cover; background-position:center; background-color:#222; }
+.article-content{ padding:24px; display:flex; flex-direction:column; justify-content:space-between; flex:1; }
+.article-content h3{ font-size:1.7rem; margin-bottom:12px; }
+.article-date{ color:var(--gold); margin-bottom:14px; }
+.article-excerpt{ line-height:2; color:#d0d0d0; }
+.read-more{ margin-top:20px; color:var(--gold); font-weight:700; }
 
-.article-card:hover{
-transform:translateY(-4px);
-}
-
-.article-thumb{
-width:290px;
-min-width:290px;
-height:210px;
-background-size:cover;
-background-position:center;
-}
-
-.article-content{
-padding:24px;
-display:flex;
-flex-direction:column;
-justify-content:space-between;
-flex:1;
-}
-
-.article-content h3{
-font-size:1.7rem;
-margin-bottom:12px;
-}
-
-.article-date{
-color:var(--gold);
-margin-bottom:14px;
-}
-
-.article-excerpt{
-line-height:2;
-color:#d0d0d0;
-}
-
-.read-more{
-margin-top:20px;
-color:var(--gold);
-font-weight:700;
-}
-
+/* READER */
 .reader-page{
-position:fixed;
-inset:0;
-background:#0a0a0a;
-z-index:9999;
-overflow-y:auto;
-padding:80px 8%;
-display:none;
+  position:fixed; inset:0; background:#0a0a0a; z-index:9999;
+  overflow-y:auto; padding:80px 8%; display:none;
 }
-
-.reader-page.active{
-display:block;
-}
-
+.reader-page.active{ display:block; }
 .reader-close{
-position:fixed;
-top:18px;
-left:18px;
-width:44px;
-height:44px;
-border:none;
-border-radius:50%;
-background:var(--gold);
-font-size:1.2rem;
-cursor:pointer;
+  position:fixed; top:18px; left:18px; width:44px; height:44px;
+  border:none; border-radius:50%; background:var(--gold); font-size:1.4rem; cursor:pointer;
 }
-
-.reader-title{
-font-size:3rem;
-margin-bottom:18px;
-}
-
-.reader-date{
-color:var(--gold);
-margin-bottom:35px;
-}
-
-.reader-content{
-line-height:2.6;
-font-size:1.15rem;
-white-space:pre-line;
-}
-
+.reader-title{ font-size:3rem; margin-bottom:18px; }
+.reader-date{ color:var(--gold); margin-bottom:35px; }
+.reader-content{ line-height:2.6; font-size:1.15rem; white-space:pre-line; }
 .share-btn{
-display:inline-block;
-margin-top:20px;
-background:var(--gold);
-color:#111;
-padding:12px 20px;
-border-radius:12px;
-font-weight:700;
-cursor:pointer;
+  display:inline-block; margin-top:20px; background:var(--gold); color:#111;
+  padding:12px 20px; border-radius:12px; font-weight:700; cursor:pointer; border:none;
+  font-family:'Cairo',sans-serif; font-size:1rem;
 }
-
 .external-link{
-display:inline-block;
-margin-top:18px;
-padding:12px 20px;
-border:1px solid var(--gold);
-border-radius:12px;
-color:var(--gold);
+  display:inline-block; margin-top:18px; padding:12px 20px;
+  border:1px solid var(--gold); border-radius:12px; color:var(--gold);
 }
 
-footer{
-border-top:1px solid var(--border);
-padding:35px 6%;
-text-align:center;
-color:#aaa;
-}
+/* FOOTER */
+footer{ border-top:1px solid var(--border); padding:35px 6%; text-align:center; color:#aaa; }
 
+/* LOADER */
 .loader-overlay{
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.7);
-display:flex;
-align-items:center;
-justify-content:center;
-z-index:99999;
+  position:fixed; inset:0; background:rgba(0,0,0,.7);
+  display:flex; align-items:center; justify-content:center; z-index:99999;
 }
-
-.loader-overlay.hidden{
-display:none;
-}
-
+.loader-overlay.hidden{ display:none; }
 .spinner{
-width:50px;
-height:50px;
-border:4px solid #333;
-border-top-color:var(--gold);
-border-radius:50%;
-animation:spin .7s linear infinite;
+  width:50px; height:50px; border:4px solid #333;
+  border-top-color:var(--gold); border-radius:50%;
+  animation:spin .7s linear infinite;
 }
+@keyframes spin{ to{ transform:rotate(360deg); } }
 
-@keyframes spin{
-to{
-transform:rotate(360deg);
-}
-}
-
-/* Password Modal */
+/* LOGIN MODAL */
 .pass-overlay{
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.85);
-z-index:99999;
-display:flex;
-align-items:center;
-justify-content:center;
-display:none;
+  position:fixed; inset:0; background:rgba(0,0,0,.88);
+  z-index:99999; align-items:center; justify-content:center; display:none;
 }
-
-.pass-overlay.active{
-display:flex;
-}
-
+.pass-overlay.active{ display:flex; }
 .pass-box{
-background:#171717;
-border:1px solid var(--gold);
-border-radius:20px;
-padding:40px;
-width:360px;
-text-align:center;
+  background:#171717; border:1px solid var(--gold); border-radius:20px;
+  padding:40px; width:360px; text-align:center;
 }
-
-.pass-box h3{
-color:var(--gold);
-margin-bottom:20px;
-font-size:1.4rem;
-}
-
+.pass-box h3{ color:var(--gold); margin-bottom:24px; font-size:1.4rem; }
 .pass-box input{
-width:100%;
-padding:14px;
-background:#111;
-border:1px solid rgba(255,255,255,.15);
-border-radius:10px;
-color:#fff;
-font-family:'Cairo',sans-serif;
-font-size:1rem;
-outline:none;
-text-align:right;
-margin-bottom:12px;
+  width:100%; padding:14px; background:#111;
+  border:1px solid rgba(255,255,255,.15); border-radius:10px;
+  color:#fff; font-family:'Cairo',sans-serif; font-size:1rem;
+  outline:none; text-align:right; margin-bottom:12px; direction:ltr;
 }
-
-.pass-box input[type="password"]{
-letter-spacing:3px;
-}
-
+.pass-box input:focus{ border-color:rgba(201,168,76,.5); }
 .pass-box button{
-width:100%;
-padding:13px;
-border:none;
-border-radius:10px;
-font-family:'Cairo',sans-serif;
-font-size:1rem;
-font-weight:700;
-cursor:pointer;
-margin-bottom:10px;
+  width:100%; padding:13px; border:none; border-radius:10px;
+  font-family:'Cairo',sans-serif; font-size:1rem; font-weight:700;
+  cursor:pointer; margin-bottom:10px;
 }
+.pass-confirm{ background:var(--gold); color:#111; }
+.pass-confirm:disabled{ opacity:.6; cursor:not-allowed; }
+.pass-cancel{ background:transparent; color:var(--muted); border:1px solid rgba(255,255,255,.1) !important; }
+.pass-error{ color:#ff5555; font-size:.9rem; margin-bottom:12px; display:none; }
 
-.pass-confirm{
-background:var(--gold);
-color:#111;
+/* ========== ADMIN PANEL ========== */
+.admin-panel{
+  position:fixed; inset:0; background:#0a0a0a; z-index:8888;
+  overflow-y:auto; display:none;
 }
+.admin-panel.active{ display:block; }
 
-.pass-cancel{
-background:transparent;
-color:var(--muted);
-border:1px solid rgba(255,255,255,.1) !important;
+.admin-nav{
+  height:66px; background:#111; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 5%; position:sticky; top:0; z-index:10;
 }
+.admin-nav h2{ color:var(--gold); font-size:1.3rem; }
+.admin-nav-btns{ display:flex; gap:10px; }
 
-.pass-error{
-color:#ff5555;
-font-size:.9rem;
-margin-top:6px;
-display:none;
+.admin-btn{
+  padding:9px 18px; border-radius:10px; border:none; cursor:pointer;
+  font-family:'Cairo',sans-serif; font-weight:700; font-size:.95rem;
 }
+.btn-gold{ background:var(--gold); color:#111; }
+.btn-outline{ background:transparent; color:var(--muted); border:1px solid rgba(255,255,255,.15) !important; }
+.btn-red{ background:var(--red); color:#fff; }
+.btn-green{ background:var(--green); color:#fff; }
+.btn-sm{ padding:7px 14px; font-size:.85rem; }
+
+.admin-body{ padding:30px 5%; max-width:1100px; margin:0 auto; }
+
+/* TABS */
+.admin-tabs{ display:flex; gap:8px; margin-bottom:30px; flex-wrap:wrap; }
+.admin-tab{
+  padding:10px 22px; border-radius:12px; border:1px solid var(--border);
+  background:transparent; color:var(--muted); cursor:pointer;
+  font-family:'Cairo',sans-serif; font-size:1rem; transition:.2s;
+}
+.admin-tab.active{ background:var(--gold); color:#111; border-color:var(--gold); font-weight:700; }
+
+.tab-section{ display:none; }
+.tab-section.active{ display:block; }
+
+/* FORM */
+.form-group{ margin-bottom:20px; }
+.form-group label{ display:block; color:var(--muted); margin-bottom:8px; font-size:.95rem; }
+.form-group textarea{
+  width:100%; padding:16px; background:#161616;
+  border:1px solid var(--border); border-radius:12px;
+  color:#fff; outline:none; font-family:'Cairo',sans-serif;
+  font-size:1rem; resize:vertical; min-height:140px;
+}
+.form-group textarea:focus{ border-color:rgba(201,168,76,.4); }
+.form-group input.fi{ /* full input */
+  width:100%; padding:14px 16px; background:#161616;
+  border:1px solid var(--border); border-radius:12px;
+  color:#fff; outline:none; font-family:'Cairo',sans-serif; font-size:1rem;
+}
+.form-group input.fi:focus{ border-color:rgba(201,168,76,.4); }
+
+.img-preview{
+  width:100%; max-width:400px; height:220px; border-radius:14px;
+  background:#161616; border:1px dashed rgba(201,168,76,.4);
+  display:flex; align-items:center; justify-content:center;
+  overflow:hidden; margin-bottom:12px; cursor:pointer; position:relative;
+}
+.img-preview img{ width:100%; height:100%; object-fit:cover; }
+.img-preview span{ color:var(--muted); font-size:.95rem; }
+.img-preview:hover{ border-color:var(--gold); }
+
+/* ARTICLES LIST IN ADMIN */
+.admin-articles-list{ display:flex; flex-direction:column; gap:14px; }
+.admin-article-row{
+  background:#161616; border:1px solid var(--border); border-radius:14px;
+  padding:18px 20px; display:flex; align-items:center; gap:16px;
+}
+.admin-article-thumb{
+  width:80px; height:60px; border-radius:8px; background-size:cover;
+  background-position:center; background-color:#222; flex-shrink:0;
+}
+.admin-article-info{ flex:1; }
+.admin-article-info h4{ font-size:1.1rem; margin-bottom:4px; }
+.admin-article-info span{ color:var(--muted); font-size:.9rem; }
+.admin-article-actions{ display:flex; gap:8px; flex-shrink:0; }
+
+/* TOAST */
+.toast{
+  position:fixed; bottom:30px; left:50%; transform:translateX(-50%) translateY(100px);
+  background:#222; border:1px solid var(--border); color:#fff;
+  padding:14px 28px; border-radius:14px; font-weight:600;
+  transition:.3s; z-index:99999; opacity:0;
+}
+.toast.show{ transform:translateX(-50%) translateY(0); opacity:1; }
+.toast.success{ border-color:var(--green); color:var(--green); }
+.toast.error{ border-color:var(--red); color:var(--red); }
+
+/* EDIT MODAL */
+.edit-modal{
+  position:fixed; inset:0; background:rgba(0,0,0,.88);
+  z-index:99990; align-items:flex-start; justify-content:center;
+  display:none; overflow-y:auto; padding:40px 20px;
+}
+.edit-modal.active{ display:flex; }
+.edit-modal-box{
+  background:#161616; border:1px solid var(--gold); border-radius:20px;
+  padding:36px; width:100%; max-width:700px;
+}
+.edit-modal-box h3{ color:var(--gold); margin-bottom:24px; font-size:1.3rem; }
+
+/* CONFIRM MODAL */
+.confirm-modal{
+  position:fixed; inset:0; background:rgba(0,0,0,.88);
+  z-index:99991; align-items:center; justify-content:center; display:none;
+}
+.confirm-modal.active{ display:flex; }
+.confirm-box{
+  background:#171717; border:1px solid var(--red); border-radius:20px;
+  padding:36px; width:360px; text-align:center;
+}
+.confirm-box h3{ margin-bottom:12px; }
+.confirm-box p{ color:var(--muted); margin-bottom:24px; line-height:1.8; }
+.confirm-box-btns{ display:flex; gap:10px; }
+.confirm-box-btns button{ flex:1; }
 
 @media(max-width:900px){
-
-.article-card{
-flex-direction:column;
-}
-
-.article-thumb{
-width:100%;
-min-width:100%;
-}
-
-.hero-name{
-font-size:2.6rem;
-}
-
-.reader-title{
-font-size:2rem;
-}
-
+  .article-card{ flex-direction:column; }
+  .article-thumb{ width:100%; min-width:100%; }
+  .hero-name{ font-size:2.6rem; }
+  .reader-title{ font-size:2rem; }
+  .admin-article-row{ flex-wrap:wrap; }
 }
 </style>
 </head>
-
 <body>
 
-<div class="loader-overlay" id="loaderOverlay">
-<div class="spinner"></div>
-</div>
+<!-- LOADER -->
+<div class="loader-overlay" id="loaderOverlay"><div class="spinner"></div></div>
 
-<!-- Password Modal -->
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- LOGIN MODAL -->
 <div class="pass-overlay" id="passOverlay">
   <div class="pass-box">
     <h3>🔐 لوحة التحكم</h3>
-    <input type="email" id="emailInput" placeholder="البريد الإلكتروني" onkeydown="if(event.key==='Enter') confirmPass()" style="letter-spacing:0" />
-    <input type="password" id="passInput" placeholder="كلمة المرور" onkeydown="if(event.key==='Enter') confirmPass()" />
-    <div class="pass-error" id="passError">البريد أو كلمة المرور غير صحيحة</div>
+    <input type="email" id="emailInput" placeholder="البريد الإلكتروني" onkeydown="if(event.key==='Enter')document.getElementById('passInput').focus()" />
+    <input type="password" id="passInput" placeholder="كلمة المرور" onkeydown="if(event.key==='Enter')confirmPass()" />
+    <div class="pass-error" id="passError"></div>
     <button class="pass-confirm" onclick="confirmPass()" id="loginBtn">دخول</button>
     <button class="pass-cancel" onclick="closePassModal()">إلغاء</button>
   </div>
 </div>
 
-<nav>
-<div class="logo" id="secretLogo">أحمد بالي</div>
-
-<div class="nav-links">
-<a href="#about" id="aboutNav">عن الموقع</a>
-<a href="#articles" id="articlesNav">المقالات</a>
-<button class="lang-btn" id="langBtn" onclick="toggleLanguage()">EN</button>
+<!-- EDIT MODAL -->
+<div class="edit-modal" id="editModal">
+  <div class="edit-modal-box">
+    <h3>✏️ تعديل المقال</h3>
+    <input type="hidden" id="editKey" />
+    <div class="form-group">
+      <label>العنوان</label>
+      <input class="fi" type="text" id="editTitle" />
+    </div>
+    <div class="form-group">
+      <label>التاريخ</label>
+      <input class="fi" type="text" id="editDate" />
+    </div>
+    <div class="form-group">
+      <label>المحتوى</label>
+      <textarea id="editContent" style="min-height:200px"></textarea>
+    </div>
+    <div class="form-group">
+      <label>رابط خارجي (اختياري)</label>
+      <input class="fi" type="url" id="editExternal" placeholder="https://..." />
+    </div>
+    <div class="form-group">
+      <label>صورة المقال</label>
+      <div class="img-preview" id="editImgPreview" onclick="document.getElementById('editImgFile').click()">
+        <span>اضغط لتغيير الصورة</span>
+      </div>
+      <input type="file" id="editImgFile" accept="image/*" style="display:none" onchange="handleEditImg(this)" />
+    </div>
+    <div style="display:flex;gap:10px;margin-top:10px">
+      <button class="admin-btn btn-gold" onclick="saveEditArticle()">💾 حفظ التعديلات</button>
+      <button class="admin-btn btn-outline" onclick="closeEditModal()">إلغاء</button>
+    </div>
+  </div>
 </div>
+
+<!-- CONFIRM DELETE MODAL -->
+<div class="confirm-modal" id="confirmModal">
+  <div class="confirm-box">
+    <h3>🗑️ حذف المقال</h3>
+    <p>هل أنت متأكد من حذف هذا المقال؟<br>لا يمكن التراجع عن هذا الإجراء.</p>
+    <div class="confirm-box-btns">
+      <button class="admin-btn btn-red" id="confirmDeleteBtn">حذف</button>
+      <button class="admin-btn btn-outline" onclick="closeConfirm()">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== PUBLIC SITE ========== -->
+<nav>
+  <div class="logo" id="secretLogo">أحمد بالي</div>
+  <div class="nav-links">
+    <a href="#about" id="aboutNav">عن الموقع</a>
+    <a href="#articles" id="articlesNav">المقالات</a>
+    <button class="lang-btn" id="langBtn" onclick="toggleLanguage()">EN</button>
+  </div>
 </nav>
 
 <section class="hero">
-<div class="avatar-frame" id="avatarFrame">
-<span style="font-size:5rem;color:var(--gold)">أ</span>
-</div>
-
-<h1 class="hero-name">أحمد بالي</h1>
-
-<div class="hero-title" id="heroTitle">
-مخرج وروائي وسيناريست وناقد فني مصري
-</div>
-
-<p class="hero-bio" id="heroBio">
-كاتب ومفكر يرصد العالم بعيون النقد
-</p>
+  <div class="avatar-frame" id="avatarFrame">
+    <span style="font-size:5rem;color:var(--gold)">أ</span>
+  </div>
+  <h1 class="hero-name">أحمد بالي</h1>
+  <div class="hero-title" id="heroTitle">مخرج وروائي وسيناريست وناقد فني مصري</div>
+  <p class="hero-bio" id="heroBio">كاتب ومفكر يرصد العالم بعيون النقد</p>
 </section>
 
 <section class="about" id="about">
-<h2 id="aboutTitle">عن الموقع</h2>
-<p id="aboutText">
-هذا الموقع فضاء نقدي خاص
-</p>
+  <h2 id="aboutTitle">عن الموقع</h2>
+  <p id="aboutText">هذا الموقع فضاء نقدي خاص</p>
 </section>
 
 <div class="search-box">
-<input
-type="text"
-class="admin-input"
-style="max-width:720px"
-placeholder="ابحث عن المقالات..."
-id="searchInput"
-oninput="filterArticles()"
-/>
+  <input type="text" class="admin-input" style="max-width:720px" placeholder="ابحث عن المقالات..." id="searchInput" oninput="filterArticles()" />
 </div>
 
 <section class="articles" id="articles">
-<h2 class="section-title" id="articlesTitle">المقالات</h2>
-
-<div class="articles-grid" id="articlesGrid">
-<p style="text-align:center;color:#aaa;padding:40px">
-جاري تحميل المقالات...
-</p>
-</div>
+  <h2 class="section-title" id="articlesTitle">المقالات</h2>
+  <div class="articles-grid" id="articlesGrid">
+    <p style="text-align:center;color:#aaa;padding:40px">جاري تحميل المقالات...</p>
+  </div>
 </section>
 
+<!-- ARTICLE READER -->
 <div class="reader-page" id="readerPage">
-
-<button class="reader-close" onclick="closeReader()">×</button>
-
-<div class="reader-container">
-
-<h1 class="reader-title" id="readerTitle"></h1>
-
-<div class="reader-date" id="readerDate"></div>
-
-<div class="reader-content" id="readerContent"></div>
-
-<div id="externalHolder"></div>
-
-<div>
-<button class="share-btn" onclick="shareArticle()" id="shareBtn">
-مشاركة المقال
-</button>
-</div>
-
-</div>
+  <button class="reader-close" onclick="closeReader()">×</button>
+  <div class="reader-container">
+    <h1 class="reader-title" id="readerTitle"></h1>
+    <div class="reader-date" id="readerDate"></div>
+    <div class="reader-content" id="readerContent"></div>
+    <div id="externalHolder"></div>
+    <div><button class="share-btn" onclick="shareArticle()" id="shareBtn">مشاركة المقال</button></div>
+  </div>
 </div>
 
 <footer>
-<div>
-جميع الحقوق محفوظة لـ أحمد بالي © 2026
-</div>
-
-<div style="margin-top:12px;color:#aaa;font-size:.95rem">
-
-<a 
-href="https://www.instagram.com/thebalyy?igsh=bnNsZ2hyYnVoYWw1"
-target="_blank"
-style="color:var(--gold);font-weight:700"
->
-Code Palmer
-</a>
-
-|
-
-<a 
-href="https://www.instagram.com/thebalyy?igsh=bnNsZ2hyYnVoYWw1"
-target="_blank"
-style="color:var(--gold);font-weight:700"
->
-أحمد بالي
-</a>
-
-</div>
+  <div>جميع الحقوق محفوظة لـ أحمد بالي © 2026</div>
+  <div style="margin-top:12px;color:#aaa;font-size:.95rem">
+    <a href="https://www.instagram.com/thebalyy?igsh=bnNsZ2hyYnVoYWw1" target="_blank" style="color:var(--gold);font-weight:700">Code Palmer</a>
+    |
+    <a href="https://www.instagram.com/thebalyy?igsh=bnNsZ2hyYnVoYWw1" target="_blank" style="color:var(--gold);font-weight:700">أحمد بالي</a>
+  </div>
 </footer>
 
+<!-- ========== ADMIN PANEL ========== -->
+<div class="admin-panel" id="adminPanel">
+  <div class="admin-nav">
+    <h2>⚙️ لوحة التحكم — أحمد بالي</h2>
+    <div class="admin-nav-btns">
+      <button class="admin-btn btn-outline" onclick="closeAdmin()">← العودة للموقع</button>
+      <button class="admin-btn btn-red" onclick="doSignOut()">تسجيل الخروج</button>
+    </div>
+  </div>
+
+  <div class="admin-body">
+
+    <!-- TABS -->
+    <div class="admin-tabs">
+      <button class="admin-tab active" onclick="switchTab('tab-articles')">📝 المقالات</button>
+      <button class="admin-tab" onclick="switchTab('tab-new')">➕ مقال جديد</button>
+      <button class="admin-tab" onclick="switchTab('tab-profile')">🖼️ الملف الشخصي</button>
+      <button class="admin-tab" onclick="switchTab('tab-about')">ℹ️ عن الموقع</button>
+    </div>
+
+    <!-- TAB: ARTICLES LIST -->
+    <div class="tab-section active" id="tab-articles">
+      <h3 style="margin-bottom:20px;color:var(--gold)">المقالات المنشورة</h3>
+      <div class="admin-articles-list" id="adminArticlesList">
+        <p style="color:var(--muted)">جاري التحميل...</p>
+      </div>
+    </div>
+
+    <!-- TAB: NEW ARTICLE -->
+    <div class="tab-section" id="tab-new">
+      <h3 style="margin-bottom:24px;color:var(--gold)">نشر مقال جديد</h3>
+
+      <div class="form-group">
+        <label>عنوان المقال *</label>
+        <input class="fi" type="text" id="newTitle" placeholder="أدخل العنوان..." />
+      </div>
+
+      <div class="form-group">
+        <label>التاريخ *</label>
+        <input class="fi" type="text" id="newDate" placeholder="مثال: ١٥ مايو ٢٠٢٦" />
+      </div>
+
+      <div class="form-group">
+        <label>محتوى المقال *</label>
+        <textarea id="newContent" placeholder="اكتب المقال هنا..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>رابط خارجي (اختياري)</label>
+        <input class="fi" type="url" id="newExternal" placeholder="https://..." />
+      </div>
+
+      <div class="form-group">
+        <label>صورة المقال (Thumbnail)</label>
+        <div class="img-preview" id="newImgPreview" onclick="document.getElementById('newImgFile').click()">
+          <span>اضغط لرفع صورة</span>
+        </div>
+        <input type="file" id="newImgFile" accept="image/*" style="display:none" onchange="handleNewImg(this)" />
+      </div>
+
+      <button class="admin-btn btn-gold" style="padding:14px 32px;font-size:1.05rem" onclick="publishArticle()">🚀 نشر المقال</button>
+    </div>
+
+    <!-- TAB: PROFILE -->
+    <div class="tab-section" id="tab-profile">
+      <h3 style="margin-bottom:24px;color:var(--gold)">الصورة الشخصية والنبذة</h3>
+
+      <div class="form-group">
+        <label>الصورة الشخصية</label>
+        <div class="img-preview" id="avatarPreview" onclick="document.getElementById('avatarFile').click()" style="width:200px;height:200px;border-radius:50%">
+          <span>اضغط لرفع صورة</span>
+        </div>
+        <input type="file" id="avatarFile" accept="image/*" style="display:none" onchange="handleAvatarImg(this)" />
+        <button class="admin-btn btn-gold btn-sm" style="margin-top:12px" onclick="saveAvatar()">💾 حفظ الصورة</button>
+      </div>
+
+      <div class="form-group" style="margin-top:30px">
+        <label>النبذة الشخصية (Bio)</label>
+        <textarea id="bioText" placeholder="اكتب النبذة الشخصية..."></textarea>
+        <button class="admin-btn btn-gold btn-sm" style="margin-top:12px" onclick="saveBio()">💾 حفظ النبذة</button>
+      </div>
+    </div>
+
+    <!-- TAB: ABOUT -->
+    <div class="tab-section" id="tab-about">
+      <h3 style="margin-bottom:24px;color:var(--gold)">نص "عن الموقع"</h3>
+      <div class="form-group">
+        <textarea id="aboutTextAdmin" placeholder="اكتب نص عن الموقع..." style="min-height:200px"></textarea>
+        <button class="admin-btn btn-gold btn-sm" style="margin-top:12px" onclick="saveAbout()">💾 حفظ</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ========== SCRIPTS ========== -->
 <script type="module">
 
-function waitForFirebase(cb,tries=0){
-
-if(window._firebase){
-cb();
-}
-else if(tries<50){
-setTimeout(()=>waitForFirebase(cb,tries+1),100);
-}
-
+function waitForFirebase(cb, tries=0){
+  if(window._firebase) cb();
+  else if(tries < 50) setTimeout(()=>waitForFirebase(cb, tries+1), 100);
 }
 
 waitForFirebase(()=>{
-
-const {
-db,ref,get,update,remove,push,
-auth,signInWithEmailAndPassword,
-signOut,compressImage
-} = window._firebase;
-
-function articlesArray(data){
-
-if(!data || !data.articles) return [];
-
-return Object.entries(data.articles)
-.map(([k,v])=>({...v,_key:k}))
-.sort((a,b)=>b._ts-a._ts);
-
-}
-
-window.renderSite = function(data){
-
-document.getElementById("aboutText").innerText = data.about || "";
-
-document.getElementById("heroBio").innerText = data.bio || "";
-
-if(data.avatarUrl){
-
-const img = `<img src="${data.avatarUrl}">`;
-
-document.getElementById("avatarFrame").innerHTML = img;
-
-}
-
-renderArticles(data);
-
-};
-
-function renderArticles(data){
-
-const grid = document.getElementById("articlesGrid");
-
-const q = document.getElementById("searchInput").value.toLowerCase();
-
-const t = window.langData[window.currentLang];
-
-const articles = articlesArray(data)
-.filter(a=>
-
-!a.private &&
-(
-q==="" ||
-a.title.toLowerCase().includes(q) ||
-a.content.toLowerCase().includes(q)
-)
-
-);
-
-grid.innerHTML = "";
-
-if(!articles.length){
-
-grid.innerHTML = `
-<p style="text-align:center;color:#aaa;padding:40px">
-${t.noArticles}
-</p>
-`;
-
-return;
-
-}
-
-articles.forEach(a=>{
-
-grid.innerHTML += `
-<div class="article-card" onclick="openArticle('${a._key}')">
-
-<div class="article-thumb"
-style="background-image:url('${a.imageUrl}')">
-</div>
-
-<div class="article-content">
-
-<div>
-
-<h3>${a.title}</h3>
-
-<div class="article-date">${a.date}</div>
-
-<div class="article-excerpt">
-${a.content.substring(0,180)}...
-</div>
-
-</div>
-
-<div class="read-more">
-${t.read}
-</div>
-
-</div>
-
-</div>
-`;
-
-});
-
-}
-
-window.filterArticles = function(){
-
-renderArticles(window._siteData || {});
-
-};
-
-window.openArticle = async function(key){
-
-const snap = await get(ref(db,`site/articles/${key}`));
-
-if(!snap.exists()) return;
-
-const a = snap.val();
-
-await update(ref(db,`site/articles/${key}`),{
-reads:(a.reads || 0)+1
-});
-
-window.currentArticleLink = window.location.href.split("#")[0] + "#article-" + key;
-
-document.getElementById("readerTitle").innerText = a.title;
-
-document.getElementById("readerDate").innerText = a.date;
-
-document.getElementById("readerContent").innerText = a.content;
-
-const holder = document.getElementById("externalHolder");
-
-if(a.externalLink){
-
-holder.innerHTML = `
-<a class="external-link"
-href="${a.externalLink}"
-target="_blank">
-
-${window.langData[window.currentLang].critic}
-
-</a>
-`;
-
-}
-else{
-
-holder.innerHTML = "";
-
-}
-
-document.getElementById("shareBtn").innerText =
-window.langData[window.currentLang].share;
-
-document.getElementById("readerPage")
-.classList.add("active");
-
-window.scrollTo(0,0);
-
-};
-
-window.shareArticle = async function(){
-
-if(navigator.share){
-
-await navigator.share({
-title:document.getElementById("readerTitle").innerText,
-url:window.currentArticleLink
-});
-
-}
-else{
-
-navigator.clipboard.writeText(window.currentArticleLink);
-
-alert("تم نسخ رابط المقال");
-
-}
-
-};
-
-window.closeReader = function(){
-
-document.getElementById("readerPage")
-.classList.remove("active");
-
-};
-
+  const { db, ref, get, update, remove, push, set, auth, signOut, compressImage } = window._firebase;
+
+  /* ---- helpers ---- */
+  function articlesArray(data){
+    if(!data || !data.articles) return [];
+    return Object.entries(data.articles)
+      .map(([k,v])=>({...v, _key:k}))
+      .sort((a,b)=>b._ts - a._ts);
+  }
+
+  function showToast(msg, type="success"){
+    const t = document.getElementById("toast");
+    t.innerText = msg;
+    t.className = "toast " + type + " show";
+    setTimeout(()=>{ t.className = "toast"; }, 3000);
+  }
+
+  /* ---- render public site ---- */
+  window.renderSite = function(data){
+    document.getElementById("aboutText").innerText = data.about || "";
+    document.getElementById("heroBio").innerText = data.bio || "";
+    if(data.avatarUrl){
+      document.getElementById("avatarFrame").innerHTML = `<img src="${data.avatarUrl}">`;
+    }
+    renderArticles(data);
+
+    // sync admin fields if panel open
+    if(document.getElementById("adminPanel").classList.contains("active")){
+      loadAdminData();
+    }
+  };
+
+  function renderArticles(data){
+    const grid = document.getElementById("articlesGrid");
+    const q = document.getElementById("searchInput").value.toLowerCase();
+    const t = window.langData[window.currentLang];
+    const articles = articlesArray(data).filter(a=>
+      !a.private && (q==="" || a.title.toLowerCase().includes(q) || a.content.toLowerCase().includes(q))
+    );
+    grid.innerHTML = "";
+    if(!articles.length){
+      grid.innerHTML = `<p style="text-align:center;color:#aaa;padding:40px">${t.noArticles}</p>`;
+      return;
+    }
+    articles.forEach(a=>{
+      grid.innerHTML += `
+        <div class="article-card" onclick="openArticle('${a._key}')">
+          <div class="article-thumb" style="background-image:url('${a.imageUrl||""}')"></div>
+          <div class="article-content">
+            <div>
+              <h3>${a.title}</h3>
+              <div class="article-date">${a.date}</div>
+              <div class="article-excerpt">${a.content.substring(0,180)}...</div>
+            </div>
+            <div class="read-more">${t.read}</div>
+          </div>
+        </div>`;
+    });
+  }
+
+  window.filterArticles = ()=> renderArticles(window._siteData || {});
+
+  window.openArticle = async function(key){
+    const snap = await get(ref(db,`site/articles/${key}`));
+    if(!snap.exists()) return;
+    const a = snap.val();
+    await update(ref(db,`site/articles/${key}`),{ reads:(a.reads||0)+1 });
+    window.currentArticleLink = window.location.href.split("#")[0] + "#article-" + key;
+    document.getElementById("readerTitle").innerText = a.title;
+    document.getElementById("readerDate").innerText = a.date;
+    document.getElementById("readerContent").innerText = a.content;
+    const holder = document.getElementById("externalHolder");
+    holder.innerHTML = a.externalLink
+      ? `<a class="external-link" href="${a.externalLink}" target="_blank">${window.langData[window.currentLang].critic}</a>`
+      : "";
+    document.getElementById("shareBtn").innerText = window.langData[window.currentLang].share;
+    document.getElementById("readerPage").classList.add("active");
+    window.scrollTo(0,0);
+  };
+
+  window.closeReader = ()=> document.getElementById("readerPage").classList.remove("active");
+
+  window.shareArticle = async function(){
+    if(navigator.share){
+      await navigator.share({ title: document.getElementById("readerTitle").innerText, url: window.currentArticleLink });
+    } else {
+      navigator.clipboard.writeText(window.currentArticleLink);
+      alert("تم نسخ رابط المقال");
+    }
+  };
+
+  /* ---- ADMIN ---- */
+  window.onAuthChange = function(user){
+    if(user){
+      // already logged in — if panel was requested, open it
+    }
+  };
+
+  function openAdmin(){
+    loadAdminData();
+    document.getElementById("adminPanel").classList.add("active");
+    window.scrollTo(0,0);
+  }
+
+  window.closeAdmin = function(){
+    document.getElementById("adminPanel").classList.remove("active");
+  };
+
+  window.doSignOut = async function(){
+    await signOut(auth);
+    document.getElementById("adminPanel").classList.remove("active");
+    showToast("تم تسجيل الخروج", "success");
+  };
+
+  function loadAdminData(){
+    const data = window._siteData || {};
+
+    // bio & about
+    document.getElementById("bioText").value = data.bio || "";
+    document.getElementById("aboutTextAdmin").value = data.about || "";
+
+    // avatar preview
+    if(data.avatarUrl){
+      document.getElementById("avatarPreview").innerHTML = `<img src="${data.avatarUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+    }
+
+    // articles list
+    renderAdminArticles(data);
+  }
+
+  function renderAdminArticles(data){
+    const list = document.getElementById("adminArticlesList");
+    const articles = articlesArray(data);
+    if(!articles.length){
+      list.innerHTML = `<p style="color:var(--muted)">لا توجد مقالات بعد</p>`;
+      return;
+    }
+    list.innerHTML = "";
+    articles.forEach(a=>{
+      const row = document.createElement("div");
+      row.className = "admin-article-row";
+      row.innerHTML = `
+        <div class="admin-article-thumb" style="background-image:url('${a.imageUrl||""}')"></div>
+        <div class="admin-article-info">
+          <h4>${a.title}</h4>
+          <span>${a.date} · ${a.reads||0} قراءة</span>
+        </div>
+        <div class="admin-article-actions">
+          <button class="admin-btn btn-outline btn-sm" onclick="openEditModal('${a._key}')">✏️ تعديل</button>
+          <button class="admin-btn btn-red btn-sm" onclick="askDelete('${a._key}','${a.title.replace(/'/g,"\\'")}')">🗑️ حذف</button>
+        </div>`;
+      list.appendChild(row);
+    });
+  }
+
+  /* ---- NEW ARTICLE ---- */
+  window._newImgData = null;
+
+  window.handleNewImg = async function(input){
+    if(!input.files[0]) return;
+    const data = await compressImage(input.files[0], 900, 0.82);
+    window._newImgData = data;
+    document.getElementById("newImgPreview").innerHTML = `<img src="${data}">`;
+  };
+
+  window.publishArticle = async function(){
+    const title   = document.getElementById("newTitle").value.trim();
+    const date    = document.getElementById("newDate").value.trim();
+    const content = document.getElementById("newContent").value.trim();
+    const ext     = document.getElementById("newExternal").value.trim();
+
+    if(!title || !content || !date){
+      showToast("يرجى ملء العنوان والتاريخ والمحتوى", "error"); return;
+    }
+
+    const article = {
+      title, date, content,
+      imageUrl: window._newImgData || "",
+      externalLink: ext || "",
+      reads: 0,
+      _ts: Date.now()
+    };
+
+    try {
+      await push(ref(db,"site/articles"), article);
+      showToast("✅ تم نشر المقال بنجاح");
+      document.getElementById("newTitle").value = "";
+      document.getElementById("newDate").value = "";
+      document.getElementById("newContent").value = "";
+      document.getElementById("newExternal").value = "";
+      document.getElementById("newImgPreview").innerHTML = `<span>اضغط لرفع صورة</span>`;
+      window._newImgData = null;
+      switchTab("tab-articles");
+    } catch(e){
+      showToast("حدث خطأ أثناء النشر", "error");
+    }
+  };
+
+  /* ---- EDIT ARTICLE ---- */
+  window._editImgData = null;
+
+  window.openEditModal = async function(key){
+    const snap = await get(ref(db,`site/articles/${key}`));
+    if(!snap.exists()) return;
+    const a = snap.val();
+    document.getElementById("editKey").value = key;
+    document.getElementById("editTitle").value = a.title || "";
+    document.getElementById("editDate").value = a.date || "";
+    document.getElementById("editContent").value = a.content || "";
+    document.getElementById("editExternal").value = a.externalLink || "";
+    window._editImgData = null;
+    const prev = document.getElementById("editImgPreview");
+    prev.innerHTML = a.imageUrl
+      ? `<img src="${a.imageUrl}">`
+      : `<span>اضغط لتغيير الصورة</span>`;
+    document.getElementById("editModal").classList.add("active");
+  };
+
+  window.closeEditModal = ()=> document.getElementById("editModal").classList.remove("active");
+
+  window.handleEditImg = async function(input){
+    if(!input.files[0]) return;
+    const data = await compressImage(input.files[0], 900, 0.82);
+    window._editImgData = data;
+    document.getElementById("editImgPreview").innerHTML = `<img src="${data}">`;
+  };
+
+  window.saveEditArticle = async function(){
+    const key     = document.getElementById("editKey").value;
+    const title   = document.getElementById("editTitle").value.trim();
+    const date    = document.getElementById("editDate").value.trim();
+    const content = document.getElementById("editContent").value.trim();
+    const ext     = document.getElementById("editExternal").value.trim();
+
+    if(!title || !content || !date){
+      showToast("يرجى ملء جميع الحقول المطلوبة", "error"); return;
+    }
+
+    const updates = { title, date, content, externalLink: ext || "" };
+    if(window._editImgData) updates.imageUrl = window._editImgData;
+
+    try {
+      await update(ref(db,`site/articles/${key}`), updates);
+      showToast("✅ تم حفظ التعديلات");
+      window.closeEditModal();
+    } catch(e){
+      showToast("حدث خطأ أثناء الحفظ", "error");
+    }
+  };
+
+  /* ---- DELETE ARTICLE ---- */
+  window.askDelete = function(key, title){
+    window._pendingDeleteKey = key;
+    document.querySelector(".confirm-box p").innerHTML =
+      `هل أنت متأكد من حذف المقال:<br><strong>"${title}"</strong>؟<br>لا يمكن التراجع عن هذا الإجراء.`;
+    document.getElementById("confirmModal").classList.add("active");
+    document.getElementById("confirmDeleteBtn").onclick = async function(){
+      try {
+        await remove(ref(db,`site/articles/${window._pendingDeleteKey}`));
+        showToast("🗑️ تم حذف المقال");
+        closeConfirm();
+      } catch(e){
+        showToast("حدث خطأ أثناء الحذف", "error");
+      }
+    };
+  };
+
+  window.closeConfirm = ()=> document.getElementById("confirmModal").classList.remove("active");
+
+  /* ---- AVATAR ---- */
+  window._avatarData = null;
+
+  window.handleAvatarImg = async function(input){
+    if(!input.files[0]) return;
+    const data = await compressImage(input.files[0], 600, 0.88);
+    window._avatarData = data;
+    document.getElementById("avatarPreview").innerHTML =
+      `<img src="${data}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+  };
+
+  window.saveAvatar = async function(){
+    if(!window._avatarData){ showToast("اختر صورة أولاً", "error"); return; }
+    try {
+      await update(ref(db,"site"), { avatarUrl: window._avatarData });
+      showToast("✅ تم حفظ الصورة الشخصية");
+      window._avatarData = null;
+    } catch(e){
+      showToast("حدث خطأ", "error");
+    }
+  };
+
+  /* ---- BIO ---- */
+  window.saveBio = async function(){
+    const bio = document.getElementById("bioText").value.trim();
+    try {
+      await update(ref(db,"site"), { bio });
+      showToast("✅ تم حفظ النبذة");
+    } catch(e){
+      showToast("حدث خطأ", "error");
+    }
+  };
+
+  /* ---- ABOUT ---- */
+  window.saveAbout = async function(){
+    const about = document.getElementById("aboutTextAdmin").value.trim();
+    try {
+      await update(ref(db,"site"), { about });
+      showToast("✅ تم حفظ نص عن الموقع");
+    } catch(e){
+      showToast("حدث خطأ", "error");
+    }
+  };
+
+  /* ---- TAB SWITCH ---- */
+  window.switchTab = function(id){
+    document.querySelectorAll(".tab-section").forEach(s=>s.classList.remove("active"));
+    document.querySelectorAll(".admin-tab").forEach(b=>b.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+    const idx = ["tab-articles","tab-new","tab-profile","tab-about"].indexOf(id);
+    document.querySelectorAll(".admin-tab")[idx].classList.add("active");
+  };
+
+  /* ---- expose openAdmin ---- */
+  window._openAdmin = openAdmin;
 });
 </script>
 
+<!-- PUBLIC SCRIPTS (non-module) -->
 <script>
-// ============================================
-// SECRET LOGO — 3 CLICKS → LOGIN MODAL
-// ============================================
-let secretClicks = 0;
-let secretTimer = null;
+/* SECRET LOGO — 3 clicks → login */
+let secretClicks = 0, secretTimer = null;
 
-document.getElementById("secretLogo").addEventListener("click", () => {
+document.getElementById("secretLogo").addEventListener("click", ()=>{
   secretClicks++;
   clearTimeout(secretTimer);
-
-  if (secretClicks >= 3) {
+  if(secretClicks >= 3){
     secretClicks = 0;
-    openPassModal();
+    // if already logged in, open admin directly
+    if(window._currentUser){
+      if(window._openAdmin) window._openAdmin();
+    } else {
+      openPassModal();
+    }
   } else {
-    secretTimer = setTimeout(() => {
-      secretClicks = 0;
-    }, 1500);
+    secretTimer = setTimeout(()=>{ secretClicks = 0; }, 1500);
   }
 });
 
-function openPassModal() {
+function openPassModal(){
   document.getElementById("emailInput").value = "";
   document.getElementById("passInput").value = "";
   document.getElementById("passError").style.display = "none";
   document.getElementById("passOverlay").classList.add("active");
-  setTimeout(() => document.getElementById("emailInput").focus(), 100);
+  setTimeout(()=> document.getElementById("emailInput").focus(), 150);
 }
 
-window.closePassModal = function() {
+window.closePassModal = function(){
   document.getElementById("passOverlay").classList.remove("active");
 };
 
-window.confirmPass = async function() {
-  const email = document.getElementById("emailInput").value.trim();
+window.confirmPass = async function(){
+  const email    = document.getElementById("emailInput").value.trim();
   const password = document.getElementById("passInput").value;
-  const btn = document.getElementById("loginBtn");
-  const errEl = document.getElementById("passError");
+  const btn      = document.getElementById("loginBtn");
+  const errEl    = document.getElementById("passError");
 
-  if (!email || !password) {
+  if(!email || !password){
     errEl.innerText = "من فضلك أدخل البريد وكلمة المرور";
-    errEl.style.display = "block";
-    return;
+    errEl.style.display = "block"; return;
   }
 
   btn.innerText = "جاري التحقق...";
   btn.disabled = true;
   errEl.style.display = "none";
 
-  function waitAuth(cb, tries = 0) {
-    if (window._firebase) cb();
-    else if (tries < 50) setTimeout(() => waitAuth(cb, tries + 1), 100);
+  function waitFB(cb, tries=0){
+    if(window._firebase) cb();
+    else if(tries < 50) setTimeout(()=>waitFB(cb, tries+1), 100);
   }
 
-  waitAuth(async () => {
+  waitFB(async ()=>{
     const { auth, signInWithEmailAndPassword } = window._firebase;
     try {
       await signInWithEmailAndPassword(auth, email, password);
       document.getElementById("passOverlay").classList.remove("active");
-      window.location.href = "index.html";
-    } catch (err) {
+      if(window._openAdmin) window._openAdmin();
+    } catch(e){
       errEl.innerText = "البريد أو كلمة المرور غير صحيحة";
       errEl.style.display = "block";
       document.getElementById("passInput").value = "";
@@ -941,11 +988,14 @@ window.confirmPass = async function() {
   });
 };
 
-// إغلاق المودال عند الضغط خارجه
-document.getElementById("passOverlay").addEventListener("click", function(e) {
-  if (e.target === this) closePassModal();
+document.getElementById("passOverlay").addEventListener("click", function(e){
+  if(e.target === this) closePassModal();
+});
+
+document.getElementById("editModal").addEventListener("click", function(e){
+  if(e.target === this) window.closeEditModal();
 });
 </script>
-  
+
 </body>
 </html>
