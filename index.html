@@ -1,44 +1,39 @@
+# الكود النهائي الكامل
+
+```html
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-<title>أحمد بالي — ناقد وكاتب</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أثر | أحمد بالي</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;600;700;800;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
 
 :root{
 --gold:#d4af37;
---gold2:#f0d77b;
---bg:#0a0a0a;
---card:#141414;
---card2:#1c1c1c;
---text:#f6f1e8;
---muted:#b8aa90;
---border:rgba(212,175,55,.15);
---shadow:0 10px 30px rgba(0,0,0,.4);
+--bg:#0c0c0c;
+--card:#171717;
+--text:#f4f4f4;
+--muted:#aaaaaa;
+--border:rgba(212,175,55,.2);
 }
 
 *{
 margin:0;
 padding:0;
 box-sizing:border-box;
-}
-
-html{
 scroll-behavior:smooth;
 }
 
 body{
-font-family:'Cairo',sans-serif;
 background:var(--bg);
 color:var(--text);
+font-family:'Cairo',sans-serif;
 overflow-x:hidden;
 }
 
@@ -46,318 +41,152 @@ body::before{
 content:'';
 position:fixed;
 inset:0;
-pointer-events:none;
-opacity:.05;
-background-image:
-radial-gradient(circle at 20% 20%, #fff 1px, transparent 1px),
-radial-gradient(circle at 80% 40%, #fff 1px, transparent 1px);
-background-size:40px 40px;
-z-index:0;
-}
-
-a{
-text-decoration:none;
-color:inherit;
-}
-
-img{
-max-width:100%;
-display:block;
-}
-
-.gold-line{
-height:2px;
-background:linear-gradient(to right,transparent,var(--gold),transparent);
+background:radial-gradient(circle at top,#1f1a0d 0%,#0c0c0c 40%);
+z-index:-1;
 }
 
 nav{
 position:sticky;
 top:0;
-z-index:100;
+z-index:999;
 background:rgba(10,10,10,.92);
-backdrop-filter:blur(12px);
-border-bottom:1px solid var(--border);
-padding:16px 5%;
+backdrop-filter:blur(10px);
+padding:18px 6%;
 display:flex;
 align-items:center;
 justify-content:space-between;
+border-bottom:1px solid var(--border);
 }
 
 .logo{
-font-family:'Amiri',serif;
 font-size:2rem;
+font-family:'Amiri',serif;
 color:var(--gold);
 font-weight:700;
-cursor:pointer;
+text-decoration:none;
 }
 
-.nav-center{
-position:absolute;
-left:50%;
-transform:translateX(-50%);
-font-family:'Amiri',serif;
-color:#bda56a;
-font-size:.95rem;
-}
-
-.nav-center span{
-color:var(--gold);
-}
-
-.nav-right{
+.nav-links{
 display:flex;
-align-items:center;
-gap:12px;
+gap:25px;
 }
 
-.lang-btn{
-background:transparent;
-border:1px solid var(--border);
-color:var(--text);
-padding:6px 12px;
-border-radius:10px;
-cursor:pointer;
-font-family:'Cairo',sans-serif;
+.nav-links a{
+text-decoration:none;
+color:#ddd;
+font-size:1rem;
 transition:.3s;
 }
 
-.lang-btn:hover,
-.lang-btn.active{
-background:rgba(212,175,55,.12);
-border-color:var(--gold);
+.nav-links a:hover{
 color:var(--gold);
 }
 
-.admin-btn{
-display:none;
-padding:8px 18px;
-border:none;
-background:var(--gold);
-color:#000;
-font-weight:700;
-border-radius:10px;
-cursor:pointer;
-font-family:'Cairo',sans-serif;
-}
-
-.admin-btn.show{
-display:block;
-}
-
 .hero{
-position:relative;
-z-index:1;
-padding:90px 5%;
-max-width:1200px;
-margin:auto;
+padding:90px 6% 70px;
 display:grid;
-grid-template-columns:1.2fr .8fr;
+grid-template-columns:1fr 320px;
 gap:60px;
 align-items:center;
 }
 
-.hero-badge{
-display:inline-block;
-padding:8px 18px;
-border:1px solid var(--border);
-border-radius:999px;
-background:rgba(212,175,55,.08);
-color:var(--gold2);
-margin-bottom:24px;
-font-size:.85rem;
-}
-
 .hero h1{
-font-size:5rem;
-line-height:1.1;
+font-size:4rem;
+line-height:1.3;
 font-family:'Amiri',serif;
-margin-bottom:12px;
 }
 
 .hero h1 span{
 color:var(--gold);
 }
 
-.hero-title{
-font-size:1.15rem;
-color:var(--muted);
-margin-bottom:24px;
-}
-
-.hero-bio{
-line-height:2.1;
+.hero p{
+margin-top:20px;
+line-height:2;
 font-size:1.1rem;
-color:#d8d0c2;
-border-right:2px solid rgba(212,175,55,.25);
-padding-right:20px;
+color:#c7c7c7;
+max-width:700px;
 }
 
-.hero-stats{
-display:flex;
-gap:40px;
-margin-top:35px;
-}
-
-.stat{
-text-align:center;
-}
-
-.stat strong{
-display:block;
-font-size:2rem;
-font-family:'Amiri',serif;
-color:var(--gold);
-}
-
-.stat span{
-font-size:.85rem;
-color:var(--muted);
-}
-
-.hero-avatar{
-display:flex;
-justify-content:center;
-}
-
-.avatar-frame{
-width:270px;
-height:270px;
+.hero-image{
+width:320px;
+height:320px;
 border-radius:50%;
 overflow:hidden;
-border:4px solid rgba(212,175,55,.4);
-background:#161616;
-position:relative;
-box-shadow:0 0 60px rgba(212,175,55,.08);
+border:4px solid var(--gold);
+background:#111;
+box-shadow:0 0 40px rgba(212,175,55,.15);
 }
 
-.avatar-frame img{
+.hero-image img{
 width:100%;
 height:100%;
 object-fit:cover;
 }
 
-.avatar-placeholder{
+.hero-image .placeholder{
 width:100%;
 height:100%;
 display:flex;
 align-items:center;
 justify-content:center;
-font-size:6rem;
-font-family:'Amiri',serif;
-color:#7f6730;
-}
-
-.about{
-max-width:1100px;
-margin:auto;
-padding:0 5% 70px;
-position:relative;
-z-index:1;
-}
-
-.about-card{
-background:linear-gradient(145deg,#141414,#111);
-border:1px solid var(--border);
-border-radius:28px;
-padding:40px;
-box-shadow:var(--shadow);
-}
-
-.about-card h2{
-font-size:2rem;
-margin-bottom:20px;
+font-size:5rem;
 color:var(--gold);
 font-family:'Amiri',serif;
 }
 
-.about-card p{
-line-height:2.2;
-color:#d2c9b8;
-font-size:1.08rem;
+.section-title{
+font-size:2rem;
+margin-bottom:30px;
+font-family:'Amiri',serif;
 }
 
-.search-box{
-max-width:1100px;
-margin:0 auto 60px;
-padding:0 5%;
-position:relative;
-z-index:1;
+.container{
+padding:0 6% 80px;
 }
 
-.search-box input{
-width:100%;
-padding:18px 20px;
-background:#141414;
-border:1px solid var(--border);
-border-radius:20px;
-color:var(--text);
-font-family:'Cairo',sans-serif;
-font-size:1rem;
-outline:none;
-transition:.3s;
-}
-
-.search-box input:focus{
-border-color:var(--gold);
-}
-
-.section{
-max-width:1100px;
-margin:auto;
-padding:0 5% 90px;
-position:relative;
-z-index:1;
-}
-
-.section-header{
-display:flex;
-align-items:center;
-justify-content:space-between;
+.search{
 margin-bottom:30px;
 }
 
-.section-header h2{
-font-size:2rem;
-font-family:'Amiri',serif;
+.search input{
+width:100%;
+padding:16px 20px;
+background:#111;
+border:1px solid var(--border);
+color:#fff;
+font-size:1rem;
+border-radius:10px;
+outline:none;
 }
 
-.section-header h2 span{
-color:var(--gold);
-}
-
-.section-header p{
-color:var(--muted);
-font-size:.9rem;
-}
-
-.articles{
+.playlist{
 display:flex;
 flex-direction:column;
-gap:22px;
+gap:18px;
 }
 
-.article-card{
-display:grid;
-grid-template-columns:260px 1fr;
-background:linear-gradient(145deg,#171717,#111);
+.article{
+background:var(--card);
 border:1px solid var(--border);
-border-radius:24px;
+border-radius:18px;
 overflow:hidden;
-transition:.35s;
+transition:.3s;
 cursor:pointer;
-box-shadow:var(--shadow);
+display:flex;
+gap:20px;
 }
 
-.article-card:hover{
-transform:translateY(-4px);
-border-color:rgba(212,175,55,.4);
+.article:hover{
+transform:translateY(-3px);
+border-color:var(--gold);
 }
 
 .article-thumb{
-height:100%;
-min-height:210px;
-background:#222;
-position:relative;
+width:280px;
+height:180px;
+background:#111;
+flex-shrink:0;
 overflow:hidden;
 }
 
@@ -365,1408 +194,464 @@ overflow:hidden;
 width:100%;
 height:100%;
 object-fit:cover;
-transition:.4s;
 }
 
-.article-card:hover img{
-transform:scale(1.05);
-}
-
-.article-category{
-position:absolute;
-bottom:14px;
-right:14px;
-background:rgba(0,0,0,.7);
-padding:6px 12px;
-border-radius:999px;
-font-size:.75rem;
-border:1px solid rgba(212,175,55,.2);
-color:var(--gold2);
-}
-
-.article-content{
-padding:28px;
-display:flex;
-flex-direction:column;
-justify-content:space-between;
-}
-
-.article-date{
-color:#8e856f;
-font-size:.82rem;
-margin-bottom:10px;
+.article-body{
+padding:20px;
+flex:1;
 }
 
 .article-title{
-font-size:2rem;
-font-family:'Amiri',serif;
-line-height:1.5;
+font-size:1.6rem;
 margin-bottom:10px;
-}
-
-.article-logline{
-color:var(--gold2);
-font-size:.95rem;
-margin-bottom:16px;
-}
-
-.article-excerpt{
-line-height:2;
-color:#d0c6b5;
-display:-webkit-box;
--webkit-line-clamp:3;
--webkit-box-orient:vertical;
-overflow:hidden;
-}
-
-.article-meta{
-display:flex;
-align-items:center;
-gap:14px;
-margin-top:24px;
-}
-
-.author-mini{
-width:46px;
-height:46px;
-border-radius:50%;
-overflow:hidden;
-border:2px solid rgba(212,175,55,.35);
-background:#1d1d1d;
-flex-shrink:0;
-}
-
-.author-mini img{
-width:100%;
-height:100%;
-object-fit:cover;
-}
-
-.author-mini span{
-display:flex;
-align-items:center;
-justify-content:center;
-height:100%;
 font-family:'Amiri',serif;
-font-size:1.5rem;
+}
+
+.article-desc{
+color:#bdbdbd;
+line-height:1.9;
+margin-bottom:18px;
+}
+
+.article-date{
 color:var(--gold);
-}
-
-.author-info{
-display:flex;
-flex-direction:column;
-}
-
-.author-info strong{
 font-size:.95rem;
 }
 
-.author-info span{
-font-size:.75rem;
-color:#8b8577;
-}
-
-.empty{
-padding:60px 20px;
-text-align:center;
-color:#8c8576;
-}
-
-.reader-overlay{
+.reader-page{
 position:fixed;
 inset:0;
-background:rgba(0,0,0,.92);
-z-index:999;
-display:none;
+background:#0a0a0a;
+z-index:5000;
 overflow-y:auto;
+display:none;
+padding:60px 8%;
 }
 
-.reader-overlay.show{
+.reader-page.active{
 display:block;
 }
 
-.reader-container{
-max-width:900px;
-margin:auto;
-padding:50px 5% 100px;
-}
-
-.reader-close{
+.close-reader{
 position:fixed;
-top:20px;
-left:20px;
-width:50px;
-height:50px;
-border-radius:50%;
-border:none;
-background:#161616;
+top:25px;
+left:25px;
+background:#111;
+border:1px solid var(--gold);
 color:var(--gold);
-font-size:1.5rem;
+padding:10px 18px;
 cursor:pointer;
-z-index:1000;
-}
-
-.reader-header{
-margin-bottom:40px;
-}
-
-.reader-category{
-display:inline-block;
-padding:8px 18px;
-background:rgba(212,175,55,.08);
-border:1px solid rgba(212,175,55,.18);
-border-radius:999px;
-margin-bottom:18px;
-color:var(--gold2);
-font-size:.85rem;
-}
-
-.reader-title{
-font-family:'Amiri',serif;
-font-size:4rem;
-line-height:1.4;
-margin-bottom:16px;
-}
-
-.reader-date{
-color:#93886f;
-margin-bottom:30px;
-}
-
-.reader-thumb{
-border-radius:30px;
-overflow:hidden;
-margin-bottom:40px;
-border:1px solid var(--border);
-}
-
-.reader-thumb img{
-width:100%;
-max-height:500px;
-object-fit:cover;
+border-radius:10px;
 }
 
 .reader-content{
-background:#111;
-padding:50px;
-border-radius:30px;
-border:1px solid var(--border);
-line-height:2.4;
-font-size:1.15rem;
-color:#e2d7c2;
-white-space:pre-wrap;
+max-width:900px;
+margin:auto;
+}
+
+.reader-content h1{
+font-size:3rem;
+margin-bottom:25px;
+font-family:'Amiri',serif;
+}
+
+.reader-date{
+margin-bottom:35px;
+color:var(--gold);
+}
+
+.reader-text{
+font-size:1.3rem;
+line-height:2.5;
+color:#ededed;
+white-space:pre-line;
 }
 
 .next-article{
-margin-top:50px;
-padding:35px;
-border-radius:26px;
-background:linear-gradient(145deg,#171717,#111);
-border:1px solid var(--border);
-cursor:pointer;
-transition:.3s;
-}
-
-.next-article:hover{
-border-color:rgba(212,175,55,.35);
-}
-
-.next-article small{
-color:#93886f;
-display:block;
-margin-bottom:12px;
-}
-
-.next-article h3{
-font-family:'Amiri',serif;
-font-size:2rem;
-color:var(--gold2);
-line-height:1.6;
-}
-
-footer{
-padding:40px 5%;
+margin-top:70px;
+padding-top:40px;
 border-top:1px solid var(--border);
-text-align:center;
-color:#918772;
-position:relative;
-z-index:1;
 }
 
-.success-toast{
+.next-article button{
+margin-top:20px;
+padding:14px 28px;
+background:var(--gold);
+color:#000;
+border:none;
+border-radius:10px;
+font-weight:700;
+cursor:pointer;
+}
+
+.admin-btn{
 position:fixed;
-bottom:30px;
-left:50%;
-transform:translateX(-50%);
-background:#151515;
-border:1px solid rgba(212,175,55,.3);
-color:var(--gold2);
-padding:14px 24px;
-border-radius:16px;
-z-index:9999;
-display:none;
-box-shadow:var(--shadow);
+bottom:25px;
+left:25px;
+width:60px;
+height:60px;
+border-radius:50%;
+border:none;
+background:var(--gold);
+color:#000;
+font-size:1.4rem;
+font-weight:bold;
+cursor:pointer;
+box-shadow:0 10px 30px rgba(212,175,55,.2);
 }
 
-.success-toast.show{
-display:block;
-animation:fade .4s;
-}
-
-@keyframes fade{
-from{
-opacity:0;
-transform:translateX(-50%) translateY(10px);
-}
-to{
-opacity:1;
-transform:translateX(-50%) translateY(0);
-}
-}
-
-#admin-overlay{
+.panel{
 position:fixed;
 inset:0;
-background:rgba(0,0,0,.88);
+background:rgba(0,0,0,.8);
 display:none;
 align-items:center;
 justify-content:center;
-z-index:9999;
-padding:20px;
+z-index:7000;
 }
 
-#admin-overlay.open{
+.panel.active{
 display:flex;
 }
 
-.admin-modal{
-width:min(760px,100%);
-background:#121212;
-border:1px solid var(--border);
-border-radius:30px;
-padding:35px;
+.panel-box{
+width:min(700px,95vw);
 max-height:90vh;
 overflow:auto;
-}
-
-.admin-header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:30px;
-}
-
-.admin-header h2{
-font-family:'Amiri',serif;
-font-size:2rem;
-color:var(--gold);
-}
-
-.close-btn{
-background:none;
-border:none;
-font-size:1.5rem;
-color:#aaa;
-cursor:pointer;
-}
-
-.field{
-margin-bottom:18px;
-}
-
-.field label{
-display:block;
-margin-bottom:8px;
-color:#cab78a;
-font-size:.9rem;
-}
-
-.field input,
-.field textarea,
-.field select{
-width:100%;
-padding:14px 16px;
-background:#0d0d0d;
+background:#111;
+padding:35px;
+border-radius:20px;
 border:1px solid var(--border);
-border-radius:14px;
-color:var(--text);
-font-family:'Cairo',sans-serif;
-outline:none;
 }
 
-.field textarea{
-min-height:120px;
+.panel-box input,
+.panel-box textarea{
+width:100%;
+padding:15px;
+margin-top:12px;
+margin-bottom:20px;
+background:#1b1b1b;
+border:1px solid #333;
+color:#fff;
+border-radius:10px;
+font-family:'Cairo',sans-serif;
+}
+
+.panel-box textarea{
+min-height:200px;
 resize:vertical;
 }
 
-.main-btn{
+.panel-box button{
+padding:14px 28px;
 background:var(--gold);
 color:#000;
-padding:14px 28px;
 border:none;
-border-radius:14px;
-cursor:pointer;
-font-weight:800;
-font-family:'Cairo',sans-serif;
-}
-
-.tabs{
-display:flex;
-gap:10px;
-margin-bottom:25px;
-flex-wrap:wrap;
-}
-
-.tab{
-padding:10px 18px;
-border-radius:12px;
-border:1px solid var(--border);
+border-radius:10px;
+font-weight:700;
 cursor:pointer;
 }
 
-.tab.active{
-background:rgba(212,175,55,.1);
-color:var(--gold);
-border-color:rgba(212,175,55,.3);
-}
-
-.tab-content{
+.success{
+margin-top:15px;
+color:#6bff93;
 display:none;
 }
 
-.tab-content.active{
-display:block;
+footer{
+padding:40px 6%;
+text-align:center;
+border-top:1px solid var(--border);
+color:#999;
 }
 
-.manage-item{
-padding:18px;
-background:#161616;
-border-radius:18px;
-margin-bottom:12px;
-border:1px solid var(--border);
-display:flex;
-justify-content:space-between;
-gap:20px;
-align-items:center;
+footer strong{
+color:#fff;
 }
 
-.manage-item h4{
-margin-bottom:6px;
-}
-
-.manage-actions{
-display:flex;
-gap:8px;
-flex-wrap:wrap;
-}
-
-.small-btn{
-padding:10px 14px;
-border:none;
-border-radius:10px;
-cursor:pointer;
-font-family:'Cairo',sans-serif;
-}
-
-.delete-btn{
-background:#3d1111;
-color:#ff8d8d;
-}
-
-.edit-btn{
-background:#163218;
-color:#8fff9f;
-}
-
-.share-btn{
-background:#3d3111;
-color:#ffe48f;
-}
-
-@media(max-width:950px){
-
+@media(max-width:900px){
 .hero{
 grid-template-columns:1fr;
 text-align:center;
 }
 
-.hero-bio{
-border:none;
-padding:0;
+.hero-image{
+margin:auto;
+width:250px;
+height:250px;
 }
 
-.hero-stats{
-justify-content:center;
+.article{
+flex-direction:column;
 }
 
-.article-card{
-grid-template-columns:1fr;
-}
-
-.reader-title{
-font-size:2.5rem;
-}
-
-.nav-center{
-display:none;
-}
-
-}
-
-@media(max-width:650px){
-
-.hero h1{
-font-size:3.2rem;
-}
-
-.reader-content{
-padding:30px;
-font-size:1.02rem;
-}
-
-.reader-title{
-font-size:2rem;
-}
-
-.article-title{
-font-size:1.5rem;
-}
-
-.avatar-frame{
-width:220px;
+.article-thumb{
+width:100%;
 height:220px;
 }
 
+.hero h1{
+font-size:2.7rem;
+}
+
+.reader-content h1{
+font-size:2.2rem;
+}
+
+.reader-text{
+font-size:1.1rem;
+line-height:2.2;
+}
 }
 
 </style>
 </head>
-
 <body>
 
-<div class="gold-line"></div>
-
 <nav>
+<a href="#" class="logo">أثر</a>
 
-<div class="logo" id="logo-secret">أحمد بالي</div>
-
-<div class="nav-center">
-<span>﴿</span>
-وَقُولُوا لِلنَّاسِ حُسْنًا
-<span>﴾</span>
+<div class="nav-links">
+<a href="#">الرئيسية</a>
+<a href="#articles">المقالات</a>
 </div>
-
-<div class="nav-right">
-
-<button class="lang-btn active" id="btn-ar">عربي</button>
-<button class="lang-btn" id="btn-en">EN</button>
-
-<button class="admin-btn" id="adminBtn" onclick="openAdmin()">
-لوحة التحكم
-</button>
-
-</div>
-
 </nav>
 
 <section class="hero">
-
 <div>
-
-<div class="hero-badge">
-ناقد وكاتب مستقل
-</div>
-
-<h1>
-أحمد <span>بالي</span>
-</h1>
-
-<div class="hero-title" id="heroTitle">
-نقد أدبي · سينمائي · قصص قصيرة · كتابة ثقافية
-</div>
-
-<div class="hero-bio" id="heroBio">
-كاتب ومفكر يرصد العالم بعيون النقد، يسكن بين سطور الروايات وكواليس السينما، ويجد في الكلمة فعلاً لا زينةً.
-</div>
-
-<div class="hero-stats">
-
-<div class="stat">
-<strong id="statArticles">0</strong>
-<span id="articlesText">مقال</span>
-</div>
-
-<div class="stat">
-<strong id="statReads">0</strong>
-<span id="readsText">قراءة</span>
-</div>
-
-</div>
-
-</div>
-
-<div class="hero-avatar">
-
-<div class="avatar-frame" id="mainAvatar">
-
-<div class="avatar-placeholder" id="avatarPlaceholder">
-أ
-</div>
-
-</div>
-
-</div>
-
-</section>
-
-<section class="about">
-
-<div class="about-card">
-
-<h2>
-عن الموقع
-</h2>
-
-<p id="aboutText">
-هذا الموقع فضاء نقدي خاص، لا يكتب فيه سواي. مساحة بعيدة عن ضجيج الشبكات الاجتماعية.
+<h1>أحمد <span>بالي</span></h1>
+<p>
+كاتب وناقد يهتم بالأدب والسينما والكتابة الثقافية.
+مساحة خاصة لنشر المقالات والتأملات النقدية بأسلوب هادئ وبصري مريح للقراءة.
 </p>
-
 </div>
 
+<div class="hero-image" id="heroImage">
+<div class="placeholder">أ</div>
+</div>
 </section>
 
-<div class="search-box">
+<section class="container" id="articles">
+<h2 class="section-title">المقالات</h2>
 
-<input
-type="text"
-id="searchInput"
-placeholder="ابحث في المقالات..."
-oninput="filterArticles()"
-/>
-
+<div class="search">
+<input type="text" id="searchInput" placeholder="ابحث داخل المقالات...">
 </div>
 
-<section class="section">
-
-<div class="section-header">
-
-<h2>
-المقالات <span>✦</span>
-</h2>
-
-<p id="articlesCount">
-لا توجد مقالات
-</p>
-
-</div>
-
-<div class="articles" id="articlesContainer">
-
-<div class="empty">
-لا توجد مقالات منشورة بعد
-</div>
-
-</div>
-
+<div class="playlist" id="articlesContainer"></div>
 </section>
+
+<div class="reader-page" id="readerPage">
+<button class="close-reader" onclick="closeReader()">إغلاق</button>
+
+<div class="reader-content">
+<h1 id="readerTitle"></h1>
+<div class="reader-date" id="readerDate"></div>
+<div class="reader-text" id="readerText"></div>
+
+<div class="next-article" id="nextArticle"></div>
+</div>
+</div>
+
+<button class="admin-btn" onclick="openPanel()">+</button>
+
+<div class="panel" id="panel">
+<div class="panel-box">
+<h2 style="margin-bottom:20px">لوحة التحكم</h2>
+
+<input type="password" id="password" placeholder="كلمة المرور">
+<button onclick="login()">دخول</button>
+
+<div id="adminArea" style="display:none;margin-top:30px">
+
+<input type="text" id="title" placeholder="عنوان المقال">
+
+<textarea id="content" placeholder="اكتب المقال هنا..."></textarea>
+
+<input type="file" id="thumb">
+<input type="file" id="avatarInput">
+
+<button onclick="publishArticle()">نشر المقال</button>
+
+<div class="success" id="successMsg">✓ تم النشر بنجاح</div>
+<div class="success" id="avatarMsg">✓ تم حفظ الصورة الشخصية</div>
+
+</div>
+</div>
+</div>
 
 <footer>
-جميع الحقوق محفوظة © أحمد بالي 2026
+جميع الحقوق محفوظة © <strong>أحمد بالي</strong>
 </footer>
-
-<div class="success-toast" id="toast"></div>
-
-<div class="reader-overlay" id="readerOverlay">
-
-<button class="reader-close" onclick="closeReader()">
-×
-</button>
-
-<div class="reader-container">
-
-<div class="reader-header">
-
-<div class="reader-category" id="readerCategory"></div>
-
-<h1 class="reader-title" id="readerTitle"></h1>
-
-<div class="reader-date" id="readerDate"></div>
-
-<div class="reader-thumb" id="readerThumb"></div>
-
-</div>
-
-<div class="reader-content" id="readerContent"></div>
-
-<div class="next-article" id="nextArticleBox" style="display:none;">
-<small>اقرأ المقال التالي</small>
-<h3 id="nextArticleTitle"></h3>
-</div>
-
-</div>
-
-</div>
-
-<div id="admin-overlay">
-
-<div class="admin-modal">
-
-<div class="admin-header">
-
-<h2>
-لوحة التحكم
-</h2>
-
-<button class="close-btn" onclick="closeAdmin()">
-×
-</button>
-
-</div>
-
-<div id="loginBox">
-
-<div class="field">
-
-<label>
-كلمة المرور
-</label>
-
-<input
-type="password"
-id="adminPass"
-placeholder="أدخل كلمة المرور"
-/>
-
-</div>
-
-<button class="main-btn" onclick="login()">
-دخول
-</button>
-
-</div>
-
-<div id="panelBox" style="display:none;">
-
-<div class="tabs">
-
-<div class="tab active" onclick="switchTab('add',this)">
-إضافة مقال
-</div>
-
-<div class="tab" onclick="switchTab('manage',this)">
-إدارة المقالات
-</div>
-
-<div class="tab" onclick="switchTab('settings',this)">
-الإعدادات
-</div>
-
-</div>
-
-<div class="tab-content active" id="tab-add">
-
-<div class="field">
-<label>عنوان المقال</label>
-<input type="text" id="aTitle">
-</div>
-
-<div class="field">
-<label>وصف قصير</label>
-<input type="text" id="aLogline">
-</div>
-
-<div class="field">
-<label>التصنيف</label>
-
-<select id="aCategory">
-
-<option>نقد أدبي</option>
-<option>نقد سينمائي</option>
-<option>قصة قصيرة</option>
-<option>مقال ثقافي</option>
-
-</select>
-
-</div>
-
-<div class="field">
-<label>المقال</label>
-<textarea id="aContent"></textarea>
-</div>
-
-<div class="field">
-
-<label>صورة المقال</label>
-
-<input
-type="file"
-id="aThumb"
-accept="image/*"
-/>
-
-</div>
-
-<button class="main-btn" onclick="publishArticle()">
-نشر المقال
-</button>
-
-</div>
-
-<div class="tab-content" id="tab-manage">
-
-<div id="manageList"></div>
-
-</div>
-
-<div class="tab-content" id="tab-settings">
-
-<div class="field">
-<label>الصورة الشخصية</label>
-<input type="file" id="avatarUpload" accept="image/*">
-</div>
-
-<div class="field">
-<label>النبذة الشخصية</label>
-<textarea id="sBio"></textarea>
-</div>
-
-<div class="field">
-<label>وصف الموقع</label>
-<textarea id="sAbout"></textarea>
-</div>
-
-<div class="field">
-<label>كلمة مرور جديدة</label>
-<input type="password" id="newPass">
-</div>
-
-<button class="main-btn" onclick="saveSettings()">
-حفظ الإعدادات
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
 
 <script>
 
-const STORE_KEY='ahmed_bali_site';
+const STORAGE='athar_articles';
+const AVATAR='athar_avatar';
+const PASS='ahmed2024';
 
-function getStore(){
-
-const data=localStorage.getItem(STORE_KEY);
-
-if(data){
-return JSON.parse(data);
-}
-
-return{
-password:'ahmed2024',
-avatar:null,
-bio:'كاتب ومفكر يرصد العالم بعيون النقد، يسكن بين سطور الروايات وكواليس السينما، ويجد في الكلمة فعلاً لا زينةً.',
-about:'هذا الموقع فضاء نقدي خاص، لا يكتب فيه سواي. مساحة بعيدة عن ضجيج الشبكات الاجتماعية.',
-articles:[]
-};
-
-}
-
-let store=getStore();
-
-let currentLang='ar';
-
-function saveStore(){
-localStorage.setItem(STORE_KEY,JSON.stringify(store));
-}
-
-function toast(msg){
-
-const t=document.getElementById('toast');
-
-t.textContent=msg;
-
-t.classList.add('show');
-
-setTimeout(()=>{
-t.classList.remove('show');
-},2500);
-
-}
+let articles=JSON.parse(localStorage.getItem(STORAGE)) || [];
+let avatar=localStorage.getItem(AVATAR);
 
 function renderAvatar(){
-
-const frame=document.getElementById('mainAvatar');
-
-const old=frame.querySelector('img');
-
-if(old){
-old.remove();
+if(avatar){
+document.getElementById('heroImage').innerHTML=`<img src="${avatar}">`;
+}
 }
 
-if(store.avatar){
+renderAvatar();
 
-document.getElementById('avatarPlaceholder').style.display='none';
-
-const img=document.createElement('img');
-
-img.src=store.avatar;
-
-frame.appendChild(img);
-
-}else{
-
-document.getElementById('avatarPlaceholder').style.display='flex';
-
-}
-
-}
-
-function renderStats(){
-
-document.getElementById('statArticles').textContent=
-store.articles.length;
-
-const reads=store.articles.reduce((a,b)=>a+(b.reads||0),0);
-
-document.getElementById('statReads').textContent=reads;
-
-document.getElementById('articlesCount').textContent=
-store.articles.length
-? store.articles.length+' مقال منشور'
-: 'لا توجد مقالات';
-
-}
-
-function renderTexts(){
-
-document.getElementById('heroBio').textContent=store.bio;
-
-document.getElementById('aboutText').textContent=store.about;
-
-}
-
-function renderArticles(arr=store.articles){
-
+function renderArticles(list=articles){
 const container=document.getElementById('articlesContainer');
 
-if(!arr.length){
-
-container.innerHTML=`
-<div class="empty">
-لا توجد مقالات منشورة بعد
-</div>
-`;
-
+if(!list.length){
+container.innerHTML='<p style="color:#888">لا توجد مقالات منشورة حتى الآن</p>';
 return;
-
 }
 
-container.innerHTML=arr.map((a,i)=>{
-
-return`
-
-<div class="article-card" onclick="openArticle(${i})">
-
+container.innerHTML=list.map((article,index)=>`
+<div class="article" onclick="openArticle(${index})">
 <div class="article-thumb">
+${article.thumb ? `<img src="${article.thumb}">` : ''}
+</div>
 
-${a.thumb
-? `<img src="${a.thumb}">`
-: `<div style="height:100%;display:flex;align-items:center;justify-content:center;font-size:5rem;color:#57492a;">✦</div>`
+<div class="article-body">
+<div class="article-title">${article.title}</div>
+<div class="article-desc">${article.content.substring(0,180)}...</div>
+<div class="article-date">${article.date}</div>
+</div>
+</div>
+`).join('');
 }
 
-<div class="article-category">
-${a.category}
-</div>
-
-</div>
-
-<div class="article-content">
-
-<div>
-
-<div class="article-date">
-${a.date}
-</div>
-
-<h3 class="article-title">
-${a.title}
-</h3>
-
-<div class="article-logline">
-${a.logline||''}
-</div>
-
-<div class="article-excerpt">
-${a.content}
-</div>
-
-</div>
-
-<div class="article-meta">
-
-<div class="author-mini">
-
-${store.avatar
-? `<img src="${store.avatar}">`
-: `<span>أ</span>`
-}
-
-</div>
-
-<div class="author-info">
-
-<strong>
-أحمد بالي ✓
-</strong>
-
-<span>
-كاتب وناقد
-</span>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-`;
-
-}).join('');
-
-}
+renderArticles();
 
 function openArticle(index){
+const article=articles[index];
 
-const article=store.articles[index];
+document.getElementById('readerTitle').textContent=article.title;
+document.getElementById('readerDate').textContent=article.date;
+document.getElementById('readerText').textContent=article.content;
 
-if(!article)return;
+document.getElementById('readerPage').classList.add('active');
 
-article.reads=(article.reads||0)+1;
-
-saveStore();
-
-renderStats();
-
-document.getElementById('readerOverlay').classList.add('show');
-
-document.body.style.overflow='hidden';
-
-document.getElementById('readerCategory').textContent=
-article.category;
-
-document.getElementById('readerTitle').textContent=
-article.title;
-
-document.getElementById('readerDate').textContent=
-article.date;
-
-document.getElementById('readerContent').textContent=
-article.content;
-
-document.getElementById('readerThumb').innerHTML=
-article.thumb
-? `<img src="${article.thumb}">`
-: '';
-
-const next=store.articles[index+1];
+const next=articles[index+1];
 
 if(next){
-
-document.getElementById('nextArticleBox').style.display='block';
-
-document.getElementById('nextArticleTitle').textContent=
-next.title;
-
-document.getElementById('nextArticleBox').onclick=()=>{
-openArticle(index+1);
-};
-
+document.getElementById('nextArticle').innerHTML=`
+<h3>اقرأ بعد ذلك</h3>
+<button onclick="openArticle(${index+1})">${next.title}</button>
+`;
 }else{
-
-document.getElementById('nextArticleBox').style.display='none';
-
+document.getElementById('nextArticle').innerHTML='';
 }
-
 }
 
 function closeReader(){
-
-document.getElementById('readerOverlay').classList.remove('show');
-
-document.body.style.overflow='auto';
-
+document.getElementById('readerPage').classList.remove('active');
 }
 
-function filterArticles(){
-
-const q=document.getElementById('searchInput')
-.value
-.trim()
-.toLowerCase();
-
-if(!q){
-
-renderArticles();
-
-return;
-
+function openPanel(){
+document.getElementById('panel').classList.add('active');
 }
 
-const filtered=store.articles.filter(a=>
-
-a.title.toLowerCase().includes(q)
-||
-a.content.toLowerCase().includes(q)
-||
-a.category.toLowerCase().includes(q)
-
-);
-
-renderArticles(filtered);
-
+window.addEventListener('click',e=>{
+if(e.target.id==='panel'){
+document.getElementById('panel').classList.remove('active');
 }
-
-function openAdmin(){
-
-document.getElementById('admin-overlay')
-.classList.add('open');
-
-}
-
-function closeAdmin(){
-
-document.getElementById('admin-overlay')
-.classList.remove('open');
-
-}
+});
 
 function login(){
+const pass=document.getElementById('password').value;
 
-const pass=document.getElementById('adminPass').value;
-
-if(pass===store.password){
-
-document.getElementById('loginBox').style.display='none';
-
-document.getElementById('panelBox').style.display='block';
-
-document.getElementById('sBio').value=store.bio;
-
-document.getElementById('sAbout').value=store.about;
-
-renderManage();
-
-toast('تم تسجيل الدخول');
-
+if(pass===PASS){
+document.getElementById('adminArea').style.display='block';
 }else{
-
 alert('كلمة المرور غير صحيحة');
-
 }
-
-}
-
-function switchTab(name,el){
-
-document.querySelectorAll('.tab').forEach(t=>{
-t.classList.remove('active');
-});
-
-el.classList.add('active');
-
-document.querySelectorAll('.tab-content').forEach(c=>{
-c.classList.remove('active');
-});
-
-document.getElementById('tab-'+name)
-.classList.add('active');
-
 }
 
 function publishArticle(){
+const title=document.getElementById('title').value.trim();
+const content=document.getElementById('content').value.trim();
+const thumb=document.getElementById('thumb').files[0];
 
-const title=document.getElementById('aTitle').value.trim();
-
-const content=document.getElementById('aContent').value.trim();
-
-if(!title||!content){
-
-alert('أكمل البيانات');
-
+if(!title || !content){
+alert('أكمل بيانات المقال');
 return;
-
 }
 
-const file=document.getElementById('aThumb').files[0];
-
-function finish(thumb=null){
-
-store.articles.unshift({
-
+const save=(image=null)=>{
+articles.unshift({
 title,
 content,
-thumb,
-category:document.getElementById('aCategory').value,
-logline:document.getElementById('aLogline').value.trim(),
-date:new Date().toLocaleDateString('ar-EG',{
-year:'numeric',
-month:'long',
-day:'numeric'
-}),
-reads:0
-
+thumb:image,
+date:new Date().toLocaleDateString('ar-EG',{year:'numeric',month:'long',day:'numeric'})
 });
 
-saveStore();
+localStorage.setItem(STORAGE,JSON.stringify(articles));
 
 renderArticles();
 
-renderStats();
-
-renderManage();
-
-toast('تم نشر المقال بنجاح ✓');
-
-document.getElementById('aTitle').value='';
-document.getElementById('aContent').value='';
-document.getElementById('aLogline').value='';
-document.getElementById('aThumb').value='';
-
-}
-
-if(file){
-
-const reader=new FileReader();
-
-reader.onload=e=>{
-finish(e.target.result);
-};
-
-reader.readAsDataURL(file);
-
-}else{
-
-finish();
-
-}
-
-}
-
-function renderManage(){
-
-const box=document.getElementById('manageList');
-
-if(!store.articles.length){
-
-box.innerHTML='لا توجد مقالات';
-
-return;
-
-}
-
-box.innerHTML=store.articles.map((a,i)=>`
-
-<div class="manage-item">
-
-<div>
-
-<h4>
-${a.title}
-</h4>
-
-<div style="color:#8e856f;font-size:.8rem;">
-${a.date}
-</div>
-
-</div>
-
-<div class="manage-actions">
-
-<button
-class="small-btn share-btn"
-onclick="shareArticle(${i})">
-مشاركة
-</button>
-
-<button
-class="small-btn delete-btn"
-onclick="deleteArticle(${i})">
-حذف
-</button>
-
-</div>
-
-</div>
-
-`).join('');
-
-}
-
-function shareArticle(i){
-
-const article=store.articles[i];
-
-navigator.clipboard.writeText(article.title);
-
-toast('تم نسخ عنوان المقال');
-
-}
-
-function deleteArticle(i){
-
-if(!confirm('حذف المقال؟'))return;
-
-store.articles.splice(i,1);
-
-saveStore();
-
-renderArticles();
-
-renderStats();
-
-renderManage();
-
-toast('تم حذف المقال');
-
-}
-
-function saveSettings(){
-
-store.bio=document.getElementById('sBio').value.trim();
-
-store.about=document.getElementById('sAbout').value.trim();
-
-const np=document.getElementById('newPass').value.trim();
-
-if(np){
-store.password=np;
-}
-
-const file=document.getElementById('avatarUpload').files[0];
-
-function finish(){
-
-saveStore();
-
-renderTexts();
-
-renderAvatar();
-
-toast('تم حفظ الإعدادات ✓');
-
-}
-
-if(file){
-
-const reader=new FileReader();
-
-reader.onload=e=>{
-
-store.avatar=e.target.result;
-
-finish();
-
-};
-
-reader.readAsDataURL(file);
-
-}else{
-
-finish();
-
-}
-
-}
-
-let clicks=0;
-
-document.getElementById('logo-secret')
-.addEventListener('click',()=>{
-
-clicks++;
-
-if(clicks>=3){
-
-document.getElementById('adminBtn')
-.classList.toggle('show');
-
-clicks=0;
-
-}
+const msg=document.getElementById('successMsg');
+msg.style.display='block';
 
 setTimeout(()=>{
-clicks=0;
-},700);
+msg.style.display='none';
+},2500);
 
+document.getElementById('title').value='';
+document.getElementById('content').value='';
+document.getElementById('thumb').value='';
+}
+
+if(thumb){
+const reader=new FileReader();
+reader.onload=e=>save(e.target.result);
+reader.readAsDataURL(thumb);
+}else{
+save();
+}
+}
+
+
+document.getElementById('avatarInput').addEventListener('change',function(){
+const file=this.files[0];
+
+if(!file) return;
+
+const reader=new FileReader();
+
+reader.onload=e=>{
+avatar=e.target.result;
+localStorage.setItem(AVATAR,avatar);
+renderAvatar();
+
+const msg=document.getElementById('avatarMsg');
+msg.style.display='block';
+
+setTimeout(()=>{
+msg.style.display='none';
+},2500);
+}
+
+reader.readAsDataURL(file);
 });
 
-document.getElementById('btn-ar')
-.onclick=()=>setLang('ar');
 
-document.getElementById('btn-en')
-.onclick=()=>setLang('en');
+document.getElementById('searchInput').addEventListener('input',function(){
+const value=this.value.toLowerCase();
 
-function setLang(lang){
+const filtered=articles.filter(article=>
+article.title.toLowerCase().includes(value) ||
+article.content.toLowerCase().includes(value)
+);
 
-currentLang=lang;
-
-document.getElementById('btn-ar')
-.classList.toggle('active',lang==='ar');
-
-document.getElementById('btn-en')
-.classList.toggle('active',lang==='en');
-
-if(lang==='en'){
-
-document.documentElement.lang='en';
-
-document.documentElement.dir='ltr';
-
-document.body.style.direction='ltr';
-
-document.getElementById('heroTitle').textContent=
-'Literary Criticism · Cinema · Short Stories · Cultural Writing';
-
-document.getElementById('articlesText').textContent='Articles';
-
-document.getElementById('readsText').textContent='Reads';
-
-document.getElementById('searchInput').placeholder=
-'Search articles...';
-
-}else{
-
-document.documentElement.lang='ar';
-
-document.documentElement.dir='rtl';
-
-document.body.style.direction='rtl';
-
-document.getElementById('heroTitle').textContent=
-'نقد أدبي · سينمائي · قصص قصيرة · كتابة ثقافية';
-
-document.getElementById('articlesText').textContent='مقال';
-
-document.getElementById('readsText').textContent='قراءة';
-
-document.getElementById('searchInput').placeholder=
-'ابحث في المقالات...';
-
-}
-
-}
-
-renderAvatar();
-renderTexts();
-renderArticles();
-renderStats();
+renderArticles(filtered);
+});
 
 </script>
 
 </body>
 </html>
+```
