@@ -53,9 +53,11 @@
   // ── Read live ─────────────────────────────────────────
   onValue(ref(db, "site"), snapshot => {
     const data = snapshot.val();
-    if(!data) return;
-    window._siteData = data;
-    renderSite(data);
+    window._siteData = data || {};
+    if(window.renderSite) window.renderSite(data || {});
+    // Hide loader even if database is empty
+    const loader = document.getElementById("loaderOverlay");
+    if(loader) loader.classList.add("hidden");
   });
 
   // ── Expose to window ──────────────────────────────────
