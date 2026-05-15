@@ -351,8 +351,7 @@ textarea.admin-input{resize:vertical;}
   </div>
   <h1 class="hero-name">أحمد بالي <span class="fb-verified">✓</span></h1>
   <div class="hero-title">مخرج وروائي وسيناريست وناقد فني مصري</div>
-  <p class="hero-bio" id="heroBio">كاتب ومفكر يرصد العالم بعيون النقد، يسكن بين سطور الروايات وكواليس السينما، ويجد في الكلمة فعلاً لا زينةً.</p>
-</section>
+<p class="hero-bio" id="heroBio"></p>
 
 <section class="about" id="about">
   <h2>عن الموقع</h2>
@@ -401,7 +400,7 @@ textarea.admin-input{resize:vertical;}
 <!-- Admin Panel -->
 <div class="admin-panel" id="adminPanel">
   <div class="admin-box">
-    <h2>⚙️ لوحة التحكم</h2>
+    <h2>لوحة التحكم</h2>
 
     <!-- Login -->
     <div id="loginSection">
@@ -435,7 +434,7 @@ textarea.admin-input{resize:vertical;}
         <label class="field-label">تغيير كلمة المرور</label>
         <input type="password" class="admin-input" id="newPassword" placeholder="كلمة مرور جديدة (اتركها فارغة للإبقاء)">
 
-        <button class="admin-btn" onclick="saveSettings()">💾 حفظ الإعدادات</button>
+        <button class="admin-btn" onclick="saveSettings()">حفظ الإعدادات</button>
       </div>
 
       <!-- Tab: Publish -->
@@ -455,7 +454,7 @@ textarea.admin-input{resize:vertical;}
           <option value="true">مقال برايفيت</option>
         </select>
 
-        <button class="admin-btn" onclick="publishArticle()">🚀 نشر المقال</button>
+        <button class="admin-btn" onclick="publishArticle()">نشر المقال</button>
       </div>
 
       <!-- Tab: Manage -->
@@ -470,7 +469,7 @@ textarea.admin-input{resize:vertical;}
 <div class="edit-modal-overlay" id="editModalOverlay">
   <div class="edit-modal">
     <button class="modal-close" onclick="closeEditModal()">×</button>
-    <h3>✏️ تعديل المقال</h3>
+    <h3>تعديل المقال</h3>
 
     <label class="field-label">عنوان المقال</label>
     <input type="text" class="admin-input" id="editTitle" placeholder="عنوان المقال"/>
@@ -488,7 +487,7 @@ textarea.admin-input{resize:vertical;}
       <option value="true">مقال برايفيت</option>
     </select>
 
-    <button class="admin-btn" onclick="saveEdit()">💾 حفظ التعديلات</button>
+    <button class="admin-btn" onclick="saveEdit()">حفظ التعديلات</button>
     <button class="admin-btn danger" onclick="closeEditModal()">إلغاء</button>
   </div>
 </div>
@@ -503,7 +502,7 @@ function waitForFirebase(cb, tries=0){
   else if(tries < 50){ setTimeout(()=> waitForFirebase(cb, tries+1), 100); }
   else{
     document.getElementById("articlesGrid").innerHTML =
-      '<p style="text-align:center;color:#ff7979;padding:40px">⚠️ تعذّر الاتصال بقاعدة البيانات</p>';
+      '<p style="text-align:center;color:#ff7979;padding:40px">تعذّر الاتصال بقاعدة البيانات</p>';
     document.getElementById("loaderOverlay").classList.add("hidden");
   }
 }
@@ -686,7 +685,7 @@ waitForFirebase(()=>{
 
     // رسالة مخصصة للصورة
     if(file){
-      showToast("تم رفع الصورة الشخصية ✨");
+      showToast("تم رفع الصورة الشخصية");
     } else {
       showToast("تم حفظ الإعدادات");
     }
@@ -716,7 +715,7 @@ waitForFirebase(()=>{
     });
 
     hideLoader();
-    showToast("تم نشر المقال 🚀");
+    showToast("تم نشر المقال");
 
     document.getElementById("articleTitle").value   = "";
     document.getElementById("articleContent").value = "";
@@ -736,13 +735,13 @@ waitForFirebase(()=>{
     <div class="article-manage">
       <h4>${a.title}</h4>
       <span class="article-status ${a.private ? 'status-private':'status-public'}">
-        ${a.private ? '🔒 برايفيت' : '🌐 عام'}
+        ${a.private ? 'خاص' : '🌐 عام'}
       </span>
       <div class="manage-btns">
         <button class="btn-edit"   onclick="openEditModal('${a._key}')">✏️ تعديل</button>
         <button class="btn-delete" onclick="deleteArticle('${a._key}')">🗑 حذف</button>
         <button class="btn-toggle" onclick="togglePrivate('${a._key}',${a.private})">
-          ${a.private ? '👁 جعله عام' : '🔒 جعله برايفيت'}
+          ${a.private ? 'عام' : ' خاص'}
         </button>
       </div>
     </div>`).join("");
@@ -781,7 +780,7 @@ waitForFirebase(()=>{
     }
     await update(ref(db, `site/articles/${editingKey}`), updates);
     hideLoader();
-    showToast("تم تعديل المقال ✏️");
+    showToast("تم تعديل المقال");
 
     // إغلاق المودال واللوحة والرجوع للرئيسية
     setTimeout(()=>{
@@ -795,7 +794,7 @@ waitForFirebase(()=>{
     showLoader();
     await remove(ref(db, `site/articles/${key}`));
     hideLoader();
-    showToast("تم حذف المقال 🗑️");
+    showToast("تم حذف المقال");
 
     // إغلاق اللوحة والرجوع للرئيسية
     setTimeout(closeAdminAndGoHome, 1200);
@@ -803,7 +802,7 @@ waitForFirebase(()=>{
 
   window.togglePrivate = async function(key, current){
     await update(ref(db, `site/articles/${key}`), { private: !current });
-    showToast(current ? "تم جعل المقال عاماً 🌐" : "تم جعل المقال برايفيت 🔒");
+    showToast(current ? "تم جعل المقال عاماً" : "تم جعل المقال برايفيت");
   };
 
   // ── UI helpers ────────────────────────────────────────
