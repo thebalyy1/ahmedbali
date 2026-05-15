@@ -223,7 +223,32 @@ let siteData = JSON.parse(localStorage.getItem("ahmedBaliSite")) || {
   }]
 };
 
-function saveData(){ localStorage.setItem("ahmedBaliSite",JSON.stringify(siteData)); }
+// ضغط الصورة قبل التخزين عشان تشتغل على كل المتصفحات وiOS
+function compressImage(file, maxWidth, quality, callback){
+  const img = new Image();
+  const url = URL.createObjectURL(file);
+  img.onload = function(){
+    const scale = Math.min(1, maxWidth / img.width);
+    const w = Math.round(img.width * scale);
+    const h = Math.round(img.height * scale);
+    const canvas = document.createElement("canvas");
+    canvas.width = w; canvas.height = h;
+    canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+    URL.revokeObjectURL(url);
+    callback(canvas.toDataURL("image/jpeg", quality));
+  };
+  img.src = url;
+}
+
+function saveData(){
+  try { localStorage.setItem("ahmedBaliSite", JSON.stringify(siteData)); }
+  catch(e){
+    // لو الـ storage امتلأ، احذف صور المقالات القديمة واحفظ بدونها
+    const slim = JSON.parse(JSON.stringify(siteData));
+    slim.articles = slim.articles.map(a => ({...a, image: a.image && a.image.startsWith("http") ? a.image : ""}));
+    try { localStorage.setItem("ahmedBaliSite", JSON.stringify(slim)); } catch(e2){}
+  }
+}
 
 function renderSite(){
   document.getElementById("aboutText").innerText = siteData.about;
@@ -306,9 +331,10 @@ function loginAdmin(){
 
 document.getElementById("avatarUpload").addEventListener("change",function(){
   const file=this.files[0]; if(!file) return;
-  const reader=new FileReader();
-  reader.onload=function(e){ siteData.avatar=e.target.result; saveData(); renderSite(); showSuccess(); };
-  reader.readAsDataURL(file);
+  compressImage(file, 400, 0.75, function(data){
+    siteData.avatar = data;
+    saveData(); renderSite(); showSuccess();
+  });
 });
 
 function saveSettings(){
@@ -323,19 +349,17 @@ function publishArticle(){
   const imageFile = document.getElementById("articleImage").files[0];
   const isPrivate = document.getElementById("articlePrivate").value === "true";
   if(!title || !content || !imageFile){ alert("اكمل بيانات المقال واختر صورة"); return; }
-  const reader = new FileReader();
-  reader.onload = function(e){
+  compressImage(imageFile, 900, 0.75, function(data){
     siteData.articles.unshift({
       title, content, reads:0, private:isPrivate,
-      image: e.target.result,
+      image: data,
       date:new Date().toLocaleDateString("ar-EG",{year:"numeric",month:"long",day:"numeric"})
     });
     saveData(); renderSite(); showSuccess();
     document.getElementById("articleTitle").value="";
     document.getElementById("articleContent").value="";
     document.getElementById("articleImage").value="";
-  };
-  reader.readAsDataURL(imageFile);
+  });
 }
 
 function renderManageArticles(){
