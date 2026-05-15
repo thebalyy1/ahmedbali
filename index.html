@@ -7,138 +7,11 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, get, update, remove, onValue, push }
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyCMyu8DSBA5vddBD8i_rDVvXPOkmlWtqNA",
-  authDomain: "ahmed-bali.firebaseapp.com",
-  databaseURL: "https://ahmed-bali-default-rtdb.firebaseio.com",
-  projectId: "ahmed-bali",
-  storageBucket: "ahmed-bali.firebasestorage.app",
-  messagingSenderId: "890726782690",
-  appId: "1:890726782690:web:33d96a5406dad4e70730bb"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-const auth = getAuth(app);
-
-window.currentLang = localStorage.getItem("siteLang") || "ar";
-
-window.langData = {
-  ar:{
-    about:"عن الموقع",
-    articles:"المقالات",
-    search:"ابحث عن المقالات...",
-    read:"قراءة المقال →",
-    next:"المقال التالي",
-    noArticles:"لا توجد مقالات",
-    loading:"جاري تحميل المقالات...",
-    share:"مشاركة المقال",
-    external:"رابط العمل الفني أو المقال",
-    critic:"مشاهدة الرابط",
-    hero:"مخرج وروائي وسيناريست وناقد فني مصري"
-  },
-  en:{
-    about:"About",
-    articles:"Articles",
-    search:"Search articles...",
-    read:"Read Article →",
-    next:"Next Article",
-    noArticles:"No articles found",
-    loading:"Loading articles...",
-    share:"Share Article",
-    external:"External Link",
-    critic:"Open Link",
-    hero:"Egyptian Director, Novelist, Screenwriter & Critic"
-  }
-};
-
-function applyLanguage(){
-  const t = window.langData[window.currentLang];
-
-  document.documentElement.lang = window.currentLang;
-  document.documentElement.dir = window.currentLang === "ar" ? "rtl" : "ltr";
-
-  document.getElementById("aboutNav").innerText = t.about;
-  document.getElementById("articlesNav").innerText = t.articles;
-  document.getElementById("aboutTitle").innerText = t.about;
-  document.getElementById("articlesTitle").innerText = t.articles;
-  document.getElementById("searchInput").placeholder = t.search;
-  document.getElementById("heroTitle").innerText = t.hero;
-  document.getElementById("langBtn").innerText = window.currentLang === "ar" ? "EN" : "AR";
-
-  if(window.renderSite) window.renderSite(window._siteData || {});
-}
-
-window.toggleLanguage = function(){
-  window.currentLang = window.currentLang === "ar" ? "en" : "ar";
-  localStorage.setItem("siteLang", window.currentLang);
-  applyLanguage();
-};
-
-function compressImage(file,maxWidth,quality){
-  return new Promise(resolve=>{
-    const img = new Image();
-    const url = URL.createObjectURL(file);
-
-    img.onload = ()=>{
-      const scale = Math.min(1,maxWidth/img.width);
-      const w = Math.round(img.width*scale);
-      const h = Math.round(img.height*scale);
-
-      const c = document.createElement("canvas");
-      c.width = w;
-      c.height = h;
-
-      c.getContext("2d").drawImage(img,0,0,w,h);
-
-      URL.revokeObjectURL(url);
-
-      resolve(c.toDataURL("image/jpeg",quality));
-    };
-
-    img.src = url;
-  });
-}
-
-onValue(ref(db,"site"),snapshot=>{
-  window._siteData = snapshot.val() || {};
-
-  if(window.renderSite){
-    window.renderSite(window._siteData);
-  }
-
-  applyLanguage();
-
-  const loader = document.getElementById("loaderOverlay");
-  if(loader) loader.classList.add("hidden");
-});
-
-onAuthStateChanged(auth,user=>{
-  window._currentUser = user || null;
-
-  if(window.onAuthChange){
-    window.onAuthChange(user);
-  }
-});
-
-window._firebase = {
-  db,ref,get,update,remove,push,
-  auth,signInWithEmailAndPassword,
-  signOut,compressImage
-};
-</script>
-
 <style>
+
 :root{
 --gold:#C9A84C;
 --bg:#0d0d0d;
@@ -171,45 +44,52 @@ max-width:100%;
 display:block;
 }
 
+/* ================= NAVBAR ================= */
+
 nav{
-height:72px;
+height:78px;
 display:flex;
 align-items:center;
 justify-content:space-between;
-padding:0 6%;
-border-bottom:1px solid var(--border);
-background:#0d0d0d;
+padding:0 5%;
+border-bottom:1px solid rgba(255,255,255,.06);
+background:rgba(10,10,10,.96);
+backdrop-filter:blur(10px);
 position:sticky;
 top:0;
 z-index:999;
 }
 
 .logo{
-font-size:1.6rem;
+font-size:2rem;
 font-weight:900;
+line-height:1;
 cursor:pointer;
+color:#fff;
 }
 
 .nav-center{
 position:absolute;
 left:50%;
 transform:translateX(-50%);
-display:flex;
-flex-direction:column;
-align-items:center;
-gap:10px;
 }
 
 .nav-links{
 display:flex;
 align-items:center;
-gap:18px;
+gap:20px;
+background:rgba(255,255,255,.02);
+padding:10px 18px;
+border-radius:18px;
+border:1px solid rgba(255,255,255,.05);
+backdrop-filter:blur(8px);
 }
 
 .nav-links a{
-color:var(--muted);
-font-size:1rem;
+color:#b8b8b8;
+font-size:.95rem;
 transition:.3s;
+font-weight:600;
 }
 
 .nav-links a:hover{
@@ -219,91 +99,26 @@ color:var(--gold);
 .nav-quote{
 display:flex;
 align-items:center;
-gap:10px;
+gap:8px;
+padding:7px 14px;
+border-radius:14px;
+background:rgba(201,168,76,.08);
+border:1px solid rgba(201,168,76,.14);
+box-shadow:0 0 14px rgba(201,168,76,.07);
+}
+
+.quote-text{
 font-family:'Amiri',serif;
-font-size:1rem;
+font-size:.88rem;
 color:var(--gold);
-padding:8px 18px;
-border-radius:16px;
-background:linear-gradient(
-90deg,
-rgba(201,168,76,.03),
-rgba(201,168,76,.10),
-rgba(201,168,76,.03)
-);
-border:1px solid rgba(201,168,76,.18);
-box-shadow:
-0 0 16px rgba(201,168,76,.08),
-inset 0 0 10px rgba(201,168,76,.05);
-overflow:hidden;
-position:relative;
-animation:quoteFloat 4s ease-in-out infinite;
-}
-@keyframes quoteFloat{
-
-0%{
-transform:translateX(-50%) translateY(0px);
-}
-
-50%{
-transform:translateX(-50%) translateY(-4px);
-}
-
-100%{
-transform:translateX(-50%) translateY(0px);
-}
-
-}
-
-@keyframes shine{
-
-100%{
-transform:translateX(120%);
-}
-
-}
-
-@keyframes twinkle{
-
-from{
-opacity:.4;
-transform:scale(.9);
-}
-
-to{
-opacity:1;
-transform:scale(1.1);
-}
-
-}
-
-@media(max-width:1100px){
-
-.nav-quote{
-font-size:.72rem;
-padding:6px 12px;
-gap:6px;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
+letter-spacing:.3px;
 white-space:nowrap;
 }
 
 .quote-decoration{
 font-size:.7rem;
-}
-
-}
-
-@media(max-width:700px){
-
-.nav-quote{
-font-size:.58rem;
-padding:5px 10px;
-border-radius:12px;
-gap:4px;
-}
-
+color:rgba(201,168,76,.7);
+animation:twinkle 2s infinite alternate;
 }
 
 .lang-btn{
@@ -311,10 +126,32 @@ background:var(--gold);
 color:#111;
 border:none;
 padding:8px 14px;
-border-radius:10px;
-font-weight:700;
+border-radius:12px;
+font-weight:800;
 cursor:pointer;
+font-size:.9rem;
+transition:.3s;
 }
+
+.lang-btn:hover{
+transform:translateY(-2px);
+}
+
+@keyframes twinkle{
+
+from{
+opacity:.5;
+transform:scale(.9);
+}
+
+to{
+opacity:1;
+transform:scale(1.08);
+}
+
+}
+
+/* ================= HERO ================= */
 
 .hero{
 padding:90px 6% 60px;
@@ -351,6 +188,8 @@ margin-top:28px;
 color:#d2d2d2;
 }
 
+/* ================= ABOUT ================= */
+
 .about{
 padding:70px 6%;
 text-align:center;
@@ -360,6 +199,8 @@ text-align:center;
 color:var(--gold);
 margin-bottom:20px;
 }
+
+/* ================= SEARCH ================= */
 
 .search-box{
 padding:30px 6%;
@@ -377,6 +218,8 @@ color:#fff;
 outline:none;
 font-family:'Cairo',sans-serif;
 }
+
+/* ================= ARTICLES ================= */
 
 .articles{
 padding:20px 6% 80px;
@@ -445,68 +288,7 @@ color:var(--gold);
 font-weight:700;
 }
 
-.reader-page{
-position:fixed;
-inset:0;
-background:#0a0a0a;
-z-index:9999;
-overflow-y:auto;
-padding:80px 8%;
-display:none;
-}
-
-.reader-page.active{
-display:block;
-}
-
-.reader-close{
-position:fixed;
-top:18px;
-left:18px;
-width:44px;
-height:44px;
-border:none;
-border-radius:50%;
-background:var(--gold);
-font-size:1.2rem;
-cursor:pointer;
-}
-
-.reader-title{
-font-size:3rem;
-margin-bottom:18px;
-}
-
-.reader-date{
-color:var(--gold);
-margin-bottom:35px;
-}
-
-.reader-content{
-line-height:2.6;
-font-size:1.15rem;
-white-space:pre-line;
-}
-
-.share-btn{
-display:inline-block;
-margin-top:20px;
-background:var(--gold);
-color:#111;
-padding:12px 20px;
-border-radius:12px;
-font-weight:700;
-cursor:pointer;
-}
-
-.external-link{
-display:inline-block;
-margin-top:18px;
-padding:12px 20px;
-border:1px solid var(--gold);
-border-radius:12px;
-color:var(--gold);
-}
+/* ================= FOOTER ================= */
 
 footer{
 border-top:1px solid var(--border);
@@ -515,411 +297,251 @@ text-align:center;
 color:#aaa;
 }
 
-.loader-overlay{
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.7);
-display:flex;
-align-items:center;
-justify-content:center;
-z-index:99999;
+.footer-credit{
+margin-top:12px;
+font-size:.95rem;
 }
 
-.loader-overlay.hidden{
-display:none;
+.footer-credit a{
+color:var(--gold);
+font-weight:700;
+transition:.3s;
 }
 
-.spinner{
-width:50px;
-height:50px;
-border:4px solid #333;
-border-top-color:var(--gold);
-border-radius:50%;
-animation:spin .7s linear infinite;
+.footer-credit a:hover{
+opacity:.8;
 }
 
-@keyframes spin{
-to{
-transform:rotate(360deg);
-}
-}
+/* ================= MOBILE ================= */
 
 @media(max-width:900px){
 
 nav{
-height:95px;
-padding:10px 4%;
-align-items:flex-start;
+height:auto;
+padding:12px 4%;
+flex-direction:column;
+gap:14px;
 }
 
 .logo{
-font-size:1.8rem;
-line-height:1.1;
+font-size:2.1rem;
+align-self:flex-end;
 }
 
 .nav-center{
-top:10px;
-gap:8px;
+position:static;
+transform:none;
+width:100%;
 }
 
 .nav-links{
+width:100%;
+justify-content:center;
+flex-wrap:wrap;
 gap:12px;
+padding:12px;
+border-radius:16px;
 }
 
 .nav-links a{
-font-size:.85rem;
-}
-
-.lang-btn{
-padding:6px 12px;
-font-size:.85rem;
+font-size:.82rem;
 }
 
 .nav-quote{
-font-size:.62rem;
-padding:6px 12px;
-gap:5px;
-border-radius:12px;
-max-width:90vw;
-white-space:nowrap;
+order:3;
+width:100%;
+justify-content:center;
+padding:8px 10px;
 }
 
-.quote-decoration{
-font-size:.6rem;
+.quote-text{
+font-size:.72rem;
+}
+
+.lang-btn{
+padding:7px 12px;
+font-size:.8rem;
+}
+
+.article-card{
+flex-direction:column;
+}
+
+.article-thumb{
+width:100%;
+min-width:100%;
+}
+
+.hero-name{
+font-size:2.6rem;
 }
 
 }
+
 </style>
 </head>
 
 <body>
 
-<div class="loader-overlay" id="loaderOverlay">
-<div class="spinner"></div>
-</div>
+<!-- ================= NAVBAR ================= -->
 
 <nav>
 
-<div class="logo" id="secretLogo">أحمد بالي</div>
+<div class="logo">
+أحمد بالي
+</div>
 
 <div class="nav-center">
 
 <div class="nav-links">
-<a href="#about" id="aboutNav">عن الموقع</a>
-<a href="#articles" id="articlesNav">المقالات</a>
-<button class="lang-btn" id="langBtn" onclick="toggleLanguage()">EN</button>
-</div>
+
+<a href="#about">
+عن الموقع
+</a>
+
+<a href="#articles">
+المقالات
+</a>
 
 <div class="nav-quote">
+
 <span class="quote-decoration">✦</span>
-﴿ وَقُولُوا لِلنَّاسِ حُسْنًا ﴾
+
+<span class="quote-text">
+وَقُولُوا لِلنَّاسِ حُسْنًا
+</span>
+
 <span class="quote-decoration">✦</span>
+
+</div>
+
+<button class="lang-btn">
+EN
+</button>
+
 </div>
 
 </div>
 
 </nav>
 
+<!-- ================= HERO ================= -->
+
 <section class="hero">
-<div class="avatar-frame" id="avatarFrame">
+
+<div class="avatar-frame">
 <span style="font-size:5rem;color:var(--gold)">أ</span>
 </div>
 
-<h1 class="hero-name">أحمد بالي</h1>
+<h1 class="hero-name">
+أحمد بالي
+</h1>
 
-<div class="hero-title" id="heroTitle">
+<div class="hero-title">
 مخرج وروائي وسيناريست وناقد فني مصري
 </div>
 
-<p class="hero-bio" id="heroBio">
+<p class="hero-bio">
 كاتب ومفكر يرصد العالم بعيون النقد
 </p>
+
 </section>
+
+<!-- ================= ABOUT ================= -->
 
 <section class="about" id="about">
-<h2 id="aboutTitle">عن الموقع</h2>
-<p id="aboutText">
+
+<h2>
+عن الموقع
+</h2>
+
+<p>
 هذا الموقع فضاء نقدي خاص
 </p>
+
 </section>
 
+<!-- ================= SEARCH ================= -->
+
 <div class="search-box">
+
 <input
 type="text"
 class="admin-input"
-style="max-width:720px"
 placeholder="ابحث عن المقالات..."
-id="searchInput"
-oninput="filterArticles()"
 />
+
 </div>
+
+<!-- ================= ARTICLES ================= -->
 
 <section class="articles" id="articles">
-<h2 class="section-title" id="articlesTitle">المقالات</h2>
 
-<div class="articles-grid" id="articlesGrid">
-<p style="text-align:center;color:#aaa;padding:40px">
-جاري تحميل المقالات...
-</p>
-</div>
-</section>
+<h2 class="section-title">
+المقالات
+</h2>
 
-<div class="reader-page" id="readerPage">
+<div class="articles-grid">
 
-<button class="reader-close" onclick="closeReader()">×</button>
-
-<div class="reader-container">
-
-<h1 class="reader-title" id="readerTitle"></h1>
-
-<div class="reader-date" id="readerDate"></div>
-
-<div class="reader-content" id="readerContent"></div>
-
-<div id="externalHolder"></div>
-
-<div>
-<button class="share-btn" onclick="shareArticle()" id="shareBtn">
-مشاركة المقال
-</button>
-</div>
-
-</div>
-</div>
-
-<footer>
-<div>
-جميع الحقوق محفوظة لـ أحمد بالي © 2026
-</div>
-
-<div style="margin-top:12px;color:#aaa;font-size:.95rem">
-
-<a 
-href="https://www.instagram.com/thebalyy?igsh=bnNsZ2hyYnVoYWw1"
-target="_blank"
-style="color:var(--gold);font-weight:700"
->
-Code Palmer
-</a>
-
-|
-
-<a 
-href="https://www.instagram.com/thebalyy?igsh=bnNsZ2hyYnVoYWw1"
-target="_blank"
-style="color:var(--gold);font-weight:700"
->
-أحمد بالي
-</a>
-
-</div>
-</footer>
-
-<script type="module">
-
-function waitForFirebase(cb,tries=0){
-
-if(window._firebase){
-cb();
-}
-else if(tries<50){
-setTimeout(()=>waitForFirebase(cb,tries+1),100);
-}
-
-}
-
-waitForFirebase(()=>{
-
-const {
-db,ref,get,update,remove,push,
-auth,signInWithEmailAndPassword,
-signOut,compressImage
-} = window._firebase;
-
-function articlesArray(data){
-
-if(!data || !data.articles) return [];
-
-return Object.entries(data.articles)
-.map(([k,v])=>({...v,_key:k}))
-.sort((a,b)=>b._ts-a._ts);
-
-}
-
-window.renderSite = function(data){
-
-document.getElementById("aboutText").innerText = data.about || "";
-
-document.getElementById("heroBio").innerText = data.bio || "";
-
-if(data.avatarUrl){
-
-const img = `<img src="${data.avatarUrl}">`;
-
-document.getElementById("avatarFrame").innerHTML = img;
-
-}
-
-renderArticles(data);
-
-};
-
-function renderArticles(data){
-
-const grid = document.getElementById("articlesGrid");
-
-const q = document.getElementById("searchInput").value.toLowerCase();
-
-const t = window.langData[window.currentLang];
-
-const articles = articlesArray(data)
-.filter(a=>
-
-!a.private &&
-(
-q==="" ||
-a.title.toLowerCase().includes(q) ||
-a.content.toLowerCase().includes(q)
-)
-
-);
-
-grid.innerHTML = "";
-
-if(!articles.length){
-
-grid.innerHTML = `
-<p style="text-align:center;color:#aaa;padding:40px">
-${t.noArticles}
-</p>
-`;
-
-return;
-
-}
-
-articles.forEach(a=>{
-
-grid.innerHTML += `
-<div class="article-card" onclick="openArticle('${a._key}')">
+<div class="article-card">
 
 <div class="article-thumb"
-style="background-image:url('${a.imageUrl}')">
+style="background-image:url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1200&auto=format&fit=crop')">
 </div>
 
 <div class="article-content">
 
 <div>
 
-<h3>${a.title}</h3>
+<h3>
+عنوان المقال
+</h3>
 
-<div class="article-date">${a.date}</div>
+<div class="article-date">
+16 مايو 2026
+</div>
 
 <div class="article-excerpt">
-${a.content.substring(0,180)}...
+هذا مثال لشكل المقال داخل الموقع بعد تنسيق الواجهة الجديدة بشكل أكثر راحة وأناقة للموبايل والكمبيوتر.
 </div>
 
 </div>
 
 <div class="read-more">
-${t.read}
+قراءة المقال →
 </div>
 
 </div>
 
 </div>
-`;
 
-});
+</div>
 
-}
+</section>
 
-window.filterArticles = function(){
+<!-- ================= FOOTER ================= -->
 
-renderArticles(window._siteData || {});
+<footer>
 
-};
+<div>
+جميع الحقوق محفوظة لـ أحمد بالي © 2026
+</div>
 
-window.openArticle = async function(key){
+<div class="footer-credit">
 
-const snap = await get(ref(db,`site/articles/${key}`));
-
-if(!snap.exists()) return;
-
-const a = snap.val();
-
-await update(ref(db,`site/articles/${key}`),{
-reads:(a.reads || 0)+1
-});
-
-window.currentArticleLink = window.location.href.split("#")[0] + "#article-" + key;
-
-document.getElementById("readerTitle").innerText = a.title;
-
-document.getElementById("readerDate").innerText = a.date;
-
-document.getElementById("readerContent").innerText = a.content;
-
-const holder = document.getElementById("externalHolder");
-
-if(a.externalLink){
-
-holder.innerHTML = `
-<a class="external-link"
-href="${a.externalLink}"
-target="_blank">
-
-${window.langData[window.currentLang].critic}
-
+<a href="https://www.instagram.com/thebalyy?igsh=bnNsZ2hyYnVoYWw1" target="_blank">
+Code Palmer
 </a>
-`;
 
-}
-else{
+|
 
-holder.innerHTML = "";
+<a href="https://www.instagram.com/thebalyy?igsh=bnNsZ2hyYnVoYWw1" target="_blank">
+أحمد بالي
+</a>
 
-}
+</div>
 
-document.getElementById("shareBtn").innerText =
-window.langData[window.currentLang].share;
-
-document.getElementById("readerPage")
-.classList.add("active");
-
-window.scrollTo(0,0);
-
-};
-
-window.shareArticle = async function(){
-
-if(navigator.share){
-
-await navigator.share({
-title:document.getElementById("readerTitle").innerText,
-url:window.currentArticleLink
-});
-
-}
-else{
-
-navigator.clipboard.writeText(window.currentArticleLink);
-
-alert("تم نسخ رابط المقال");
-
-}
-
-};
-
-window.closeReader = function(){
-
-document.getElementById("readerPage")
-.classList.remove("active");
-
-};
-
-});
-</script>
+</footer>
 
 </body>
 </html>
