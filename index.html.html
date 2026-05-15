@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أحمد بالي — ناقد وكاتب</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zain:wght@200;300;400;700;800;900&family=Amiri:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C97A;
+    --gold-dim: #7A6230;
+    --bg-deep: #0D0D0D;
+    --bg-card: #141414;
+    --bg-hover: #1A1A1A;
+    --text-primary: #F0EDE4;
+    --text-muted: #9A9080;
+    --text-dim: #555048;
+    --border: rgba(201,168,76,0.18);
+    --border-hover: rgba(201,168,76,0.45);
+    --radius: 4px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Zain', sans-serif;
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    min-height: 100vh;
+    direction: rtl;
+    overflow-x: hidden;
+  }
+
+  /* ========== NOISE TEXTURE ========== */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  /* ========== ANIMATIONS ========== */
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.92); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+  @keyframes shimmer {
+    0%   { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+  @keyframes glowPulse {
+    0%, 100% { box-shadow: 0 0 0 6px rgba(201,168,76,0.06); }
+    50%       { box-shadow: 0 0 0 10px rgba(201,168,76,0.14); }
+  }
+  @keyframes ayahFloat {
+    0%, 100% { transform: translateY(0px); }
+    50%       { transform: translateY(-2px); }
+  }
+
+  .anim-fadein-down { animation: fadeInDown 0.7s ease both; }
+  .anim-fadein-up   { animation: fadeInUp 0.7s ease both; }
+  .anim-fadein      { animation: fadeIn 0.9s ease both; }
+  .anim-scale       { animation: scaleIn 0.6s ease both; }
+
+  /* stagger delays */
+  .delay-1 { animation-delay: 0.1s; }
+  .delay-2 { animation-delay: 0.22s; }
+  .delay-3 { animation-delay: 0.36s; }
+  .delay-4 { animation-delay: 0.5s; }
+  .delay-5 { animation-delay: 0.65s; }
+
+  /* ========== GOLDEN LINE TOP ========== */
+  .gold-line {
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    position: relative; z-index: 10;
+  }
+
+  /* ========== NAV ========== */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(13,13,13,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 5%;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px;
+    animation: fadeInDown 0.5s ease both;
+  }
+  .nav-logo {
+    font-family: 'Amiri', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+  /* Quranic ayah in nav center */
+  .nav-ayah {
+    position: absolute; left: 50%; transform: translateX(-50%);
+    font-family: 'Amiri', serif;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    pointer-events: none;
+    animation: ayahFloat 4s ease-in-out infinite;
+    letter-spacing: 0.01em;
+  }
+  .nav-ayah a {
+    color: var(--gold-dim);
+    text-decoration: none;
+    transition: color 0.2s;
+    pointer-events: all;
+  }
+  .nav-ayah a:hover { color: var(--gold); }
+  .nav-ayah-bracket { color: var(--gold-dim); font-size: 1.1rem; line-height: 1; }
+
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--gold); }
+
+  /* Language switcher */
+  .lang-switcher {
+    display: flex; align-items: center; gap: 4px;
+  }
+  .lang-btn {
+    background: transparent; border: 1px solid var(--border);
+    color: var(--text-muted); padding: 4px 10px;
+    border-radius: var(--radius); font-size: 0.72rem;
+    font-family: 'Zain', sans-serif; cursor: pointer;
+    transition: all 0.2s; letter-spacing: 0.04em;
+  }
+  .lang-btn.active { border-color: var(--gold-dim); color: var(--gold); background: rgba(201,168,76,0.08); }
+  .lang-btn:hover { border-color: var(--gold-dim); color: var(--gold); }
+
+  /* Hidden admin button */
+  .nav-admin { display: none; }
+  .nav-admin.revealed {
+    display: inline-block;
+    background: transparent;
+    border: 1px solid var(--gold-dim);
+    color: var(--gold);
+    padding: 6px 16px;
+    border-radius: var(--radius);
+    font-size: 0.8rem;
+    font-family: 'Zain', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 600;
+  }
+  .nav-admin.revealed:hover { background: var(--gold); color: #000; }
+
+  /* ========== HERO ========== */
+  .hero {
+    position: relative; z-index: 1;
+    padding: 80px 5% 60px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 60px;
+    align-items: center;
+    max-width: 1100px; margin: 0 auto;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero-text {}
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    border: 1px solid var(--border);
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+    margin-bottom: 24px;
+    background: rgba(201,168,76,0.06);
+  }
+  .hero-badge::before { content: '✦'; font-size: 0.6rem; }
+  .hero-name {
+    font-family: 'Amiri', serif;
+    font-weight: 700;
+    font-size: clamp(2.8rem, 6vw, 4.5rem);
+    line-height: 1.15;
+    color: #FFFFFF;
+    margin-bottom: 12px;
+  }
+  .hero-name span { color: var(--gold); }
+  .hero-title {
+    font-family: 'Zain', sans-serif;
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+    margin-bottom: 28px;
+    font-weight: 300;
+  }
+  .hero-bio {
+    font-family: 'Zain', sans-serif;
+    font-size: 1.15rem;
+    line-height: 1.95;
+    color: #C8C0B0;
+    max-width: 560px;
+    border-right: 2px solid var(--gold-dim);
+    padding-right: 20px;
+  }
+  .hero-stats {
+    display: flex; gap: 32px; margin-top: 36px;
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: 'Amiri', serif;
+    font-size: 1.8rem;
+    color: var(--gold);
+    display: block;
+  }
+  .stat-label { font-size: 0.72rem; color: var(--text-dim); letter-spacing: 0.06em; }
+
+  /* Social icons under bio */
+  .social-links {
+    display: flex; gap: 14px; margin-top: 24px; align-items: center;
+  }
+  .social-link {
+    display: flex; align-items: center; justify-content: center;
+    width: 38px; height: 38px;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    background: rgba(201,168,76,0.04);
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: all 0.25s;
+    font-size: 1.1rem;
+  }
+  .social-link:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+    background: rgba(201,168,76,0.1);
+    transform: translateY(-2px);
+  }
+
+  /* Avatar */
+  .hero-avatar {
+    position: relative; flex-shrink: 0;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .avatar-frame {
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    border: 3px solid var(--gold-dim);
+    background: var(--bg-card);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+    animation: glowPulse 3s ease-in-out infinite;
+  }
+  .avatar-frame::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(201,168,76,0.12) 0%, transparent 60%);
+  }
+  .avatar-placeholder {
+    font-family: 'Amiri', serif;
+    font-size: 5rem;
+    color: var(--gold-dim);
+    user-select: none;
+  }
+  .avatar-corner { display: none; }
+  .verified-badge {
+    margin-top: 14px;
+    background: var(--bg-deep);
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    font-size: 0.65rem;
+    padding: 4px 14px;
+    border-radius: 20px;
+    letter-spacing: 0.12em;
+    white-space: nowrap;
+  }
+  #avatar-upload-btn {
+    display: block;
+    margin-top: 12px;
+    text-align: center;
+    font-size: 0.72rem;
+    color: var(--gold-dim);
+    cursor: pointer;
+    letter-spacing: 0.06em;
+    transition: color 0.2s;
+  }
+  #avatar-upload-btn:hover { color: var(--gold); }
+  #avatar-file { display: none; }
+  .avatar-img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+
+  /* Verified checkmark — gold small */
+  .verified {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 13px; height: 13px; border-radius: 50%;
+    background: var(--gold);
+    color: #000;
+    font-size: 0.5rem; font-weight: 900;
+    flex-shrink: 0;
+    vertical-align: middle;
+  }
+
+  /* ========== ABOUT SITE ========== */
+  .about-strip {
+    position: relative; z-index: 1;
+    max-width: 1100px; margin: 0 auto;
+    padding: 48px 5%;
+    border-bottom: 1px solid var(--border);
+    display: grid; grid-template-columns: auto 1fr; gap: 40px; align-items: start;
+  }
+  .about-label {
+    font-size: 0.7rem; letter-spacing: 0.2em; color: var(--gold); writing-mode: vertical-rl;
+    text-orientation: mixed; transform: rotate(180deg); align-self: center;
+  }
+  .about-text {
+    font-family: 'Zain', sans-serif;
+    font-size: 1.1rem; line-height: 2; color: var(--text-muted);
+  }
+
+  /* ========== SEARCH ========== */
+  .search-section {
+    position: relative; z-index: 1;
+    max-width: 1100px; margin: 0 auto;
+    padding: 40px 5%;
+  }
+  .search-wrap {
+    position: relative; max-width: 620px;
+  }
+  .search-icon {
+    position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+    color: var(--gold-dim); font-size: 1rem; pointer-events: none;
+  }
+  #search-input {
+    width: 100%; padding: 14px 46px 14px 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text-primary);
+    font-family: 'Zain', sans-serif;
+    font-size: 0.9rem;
+    transition: border-color 0.2s;
+    outline: none;
+    direction: rtl;
+  }
+  #search-input:focus { border-color: var(--gold-dim); }
+  #search-input::placeholder { color: var(--text-dim); }
+
+  /* ========== ARTICLES SECTION ========== */
+  .articles-section {
+    position: relative; z-index: 1;
+    max-width: 1100px; margin: 0 auto;
+    padding: 0 5% 80px;
+  }
+  .section-header {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: 36px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-title {
+    font-family: 'Zain', sans-serif;
+    font-weight: 700;
+    font-size: 1.6rem; color: var(--text-primary);
+  }
+  .section-title span { color: var(--gold); font-size: 0.9rem; margin-right: 10px; }
+  .section-count { font-size: 0.75rem; color: var(--text-dim); letter-spacing: 0.06em; }
+
+  /* ========== ARTICLE GRID ========== */
+  .articles-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .article-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: border-color 0.25s, background 0.25s, transform 0.25s;
+    cursor: pointer;
+    text-decoration: none;
+    display: flex;
+    flex-direction: row;
+    color: inherit;
+    gap: 0;
+    animation: fadeInUp 0.5s ease both;
+  }
+  .article-card:hover {
+    border-color: var(--border-hover);
+    background: var(--bg-hover);
+    transform: translateY(-2px);
+  }
+  .card-thumb {
+    width: 240px; min-width: 240px; height: 148px;
+    background: var(--bg-hover);
+    position: relative; overflow: hidden;
+    border-radius: 6px 0 0 6px;
+    flex-shrink: 0;
+  }
+  .card-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+  .article-card:hover .card-thumb img { transform: scale(1.05); }
+  .card-thumb-placeholder {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Zain', sans-serif; font-size: 2.5rem; color: var(--text-dim);
+    background: linear-gradient(135deg, #141414 0%, #1a1714 100%);
+  }
+  .card-category {
+    position: absolute; bottom: 8px; right: 8px;
+    background: rgba(13,13,13,0.88);
+    border: 1px solid var(--border);
+    color: var(--gold);
+    font-size: 0.62rem; letter-spacing: 0.08em;
+    padding: 2px 8px; border-radius: 3px;
+  }
+  .card-reads {
+    position: absolute; top: 8px; left: 8px;
+    background: rgba(13,13,13,0.8);
+    color: var(--text-muted); font-size: 0.65rem;
+    padding: 2px 7px; border-radius: 3px; display: flex; align-items: center; gap: 3px;
+  }
+  .card-body {
+    padding: 16px 20px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    flex: 1; min-width: 0;
+  }
+  .card-title {
+    font-family: 'Amiri', serif;
+    font-weight: 700;
+    font-size: 1.15rem; line-height: 1.55;
+    color: var(--text-primary); margin-bottom: 4px;
+  }
+  .card-logline {
+    font-family: 'Amiri', serif;
+    font-style: italic;
+    font-size: 0.82rem;
+    color: var(--gold-dim);
+    margin-bottom: 6px;
+    line-height: 1.6;
+  }
+  .card-excerpt {
+    font-family: 'Zain', sans-serif;
+    font-size: 0.88rem; line-height: 1.75;
+    color: var(--text-muted); margin-bottom: 0; flex: 1;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .card-meta {
+    display: flex; align-items: center; gap: 10px;
+    margin-top: 14px;
+  }
+  .card-author-avatar {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: rgba(201,168,76,0.12);
+    border: 2px solid var(--gold-dim);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; color: var(--gold); font-weight: 700;
+    flex-shrink: 0; overflow: hidden;
+  }
+  .card-author-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+  .card-author-info { display: flex; flex-direction: column; gap: 1px; flex: 1; min-width: 0; }
+  .card-author-name {
+    font-size: 0.82rem; font-weight: 700;
+    color: var(--text-primary);
+    display: flex; align-items: center; gap: 5px;
+  }
+  .card-date { font-size: 0.72rem; color: var(--text-dim); }
+
+  /* ========== EMPTY STATE ========== */
+  .empty-state {
+    text-align: center; padding: 60px 20px;
+    color: var(--text-dim);
+    font-family: 'Zain', sans-serif; font-size: 1.1rem;
+  }
+  .empty-state .ornament { font-size: 2rem; color: var(--gold-dim); margin-bottom: 16px; }
+
+  /* ========== ADMIN PANEL ========== */
+  #admin-overlay {
+    display: none; position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.85); backdrop-filter: blur(4px);
+    align-items: center; justify-content: center;
+  }
+  #admin-overlay.open { display: flex; }
+  .admin-modal {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    width: min(680px, 94vw);
+    max-height: 90vh; overflow-y: auto;
+    padding: 36px;
+    position: relative;
+    animation: scaleIn 0.25s ease both;
+  }
+  .modal-header {
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px;
+    border-bottom: 1px solid var(--border); padding-bottom: 16px;
+  }
+  .modal-title {
+    font-family: 'Amiri', serif; font-weight: 700; font-size: 1.4rem; color: var(--gold);
+  }
+  .modal-close {
+    background: none; border: none; color: var(--text-muted);
+    font-size: 1.4rem; cursor: pointer; line-height: 1;
+    transition: color 0.2s;
+  }
+  .modal-close:hover { color: var(--text-primary); }
+
+  #login-screen, #panel-screen { }
+  .field { margin-bottom: 18px; }
+  .field label { display: block; font-size: 0.78rem; color: var(--text-muted); margin-bottom: 7px; letter-spacing: 0.06em; }
+  .field input, .field textarea, .field select {
+    width: 100%; padding: 10px 14px;
+    background: #0D0D0D; border: 1px solid var(--border);
+    border-radius: var(--radius); color: var(--text-primary);
+    font-family: 'Zain', sans-serif; font-size: 0.88rem;
+    outline: none; direction: rtl; transition: border-color 0.2s;
+    resize: vertical;
+  }
+  .field input:focus, .field textarea:focus { border-color: var(--gold-dim); }
+  .field textarea { min-height: 80px; }
+  .btn-gold {
+    background: var(--gold); color: #000;
+    border: none; padding: 11px 28px;
+    font-family: 'Zain', sans-serif; font-weight: 700;
+    font-size: 0.85rem; border-radius: var(--radius);
+    cursor: pointer; transition: opacity 0.2s;
+    letter-spacing: 0.04em;
+  }
+  .btn-gold:hover { opacity: 0.88; }
+  .btn-ghost {
+    background: none; border: 1px solid var(--border);
+    color: var(--text-muted); padding: 9px 20px;
+    font-family: 'Zain', sans-serif; font-size: 0.82rem;
+    border-radius: var(--radius); cursor: pointer; transition: all 0.2s; margin-right: 10px;
+  }
+  .btn-ghost:hover { border-color: var(--border-hover); color: var(--text-primary); }
+  .btn-danger {
+    background: none; border: 1px solid #5a2020;
+    color: #e06060; padding: 6px 14px;
+    font-family: 'Zain', sans-serif; font-size: 0.78rem;
+    border-radius: var(--radius); cursor: pointer; transition: all 0.2s;
+  }
+  .btn-danger:hover { background: #5a2020; color: #fff; }
+  .btn-share {
+    background: none; border: 1px solid var(--gold-dim);
+    color: var(--gold-dim); padding: 6px 14px;
+    font-family: 'Zain', sans-serif; font-size: 0.78rem;
+    border-radius: var(--radius); cursor: pointer; transition: all 0.2s;
+  }
+  .btn-share:hover { border-color: var(--gold); color: var(--gold); }
+  .btn-edit {
+    background: none; border: 1px solid #2a4a2a;
+    color: #7ecf7e; padding: 6px 14px;
+    font-family: 'Zain', sans-serif; font-size: 0.78rem;
+    border-radius: var(--radius); cursor: pointer; transition: all 0.2s;
+  }
+  .btn-edit:hover { background: #2a4a2a; color: #fff; }
+  .error-msg { color: #e06060; font-size: 0.78rem; margin-top: 8px; display: none; }
+  .form-divider { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+
+  .panel-articles-list { margin-top: 20px; }
+  .panel-article-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 0; border-bottom: 1px solid var(--border);
+    gap: 12px; flex-wrap: wrap;
+  }
+  .panel-article-title { font-size: 0.88rem; color: var(--text-primary); flex: 1; }
+  .panel-article-date { font-size: 0.72rem; color: var(--text-dim); flex-shrink: 0; }
+  .panel-article-actions { display: flex; gap: 6px; }
+  .panel-tabs {
+    display: flex; gap: 4px; margin-bottom: 24px;
+  }
+  .tab-btn {
+    padding: 7px 18px; background: none;
+    border: 1px solid var(--border); color: var(--text-muted);
+    font-family: 'Zain', sans-serif; font-size: 0.8rem;
+    border-radius: var(--radius); cursor: pointer; transition: all 0.2s;
+  }
+  .tab-btn.active { background: rgba(201,168,76,0.12); border-color: var(--gold-dim); color: var(--gold); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .thumb-preview { width: 100%; height: 140px; object-fit: cover; border-radius: var(--radius); margin-top: 8px; display: none; }
+
+  /* Edit form inside manage */
+  .edit-form {
+    background: rgba(201,168,76,0.04); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px; margin-top: 8px;
+    display: none;
+  }
+  .edit-form.open { display: block; }
+
+  /* Footer */
+  footer {
+    position: relative; z-index: 1;
+    border-top: 1px solid var(--border);
+    padding: 32px 5%;
+    text-align: center;
+    color: var(--text-dim); font-size: 0.75rem; letter-spacing: 0.06em;
+  }
+  footer span { color: var(--gold-dim); }
+  .footer-rights { margin-bottom: 8px; }
+  .footer-by {
+    font-size: 0.7rem; color: var(--text-dim); opacity: 0.7;
+  }
+  .footer-by a {
+    color: var(--gold-dim); text-decoration: none; transition: color 0.2s;
+  }
+  .footer-by a:hover { color: var(--gold); }
+
+  @media (max-width: 640px) {
+    .hero { grid-template-columns: 1fr; gap: 32px; }
+    .hero-avatar { order: -1; display: flex; flex-direction: column; align-items: center; }
+    .article-card { flex-direction: column; }
+    .card-thumb { width: 100%; min-width: unset; height: 180px; border-radius: 6px 6px 0 0; }
+    nav { padding: 0 4%; }
+    .nav-links { display: none; }
+    .nav-ayah { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="gold-line"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo" id="nav-logo-click">أحمد بالي</a>
+
+  <span class="nav-ayah">
+    <span class="nav-ayah-bracket">﴾</span>
+    <a href="https://awkafonline.gov.eg/friday-sermon/post/34/3861/%D9%88%D9%8E%D9%82%D9%8F%D9%88%D9%84%D9%8F%D9%88%D8%A7-%D9%84%D9%90%D9%84%D9%86%D9%91%D9%8E%D8%A7%D8%B3%D9%90-%D8%AD%D9%8F%D8%B3%D9%92%D9%86%D9%8B%D8%A7" target="_blank" rel="noopener">وَقُولُوا لِلنَّاسِ حُسْنًا</a>
+    <span class="nav-ayah-bracket">﴿</span>
+  </span>
+
+  <div style="display:flex; align-items:center; gap:10px;">
+    <ul class="nav-links">
+      <li><a href="#hero" id="nav-home">الرئيسية</a></li>
+      <li><a href="#articles" id="nav-articles">المقالات</a></li>
+    </ul>
+    <div class="lang-switcher">
+      <button class="lang-btn active" id="lang-ar" onclick="setLang('ar')">ع</button>
+      <button class="lang-btn" id="lang-en" onclick="setLang('en')">EN</button>
+    </div>
+    <button class="nav-admin" id="admin-btn" onclick="openAdmin()">لوحة التحكم</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-text">
+    <div class="hero-badge anim-fadein-down delay-1">ناقد وكاتب مستقل</div>
+    <h1 class="hero-name anim-fadein-down delay-2">أحمد بالي</h1>
+    <p class="hero-title anim-fadein-down delay-3" id="hero-title-text">نقد أدبي · سينمائي · قصص قصيرة · كتابة ثقافية</p>
+    <p class="hero-bio anim-fadein-up delay-3" id="hero-bio-text">
+      كاتب ومفكر يرصد العالم بعيون النقد، يسكن بين سطور الروايات وكواليس السينما، ويجد في الكلمة فعلاً لا زينةً. هنا مساحة للقراءة الجادة والتأمل العميق.
+    </p>
+    <!-- Social icons -->
+    <div class="social-links anim-fadein-up delay-4">
+      <a href="https://www.facebook.com/YOUR_FACEBOOK" target="_blank" rel="noopener" class="social-link" id="social-fb" title="Facebook">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+      </a>
+      <a href="https://www.instagram.com/YOUR_INSTAGRAM" target="_blank" rel="noopener" class="social-link" id="social-ig" title="Instagram">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+      </a>
+    </div>
+    <div class="hero-stats anim-fadein-up delay-5">
+      <div class="stat"><span class="stat-num" id="stat-articles">0</span><span class="stat-label">مقال</span></div>
+      <div class="stat"><span class="stat-num" id="stat-reads">0</span><span class="stat-label">قراءة</span></div>
+    </div>
+  </div>
+  <div class="hero-avatar anim-scale delay-2">
+    <div class="avatar-frame" id="avatar-frame">
+      <div class="avatar-corner tl"></div>
+      <div class="avatar-corner br"></div>
+      <span class="avatar-placeholder" id="avatar-placeholder">أ</span>
+    </div>
+    <label id="avatar-upload-btn" for="avatar-file">تحميل صورة شخصية ↑</label>
+    <input type="file" id="avatar-file" accept="image/*">
+  </div>
+</section>
+
+<!-- ABOUT SITE -->
+<div class="about-strip anim-fadein-up delay-2">
+  <div class="about-label" id="about-label-text">عن الموقع</div>
+  <p class="about-text" id="about-site-text">
+    هذا الموقع فضاء نقدي خاص، لا يكتب فيه سواي. مساحة بعيدة عن ضجيج الشبكات الاجتماعية وقوانينها، أقرب إلى روح المنتديات الأدبية القديمة حيث كانت الكلمة تُعاش ويُحتفى بها. هنا أنشر ما أكتب حين أكتب، وما أرى حين أرى.
+  </p>
+</div>
+
+<!-- SEARCH -->
+<div class="search-section">
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="search-input" placeholder="ابحث في المقالات..." oninput="filterArticles()">
+  </div>
+</div>
+
+<!-- ARTICLES -->
+<section class="articles-section" id="articles">
+  <div class="section-header">
+    <h2 class="section-title" id="section-title-text">المقالات <span>✦</span></h2>
+    <span class="section-count" id="articles-label">لا توجد مقالات بعد</span>
+  </div>
+  <div class="articles-grid" id="articles-grid">
+    <div class="empty-state">
+      <div class="ornament">✦</div>
+      <p>لم تُنشر مقالات بعد</p>
+      <p style="font-size:0.8rem; margin-top:8px; color: var(--text-dim);">سيبدأ الأرشيف هنا</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-rights">
+    <span id="footer-rights-text">جميع الحقوق محفوظة لـ</span> <span>أحمد بالي</span> © 2026
+  </div>
+  <div class="footer-by">
+    <span id="footer-by-text">هذا الموقع بواسطة </span><a href="https://www.facebook.com/YOUR_FACEBOOK" target="_blank" rel="noopener" id="footer-by-link">أحمد بالي</a>
+  </div>
+</footer>
+
+<!-- ADMIN OVERLAY -->
+<div id="admin-overlay">
+  <div class="admin-modal">
+    <div class="modal-header">
+      <span class="modal-title">لوحة التحكم</span>
+      <button class="modal-close" onclick="closeAdmin()">✕</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="login-screen">
+      <div class="field">
+        <label>كلمة المرور</label>
+        <input type="password" id="admin-pass" placeholder="أدخل كلمة المرور" onkeydown="if(event.key==='Enter')login()">
+        <div class="error-msg" id="login-error">كلمة المرور غير صحيحة</div>
+      </div>
+      <button class="btn-gold" onclick="login()">دخول</button>
+    </div>
+
+    <!-- PANEL -->
+    <div id="panel-screen" style="display:none;">
+      <div class="panel-tabs">
+        <button class="tab-btn active" onclick="switchTab('add')">إضافة مقال</button>
+        <button class="tab-btn" onclick="switchTab('manage')">إدارة المقالات</button>
+        <button class="tab-btn" onclick="switchTab('settings')">الإعدادات</button>
+      </div>
+
+      <!-- ADD ARTICLE TAB -->
+      <div class="tab-content active" id="tab-add">
+        <div class="field">
+          <label>عنوان المقال</label>
+          <input type="text" id="a-title" placeholder="عنوان جذاب وواضح">
+        </div>
+        <div class="field">
+          <label>لوج لاين تشويقي (جملة واحدة تشد القارئ)</label>
+          <input type="text" id="a-logline" placeholder="جملة تشويقية قصيرة تظهر تحت العنوان مباشرة...">
+        </div>
+        <div class="field">
+          <label>التصنيف</label>
+          <select id="a-cat">
+            <option value="نقد أدبي">نقد أدبي</option>
+            <option value="نقد سينمائي">نقد سينمائي</option>
+            <option value="قصة قصيرة">قصة قصيرة</option>
+            <option value="مقال ثقافي">مقال ثقافي</option>
+            <option value="رواية">رواية</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>محتوى المقال (بدون حد أدنى للكلمات)</label>
+          <textarea id="a-excerpt" placeholder="اكتب مقالك هنا بحرية..."></textarea>
+        </div>
+        <div class="field">
+          <label>صورة المقال (Thumbnail)</label>
+          <input type="file" id="a-thumb-file" accept="image/*" onchange="previewThumb()">
+          <img id="thumb-preview-img" class="thumb-preview">
+        </div>
+        <div class="field">
+          <label>رابط المقال الخارجي (اختياري)</label>
+          <input type="text" id="a-link" placeholder="https://...">
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; margin-top:8px;">
+          <button class="btn-gold" onclick="publishArticle()">نشر المقال</button>
+          <button class="btn-ghost" onclick="clearForm()">مسح</button>
+        </div>
+        <div class="error-msg" id="publish-error" style="margin-top:10px;">يرجى إدخال عنوان المقال على الأقل</div>
+      </div>
+
+      <!-- MANAGE TAB -->
+      <div class="tab-content" id="tab-manage">
+        <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:16px;">المقالات المنشورة</p>
+        <div id="manage-list" class="panel-articles-list"></div>
+      </div>
+
+      <!-- SETTINGS TAB -->
+      <div class="tab-content" id="tab-settings">
+        <div class="field">
+          <label>رابط فيسبوك</label>
+          <input type="text" id="s-fb" placeholder="https://facebook.com/...">
+        </div>
+        <div class="field">
+          <label>رابط إنستاجرام</label>
+          <input type="text" id="s-ig" placeholder="https://instagram.com/...">
+        </div>
+        <div class="field">
+          <label>النبذة الشخصية (تظهر في الصفحة الرئيسية)</label>
+          <textarea id="s-bio" rows="4"></textarea>
+        </div>
+        <div class="field">
+          <label>نص التعريف بالموقع</label>
+          <textarea id="s-about" rows="4"></textarea>
+        </div>
+        <div class="field">
+          <label>كلمة مرور جديدة (اتركها فارغة إذا لا تريد التغيير)</label>
+          <input type="password" id="s-newpass" placeholder="كلمة مرور جديدة">
+        </div>
+        <button class="btn-gold" onclick="saveSettings()">حفظ الإعدادات</button>
+        <p id="settings-saved" style="font-size:0.78rem; color:var(--gold); margin-top:10px; display:none;">✓ تم الحفظ بنجاح</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const STORE_KEY = 'ahmedbali_data';
+
+function getStore() {
+  try {
+    const d = localStorage.getItem(STORE_KEY);
+    if (d) return JSON.parse(d);
+  } catch(e) {}
+  return {
+    password: 'ahmed2024',
+    articles: [],
+    bio: 'كاتب ومفكر يرصد العالم بعيون النقد، يسكن بين سطور الروايات وكواليس السينما، ويجد في الكلمة فعلاً لا زينةً. هنا مساحة للقراءة الجادة والتأمل العميق.',
+    about: 'هذا الموقع فضاء نقدي خاص، لا يكتب فيه سواي. مساحة بعيدة عن ضجيج الشبكات الاجتماعية وقوانينها، أقرب إلى روح المنتديات الأدبية القديمة حيث كانت الكلمة تُعاش ويُحتفى بها. هنا أنشر ما أكتب حين أكتب، وما أرى حين أرى.',
+    fbLink: 'https://www.facebook.com/YOUR_FACEBOOK',
+    igLink: 'https://www.instagram.com/YOUR_INSTAGRAM',
+    avatar: null
+  };
+}
+
+function saveStore(data) {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(data)); } catch(e) {}
+}
+
+let store = getStore();
+let thumbData = null;
+let loggedIn = false;
+let filtered = null;
+
+function init() {
+  renderPage();
+  applySocialLinks();
+}
+
+function applySocialLinks() {
+  const fb = store.fbLink || '#';
+  const ig = store.igLink || '#';
+  document.getElementById('social-fb').href = fb;
+  document.getElementById('social-ig').href = ig;
+  document.getElementById('footer-by-link').href = fb;
+}
+
+function renderPage() {
+  document.getElementById('hero-bio-text').textContent = store.bio || '';
+  document.getElementById('about-site-text').textContent = store.about || '';
+  const total = store.articles.length;
+  const totalReads = store.articles.reduce((s, a) => s + (a.reads || 0), 0);
+  const safeSet = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  safeSet('stat-articles', total);
+  safeSet('stat-reads', totalReads);
+  safeSet('articles-label', total > 0 ? total + ' مقال منشور' : 'لا توجد مقالات بعد');
+
+  if (store.avatar) {
+    const frame = document.getElementById('avatar-frame');
+    document.getElementById('avatar-placeholder').style.display = 'none';
+    let img = frame.querySelector('img.avatar-img');
+    if (!img) { img = document.createElement('img'); img.className = 'avatar-img'; frame.appendChild(img); }
+    img.src = store.avatar;
+  }
+
+  renderGrid(filtered !== null ? filtered : store.articles);
+}
+
+function renderGrid(articles) {
+  const grid = document.getElementById('articles-grid');
+  if (!articles || articles.length === 0) {
+    grid.innerHTML = '<div class="empty-state"><div class="ornament">✦</div><p>لا توجد مقالات</p></div>';
+    return;
+  }
+  const avatarSrc = store.avatar || null;
+  const authorAvatar = avatarSrc ? `<img src="${avatarSrc}" alt="أحمد بالي">` : `<span>أ</span>`;
+
+  grid.innerHTML = articles.map((a) => {
+    const realIdx = store.articles.indexOf(a);
+    const clickHandler = !a.link
+      ? `onclick="incrementReads(${realIdx}); return false;"`
+      : `onclick="incrementReads(${realIdx});"`;
+    return `<a class="article-card" href="${a.link || '#'}" ${a.link ? 'target="_blank"' : ''} ${clickHandler}>
+      <div class="card-thumb">
+        ${a.thumb ? `<img src="${a.thumb}" alt="${a.title}">` : `<div class="card-thumb-placeholder">${getCatEmoji(a.category)}</div>`}
+        <div class="card-reads">👁 ${a.reads || 0}</div>
+        <div class="card-category">${a.category || 'مقال'}</div>
+      </div>
+      <div class="card-body">
+        <div>
+          <h3 class="card-title">${a.title}</h3>
+          ${a.logline ? `<p class="card-logline">${a.logline}</p>` : ''}
+          <p class="card-excerpt">${a.excerpt || ''}</p>
+        </div>
+        <div class="card-meta">
+          <div class="card-author-avatar">${authorAvatar}</div>
+          <div class="card-author-info">
+            <span class="card-author-name">أحمد بالي <span class="verified" title="كاتب موثّق">✓</span></span>
+            <span class="card-date">${a.date || ''}</span>
+          </div>
+        </div>
+      </div>
+    </a>`;
+  }).join('');
+}
+
+function getCatEmoji(cat) {
+  const map = { 'نقد أدبي': '📖', 'نقد سينمائي': '🎬', 'قصة قصيرة': '✍', 'مقال ثقافي': '🌙', 'رواية': '📚' };
+  return map[cat] || '✦';
+}
+
+function incrementReads(i) {
+  if (i < 0 || i >= store.articles.length) return;
+  store.articles[i].reads = (store.articles[i].reads || 0) + 1;
+  saveStore(store);
+  renderPage();
+}
+
+function filterArticles() {
+  const q = document.getElementById('search-input').value.trim().toLowerCase();
+  if (!q) { filtered = null; renderGrid(store.articles); return; }
+  filtered = store.articles.filter(a =>
+    (a.title && a.title.toLowerCase().includes(q)) ||
+    (a.excerpt && a.excerpt.toLowerCase().includes(q)) ||
+    (a.category && a.category.toLowerCase().includes(q))
+  );
+  renderGrid(filtered);
+}
+
+// ADMIN
+function openAdmin() { document.getElementById('admin-overlay').classList.add('open'); }
+function closeAdmin() { document.getElementById('admin-overlay').classList.remove('open'); }
+
+document.getElementById('admin-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeAdmin();
+});
+
+function login() {
+  const pass = document.getElementById('admin-pass').value;
+  if (pass === store.password) {
+    loggedIn = true;
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('panel-screen').style.display = 'block';
+    document.getElementById('s-bio').value = store.bio || '';
+    document.getElementById('s-about').value = store.about || '';
+    document.getElementById('s-fb').value = store.fbLink || '';
+    document.getElementById('s-ig').value = store.igLink || '';
+    renderManageList();
+  } else {
+    document.getElementById('login-error').style.display = 'block';
+  }
+}
+
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach((b, i) => {
+    b.classList.toggle('active', ['add','manage','settings'][i] === name);
+  });
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  if (name === 'manage') renderManageList();
+}
+
+function previewThumb() {
+  const file = document.getElementById('a-thumb-file').files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    thumbData = e.target.result;
+    const img = document.getElementById('thumb-preview-img');
+    img.src = thumbData; img.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+function publishArticle() {
+  const title = document.getElementById('a-title').value.trim();
+  if (!title) { document.getElementById('publish-error').style.display = 'block'; return; }
+  document.getElementById('publish-error').style.display = 'none';
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' });
+  store.articles.unshift({
+    title,
+    logline: document.getElementById('a-logline').value.trim(),
+    category: document.getElementById('a-cat').value,
+    excerpt: document.getElementById('a-excerpt').value.trim(),
+    thumb: thumbData || null,
+    link: document.getElementById('a-link').value.trim(),
+    date: dateStr,
+    reads: 0
+  });
+  saveStore(store);
+  clearForm();
+  renderPage();
+  renderManageList();
+  switchTab('manage');
+}
+
+function clearForm() {
+  document.getElementById('a-title').value = '';
+  document.getElementById('a-logline').value = '';
+  document.getElementById('a-excerpt').value = '';
+  document.getElementById('a-link').value = '';
+  document.getElementById('a-thumb-file').value = '';
+  document.getElementById('thumb-preview-img').style.display = 'none';
+  thumbData = null;
+}
+
+function renderManageList() {
+  const list = document.getElementById('manage-list');
+  if (!store.articles.length) {
+    list.innerHTML = '<p style="font-size:0.8rem; color:var(--text-dim);">لا توجد مقالات بعد</p>';
+    return;
+  }
+  list.innerHTML = store.articles.map((a, i) => `
+    <div class="panel-article-item" id="item-${i}">
+      <div style="flex:1; min-width:0;">
+        <div class="panel-article-title">${a.title}</div>
+        <div class="panel-article-date">${a.date}</div>
+      </div>
+      <div class="panel-article-actions">
+        <button class="btn-share" onclick="shareArticle(${i})">مشاركة</button>
+        <button class="btn-edit" onclick="toggleEdit(${i})">تعديل</button>
+        <button class="btn-danger" onclick="deleteArticle(${i})">حذف</button>
+      </div>
+    </div>
+    <div class="edit-form" id="edit-form-${i}">
+      <div class="field">
+        <label>العنوان</label>
+        <input type="text" id="edit-title-${i}" value="${escHtml(a.title)}">
+      </div>
+      <div class="field">
+        <label>اللوج لاين</label>
+        <input type="text" id="edit-logline-${i}" value="${escHtml(a.logline || '')}">
+      </div>
+      <div class="field">
+        <label>المحتوى</label>
+        <textarea id="edit-excerpt-${i}" rows="4">${escHtml(a.excerpt || '')}</textarea>
+      </div>
+      <div class="field">
+        <label>الرابط الخارجي</label>
+        <input type="text" id="edit-link-${i}" value="${escHtml(a.link || '')}">
+      </div>
+      <button class="btn-gold" style="font-size:0.8rem; padding:8px 20px;" onclick="saveEdit(${i})">حفظ التعديلات</button>
+    </div>
+  `).join('');
+}
+
+function escHtml(s) {
+  return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function toggleEdit(i) {
+  const form = document.getElementById('edit-form-' + i);
+  form.classList.toggle('open');
+}
+
+function saveEdit(i) {
+  store.articles[i].title   = document.getElementById('edit-title-' + i).value.trim();
+  store.articles[i].logline = document.getElementById('edit-logline-' + i).value.trim();
+  store.articles[i].excerpt = document.getElementById('edit-excerpt-' + i).value.trim();
+  store.articles[i].link    = document.getElementById('edit-link-' + i).value.trim();
+  saveStore(store);
+  renderPage();
+  renderManageList();
+}
+
+function shareArticle(i) {
+  const a = store.articles[i];
+  const text = a.link
+    ? `${a.title}\n${a.link}`
+    : `${a.title}`;
+  if (navigator.share) {
+    navigator.share({ title: a.title, text: a.logline || '', url: a.link || location.href });
+  } else {
+    navigator.clipboard.writeText(text).then(() => alert('تم نسخ رابط المقال ✓'));
+  }
+}
+
+function deleteArticle(i) {
+  if (!confirm('هل أنت متأكد من حذف هذا المقال؟')) return;
+  store.articles.splice(i, 1);
+  saveStore(store);
+  renderPage();
+  renderManageList();
+}
+
+function saveSettings() {
+  store.bio    = document.getElementById('s-bio').value.trim();
+  store.about  = document.getElementById('s-about').value.trim();
+  store.fbLink = document.getElementById('s-fb').value.trim();
+  store.igLink = document.getElementById('s-ig').value.trim();
+  const np = document.getElementById('s-newpass').value.trim();
+  if (np) store.password = np;
+  saveStore(store);
+  renderPage();
+  applySocialLinks();
+  document.getElementById('settings-saved').style.display = 'block';
+  setTimeout(() => document.getElementById('settings-saved').style.display = 'none', 2500);
+}
+
+// Avatar upload
+document.getElementById('avatar-file').addEventListener('change', function() {
+  const file = this.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    store.avatar = e.target.result;
+    saveStore(store);
+    renderPage();
+  };
+  reader.readAsDataURL(file);
+});
+
+// ===== SECRET ADMIN REVEAL (triple-click logo) =====
+let logoClickCount = 0;
+let logoClickTimer = null;
+document.getElementById('nav-logo-click').addEventListener('click', function(e) {
+  e.preventDefault();
+  logoClickCount++;
+  clearTimeout(logoClickTimer);
+  if (logoClickCount >= 3) {
+    logoClickCount = 0;
+    document.getElementById('admin-btn').classList.toggle('revealed');
+  } else {
+    logoClickTimer = setTimeout(() => { logoClickCount = 0; }, 800);
+  }
+});
+
+// ===== LANGUAGE SWITCHING =====
+const translations = {
+  ar: {
+    navHome: 'الرئيسية', navArticles: 'المقالات',
+    adminBtn: 'لوحة التحكم',
+    heroBadge: 'ناقد وكاتب مستقل',
+    heroTitle: 'نقد أدبي · سينمائي · قصص قصيرة · كتابة ثقافية',
+    statArticlesLabel: 'مقال', statReadsLabel: 'قراءة',
+    aboutLabel: 'عن الموقع',
+    searchPlaceholder: 'ابحث في المقالات...',
+    sectionTitle: 'المقالات',
+    footerRights: 'جميع الحقوق محفوظة لـ',
+    footerBy: 'هذا الموقع بواسطة ',
+  },
+  en: {
+    navHome: 'Home', navArticles: 'Articles',
+    adminBtn: 'Control Panel',
+    heroBadge: 'Independent Critic & Writer',
+    heroTitle: 'Literary Criticism · Cinema · Short Stories · Cultural Writing',
+    statArticlesLabel: 'Articles', statReadsLabel: 'Reads',
+    aboutLabel: 'About',
+    searchPlaceholder: 'Search articles...',
+    sectionTitle: 'Articles',
+    footerRights: 'All rights reserved to',
+    footerBy: 'This website by ',
+  }
+};
+
+let currentLang = 'ar';
+function setLang(lang) {
+  currentLang = lang;
+  const t = translations[lang];
+  const isAr = lang === 'ar';
+  document.documentElement.lang = lang;
+  document.documentElement.dir = isAr ? 'rtl' : 'ltr';
+  document.body.style.direction = isAr ? 'rtl' : 'ltr';
+  document.getElementById('lang-ar').classList.toggle('active', isAr);
+  document.getElementById('lang-en').classList.toggle('active', !isAr);
+  document.getElementById('nav-home').textContent = t.navHome;
+  document.getElementById('nav-articles').textContent = t.navArticles;
+  document.getElementById('admin-btn').textContent = t.adminBtn;
+  const badge = document.querySelector('.hero-badge');
+  if (badge) badge.childNodes[badge.childNodes.length - 1].textContent = ' ' + t.heroBadge;
+  const heroTitleEl = document.getElementById('hero-title-text');
+  if (heroTitleEl) heroTitleEl.textContent = t.heroTitle;
+  const s1 = document.querySelector('.stat:nth-child(1) .stat-label');
+  const s2 = document.querySelector('.stat:nth-child(2) .stat-label');
+  if (s1) s1.textContent = t.statArticlesLabel;
+  if (s2) s2.textContent = t.statReadsLabel;
+  const aboutLbl = document.getElementById('about-label-text');
+  if (aboutLbl) aboutLbl.textContent = t.aboutLabel;
+  document.getElementById('search-input').placeholder = t.searchPlaceholder;
+  const secTitle = document.getElementById('section-title-text');
+  if (secTitle) secTitle.firstChild.textContent = t.sectionTitle + ' ';
+  const fr = document.getElementById('footer-rights-text');
+  if (fr) fr.textContent = t.footerRights;
+  const fb = document.getElementById('footer-by-text');
+  if (fb) fb.textContent = t.footerBy;
+  renderGrid(filtered !== null ? filtered : store.articles);
+}
+
+init();
+</script>
+</body>
+</html>
