@@ -1,734 +1,412 @@
-# الملف الكامل للموقع
+import { useState, useEffect, useRef } from "react";
 
-```html
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ahmed Bali — Official Website</title>
+const STORAGE_KEY = "ahmedBaliSite-v2";
+const SHARED = true;
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+const DEFAULT_DATA = {
+  password: "ahmed2024",
+  about: "هذا الموقع فضاء نقدي خاص، لا يكتب فيه سواي.",
+  bio: "كاتب ومفكر يرصد العالم بعيون النقد، يسكن بين سطور الروايات وكواليس السينما، ويجد في الكلمة فعلاً لا زينةً.",
+  avatar: null,
+  articles: [],
+};
 
-<style>
-:root{
-  --gold:#C9A84C;
-  --bg:#050505;
-  --card:#111111;
-  --text:#f3f3f3;
-  --muted:#9f9f9f;
-  --border:rgba(255,255,255,.08);
+async function loadData() {
+  try {
+    const res = await window.storage.get(STORAGE_KEY, SHARED);
+    if (res && res.value) return JSON.parse(res.value);
+  } catch (_) {}
+  return DEFAULT_DATA;
 }
 
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
+async function saveData(data) {
+  try {
+    await window.storage.set(STORAGE_KEY, JSON.stringify(data), SHARED);
+  } catch (_) {}
 }
 
-html{
-  scroll-behavior:smooth;
+function compressImage(file, maxWidth, quality) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const scale = Math.min(1, maxWidth / img.width);
+      const w = Math.round(img.width * scale);
+      const h = Math.round(img.height * scale);
+      const canvas = document.createElement("canvas");
+      canvas.width = w;
+      canvas.height = h;
+      canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+      URL.revokeObjectURL(url);
+      resolve(canvas.toDataURL("image/jpeg", quality));
+    };
+    img.src = url;
+  });
 }
 
-body{
-  font-family:'Cairo',sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  overflow-x:hidden;
-}
-
-body::before{
-  content:"";
-  position:fixed;
-  inset:0;
-  background:
-  radial-gradient(circle at top right,rgba(201,168,76,.12),transparent 30%),
-  radial-gradient(circle at bottom left,rgba(201,168,76,.07),transparent 30%);
-  pointer-events:none;
-  z-index:-1;
-}
-
-a{
-  text-decoration:none;
-  color:inherit;
-}
-
-img{
-  max-width:100%;
-  display:block;
-}
-
-nav{
-  height:74px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:0 6%;
-  border-bottom:1px solid var(--border);
-  background:rgba(0,0,0,.94);
-  backdrop-filter:blur(12px);
-  position:sticky;
-  top:0;
-  z-index:999;
-}
-
-.logo{
-  display:flex;
-  align-items:center;
-  cursor:pointer;
-}
-
-.logo img{
-  width:130px;
-  object-fit:contain;
-}
-
-.nav-links{
-  display:flex;
-  align-items:center;
-  gap:24px;
-}
-
-.nav-links a,
-.lang-switcher button{
-  color:#ddd;
-  background:none;
-  border:none;
-  cursor:pointer;
-  font-family:'Cairo',sans-serif;
-  font-size:.95rem;
-  transition:.3s;
-}
-
-.nav-links a:hover,
-.lang-switcher button:hover{
-  color:var(--gold);
-}
-
-.nav-center-ayah{
-  position:absolute;
-  left:50%;
-  transform:translateX(-50%);
-  display:flex;
-  align-items:center;
-  gap:8px;
-  color:#d8c89c;
-  font-family:'Amiri',serif;
-}
-
-.ayah-bracket{
-  color:var(--gold);
-}
-
-.hero{
-  padding:90px 6% 70px;
-  text-align:center;
-}
-
-.hero-avatar{
-  width:220px;
-  height:220px;
-  margin:auto;
-  border-radius:50%;
-  border:3px solid var(--gold);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  overflow:hidden;
-  box-shadow:0 0 40px rgba(201,168,76,.2);
-}
-
-.hero-avatar img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-
-.avatar-placeholder{
-  font-size:6rem;
-  color:var(--gold);
-  font-family:'Amiri',serif;
-}
-
-.hero-name{
-  margin-top:28px;
-  font-size:clamp(3rem,8vw,5rem);
-  font-weight:900;
-}
-
-.hero-title{
-  margin-top:12px;
-  color:var(--gold);
-  font-size:1.2rem;
-  font-weight:700;
-}
-
-.hero-bio{
-  max-width:900px;
-  margin:28px auto 0;
-  line-height:2.3;
-  color:#d5d5d5;
-  font-size:1.06rem;
-}
-
-.fb-verified{
-  width:20px;
-  height:20px;
-  border-radius:50%;
-  background:var(--gold);
-  color:#111;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  font-size:11px;
-  margin-right:8px;
-}
-
-.about{
-  padding:75px 6%;
-  text-align:center;
-  border-top:1px solid var(--border);
-  border-bottom:1px solid var(--border);
-}
-
-.about h2{
-  color:var(--gold);
-  margin-bottom:22px;
-  font-size:2.2rem;
-}
-
-.about p{
-  max-width:920px;
-  margin:auto;
-  line-height:2.3;
-  color:#d0d0d0;
-}
-
-.search-box{
-  padding:45px 6%;
-  display:flex;
-  justify-content:center;
-}
-
-.search-box input{
-  width:min(850px,100%);
-  padding:18px 22px;
-  background:#0f0f0f;
-  border:1px solid var(--border);
-  border-radius:16px;
-  color:#fff;
-  outline:none;
-  font-family:'Cairo',sans-serif;
-}
-
-.articles{
-  padding:20px 6% 80px;
-}
-
-.section-title{
-  text-align:center;
-  margin-bottom:35px;
-  font-size:2.2rem;
-}
-
-.articles-grid{
-  display:flex;
-  flex-direction:column;
-  gap:24px;
-}
-
-.article-card{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:22px;
-  overflow:hidden;
-  display:flex;
-  transition:.35s;
-  cursor:pointer;
-}
-
-.article-card:hover{
-  transform:translateY(-5px);
-  border-color:rgba(201,168,76,.4);
-}
-
-.article-thumb{
-  width:290px;
-  min-width:290px;
-  height:210px;
-  background:#111;
-  background-size:cover;
-  background-position:center;
-}
-
-.article-content{
-  padding:24px;
-  flex:1;
-  display:flex;
-  flex-direction:column;
-  justify-content:space-between;
-}
-
-.article-content h3{
-  font-size:1.7rem;
-  margin-bottom:12px;
-}
-
-.article-date{
-  color:var(--gold);
-  margin-bottom:14px;
-}
-
-.article-excerpt{
-  color:#d2d2d2;
-  line-height:2;
-}
-
-.read-more{
-  margin-top:18px;
-  color:var(--gold);
-  font-weight:700;
-}
-
-footer{
-  border-top:1px solid var(--border);
-  text-align:center;
-  padding:40px 6%;
-  color:#aaa;
-}
-
-.footer-dev{
-  color:#fff;
-}
-
-.admin-panel{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.78);
-  backdrop-filter:blur(8px);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:99999;
-}
-
-.admin-panel.active{
-  display:flex;
-}
-
-.admin-box{
-  width:min(760px,100%);
-  background:#121212;
-  border:1px solid var(--border);
-  border-radius:24px;
-  padding:30px;
-  max-height:90vh;
-  overflow:auto;
-}
-
-.admin-box h2,
-.admin-section h3{
-  color:var(--gold);
-}
-
-.admin-box input,
-.admin-box textarea,
-.admin-box select{
-  width:100%;
-  padding:14px;
-  margin-top:14px;
-  background:#0b0b0b;
-  border:1px solid var(--border);
-  border-radius:14px;
-  color:#fff;
-  font-family:'Cairo',sans-serif;
-}
-
-.admin-box button{
-  margin-top:14px;
-  padding:12px 20px;
-  background:var(--gold);
-  border:none;
-  border-radius:12px;
-  cursor:pointer;
-  font-family:'Cairo',sans-serif;
-  font-weight:700;
-}
-
-.admin-section{
-  margin-top:30px;
-  padding-top:24px;
-  border-top:1px solid var(--border);
-}
-
+const css = `
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Amiri:wght@400;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+.site{font-family:'Cairo',sans-serif;background:#0d0d0d;color:#f3f3f3;min-height:100vh;direction:rtl;}
+.site::before{content:"";position:fixed;inset:0;background:radial-gradient(circle at top right,rgba(201,168,76,.13),transparent 30%),radial-gradient(circle at bottom left,rgba(201,168,76,.08),transparent 30%);pointer-events:none;z-index:0;}
+a{text-decoration:none;color:inherit;}
+nav{height:72px;display:flex;align-items:center;justify-content:space-between;padding:0 6%;border-bottom:1px solid rgba(255,255,255,.08);background:rgba(10,10,10,.92);backdrop-filter:blur(12px);position:sticky;top:0;z-index:999;}
+.logo{font-size:1.6rem;font-weight:900;color:#fff;cursor:pointer;user-select:none;}
+.nav-ayah{position:absolute;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;font-family:'Amiri',serif;font-size:.95rem;color:#d5c8a0;white-space:nowrap;pointer-events:none;user-select:none;}
+.ayah-b{color:#C9A84C;font-size:1.1rem;}
+.nav-links{display:flex;align-items:center;gap:18px;}
+.nav-links a{color:#a5a5a5;transition:.3s;font-size:.95rem;cursor:pointer;}
+.nav-links a:hover{color:#C9A84C;}
+.hero{padding:90px 6% 60px;display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;z-index:1;}
+.avatar-frame{width:240px;height:240px;border-radius:50%;overflow:hidden;border:3px solid #C9A84C;background:#111;display:flex;align-items:center;justify-content:center;box-shadow:0 0 35px rgba(201,168,76,.2);}
+.avatar-frame img{width:100%;height:100%;object-fit:cover;}
+.avatar-placeholder{font-size:6rem;color:#C9A84C;font-family:'Amiri',serif;}
+.hero-name{font-size:clamp(2.5rem,8vw,5rem);font-weight:900;color:#fff;margin-top:32px;display:flex;align-items:center;gap:10px;}
+.verified{width:18px;height:18px;border-radius:50%;background:#C9A84C;color:#111;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:bold;}
+.hero-title{margin-top:12px;color:#C9A84C;font-size:1.2rem;font-weight:700;}
+.hero-bio{max-width:850px;line-height:2.3;margin-top:28px;color:#d2d2d2;font-size:1.08rem;}
+.about-sec{padding:75px 6%;border-top:1px solid rgba(255,255,255,.08);border-bottom:1px solid rgba(255,255,255,.08);text-align:center;position:relative;z-index:1;}
+.about-sec h2{font-size:2rem;margin-bottom:26px;color:#C9A84C;}
+.about-sec p{max-width:920px;margin:auto;line-height:2.3;color:#d0d0d0;font-size:1.06rem;}
+.search-box{padding:45px 6%;display:flex;justify-content:center;position:relative;z-index:1;}
+.search-box input{width:min(720px,100%);padding:18px 22px;background:#161616;border:1px solid rgba(255,255,255,.08);border-radius:16px;outline:none;color:#fff;font-family:'Cairo',sans-serif;font-size:1rem;transition:.3s;}
+.search-box input:focus{border-color:#C9A84C;}
+.articles-sec{padding:20px 6% 80px;position:relative;z-index:1;}
+.sec-title{font-size:2rem;margin-bottom:35px;color:#fff;text-align:center;}
+.articles-grid{display:flex;flex-direction:column;gap:22px;}
+.article-card{background:#171717;border:1px solid rgba(255,255,255,.08);border-radius:20px;overflow:hidden;display:flex;transition:.35s;cursor:pointer;}
+.article-card:hover{transform:translateY(-4px);border-color:rgba(201,168,76,.4);}
+.article-thumb{width:290px;min-width:290px;height:210px;background:#111;background-size:cover;background-position:center;}
+.article-body{padding:24px;display:flex;flex-direction:column;justify-content:space-between;flex:1;}
+.article-body h3{font-size:1.7rem;margin-bottom:12px;font-family:'Amiri',serif;}
+.article-date{color:#C9A84C;font-size:.92rem;margin-bottom:14px;}
+.article-excerpt{line-height:2;color:#d0d0d0;}
+.read-more{margin-top:20px;color:#C9A84C;font-weight:700;}
+.reader{position:fixed;inset:0;background:#0a0a0a;z-index:9999;overflow-y:auto;padding:80px 8%;}
+.reader-close{position:fixed;top:18px;left:18px;width:44px;height:44px;border:none;border-radius:50%;background:#C9A84C;font-size:1.2rem;font-weight:bold;cursor:pointer;color:#111;}
+.reader-inner{max-width:900px;margin:auto;}
+.reader-title{font-size:3rem;font-family:'Amiri',serif;margin-bottom:18px;color:#fff;}
+.reader-date{color:#C9A84C;margin-bottom:35px;}
+.reader-content{line-height:2.6;font-size:1.18rem;color:#e3e3e3;white-space:pre-line;}
+.author-box{margin-top:60px;padding-top:35px;border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:18px;}
+.author-avatar{width:82px;height:82px;border-radius:50%;overflow:hidden;border:2px solid #C9A84C;background:#111;display:flex;align-items:center;justify-content:center;font-size:2rem;color:#C9A84C;flex-shrink:0;}
+.author-avatar img{width:100%;height:100%;object-fit:cover;}
+.author-info h3{display:flex;align-items:center;gap:8px;font-size:1.2rem;margin-bottom:8px;color:#fff;}
+.author-info p{color:#b9b9b9;line-height:1.9;font-size:.95rem;}
+.next-sec{margin-top:50px;padding-top:28px;border-top:1px solid rgba(255,255,255,.08);}
+.next-sec h4{margin-bottom:16px;color:#C9A84C;}
+.next-link{display:block;padding:20px;background:#151515;border-radius:14px;transition:.3s;cursor:pointer;color:#f3f3f3;}
+.next-link:hover{background:#1e1e1e;}
+footer{border-top:1px solid rgba(255,255,255,.08);padding:35px 6%;text-align:center;color:#aaa;position:relative;z-index:1;}
+.footer-by{margin-top:12px;display:flex;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap;}
+.footer-dev{color:#C9A84C;font-weight:700;}
+.admin-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;z-index:99999;padding:20px;}
+.admin-box{background:#151515;border:1px solid rgba(255,255,255,.08);border-radius:22px;padding:28px;width:min(760px,100%);max-height:90vh;overflow:auto;}
+.admin-box h2{margin-bottom:20px;color:#C9A84C;}
+.admin-box h3{margin-bottom:15px;color:#C9A84C;}
+.admin-input{width:100%;padding:14px;margin-bottom:14px;background:#101010;border:1px solid rgba(255,255,255,.08);border-radius:12px;outline:none;color:#fff;font-family:'Cairo',sans-serif;font-size:1rem;}
+.admin-btn{background:#C9A84C;border:none;padding:12px 18px;border-radius:12px;font-family:'Cairo',sans-serif;font-weight:700;cursor:pointer;margin-left:8px;margin-bottom:10px;color:#111;}
+.admin-section{margin-top:30px;padding-top:20px;border-top:1px solid rgba(255,255,255,.08);}
+.art-manage{background:#111;padding:16px;border-radius:14px;margin-bottom:12px;}
+.art-manage h4{margin-bottom:8px;color:#f3f3f3;}
+.art-status{color:#C9A84C;font-size:.9rem;margin-bottom:10px;}
+.success{margin-top:12px;color:#79ff9f;font-size:.95rem;}
+.empty{text-align:center;color:#a5a5a5;padding:40px;}
+.loading{text-align:center;color:#a5a5a5;padding:80px;font-size:1.2rem;}
 @media(max-width:900px){
-
-  nav{
-    flex-wrap:wrap;
-    height:auto;
-    padding:14px 4%;
-  }
-
-  .nav-center-ayah{
-    position:static;
-    transform:none;
-    width:100%;
-    justify-content:center;
-    margin-top:10px;
-    padding-top:10px;
-    border-top:1px solid var(--border);
-  }
-
-  .article-card{
-    flex-direction:column;
-  }
-
-  .article-thumb{
-    width:100%;
-    min-width:100%;
-  }
-
-  .logo img{
-    width:95px;
-  }
+  nav{flex-wrap:wrap;height:auto;padding:14px 4%;gap:0;}
+  .nav-ayah{position:static;transform:none;order:3;width:100%;justify-content:center;padding:8px 0 10px;font-size:.85rem;border-top:1px solid rgba(255,255,255,.08);margin-top:8px;}
+  .logo{order:1;}.nav-links{order:2;}
+  .article-card{flex-direction:column;}
+  .article-thumb{width:100%;min-width:100%;height:240px;}
+  .reader-title{font-size:2rem;}
+  .author-box{flex-direction:column;text-align:center;}
 }
-</style>
-</head>
-<body>
+`;
 
-<nav>
+export default function App() {
+  const [data, setData] = useState(null);
+  const [search, setSearch] = useState("");
+  const [reader, setReader] = useState(null);
+  const [adminOpen, setAdminOpen] = useState(false);
+  const [adminAuth, setAdminAuth] = useState(false);
+  const [passInput, setPassInput] = useState("");
+  const [success, setSuccess] = useState(false);
+  const [logoClicks, setLogoClicks] = useState(0);
+  const logoTimer = useRef(null);
 
-<div class="logo" id="secretLogo">
-<img src="logo.png" alt="Logo">
-</div>
+  // form states
+  const [aboutInput, setAboutInput] = useState("");
+  const [bioInput, setBioInput] = useState("");
+  const [artTitle, setArtTitle] = useState("");
+  const [artContent, setArtContent] = useState("");
+  const [artPrivate, setArtPrivate] = useState(false);
+  const [artImageFile, setArtImageFile] = useState(null);
+  const [avatarFile, setAvatarFile] = useState(null);
 
-<div class="nav-center-ayah">
-<span class="ayah-bracket">﴿</span>
-<span id="ayahText">وَقُولُوا لِلنَّاسِ حُسْنًا</span>
-<span class="ayah-bracket">﴾</span>
-</div>
+  useEffect(() => {
+    loadData().then((d) => {
+      setData(d);
+      setAboutInput(d.about);
+      setBioInput(d.bio);
+    });
+  }, []);
 
-<div class="nav-links">
-<a href="#about" id="aboutNav">عن الموقع</a>
-<a href="#articles" id="articlesNav">المقالات</a>
+  const persist = async (newData) => {
+    setData(newData);
+    await saveData(newData);
+  };
 
-<div class="lang-switcher">
-<button onclick="setLanguage('ar')">العربية</button>
-|
-<button onclick="setLanguage('en')">English</button>
-</div>
-</div>
+  const showSuccess = () => {
+    setSuccess(true);
+    setTimeout(() => setSuccess(false), 2500);
+  };
 
-</nav>
+  const handleLogoClick = () => {
+    const c = logoClicks + 1;
+    setLogoClicks(c);
+    clearTimeout(logoTimer.current);
+    if (c >= 3) { setAdminOpen(true); setLogoClicks(0); return; }
+    logoTimer.current = setTimeout(() => setLogoClicks(0), 1500);
+  };
 
-<section class="hero">
+  const loginAdmin = () => {
+    if (passInput === data.password) { setAdminAuth(true); }
+    else alert("كلمة المرور غير صحيحة");
+  };
 
-<div class="hero-avatar" id="avatarFrame">
-<span class="avatar-placeholder">أ</span>
-</div>
+  const saveSettings = async () => {
+    const updated = { ...data, about: aboutInput, bio: bioInput };
+    if (avatarFile) {
+      const compressed = await compressImage(avatarFile, 400, 0.75);
+      updated.avatar = compressed;
+      setAvatarFile(null);
+    }
+    await persist(updated);
+    showSuccess();
+  };
 
-<h1 class="hero-name">
-<span id="heroName">أحمد بالي</span>
-<span class="fb-verified">✓</span>
-</h1>
+  const publishArticle = async () => {
+    if (!artTitle || !artContent || !artImageFile) { alert("اكمل بيانات المقال واختر صورة"); return; }
+    const img = await compressImage(artImageFile, 900, 0.75);
+    const article = {
+      id: Date.now(),
+      title: artTitle,
+      content: artContent,
+      image: img,
+      private: artPrivate,
+      reads: 0,
+      date: new Date().toLocaleDateString("ar-EG", { year: "numeric", month: "long", day: "numeric" }),
+    };
+    const updated = { ...data, articles: [article, ...data.articles] };
+    await persist(updated);
+    setArtTitle(""); setArtContent(""); setArtImageFile(null); setArtPrivate(false);
+    showSuccess();
+  };
 
-<div class="hero-title" id="heroTitle">
-مخرج وروائي وسيناريست وناقد فني مصري
-</div>
+  const deleteArticle = async (id) => {
+    if (!confirm("هل تريد حذف المقال؟")) return;
+    const updated = { ...data, articles: data.articles.filter((a) => a.id !== id) };
+    await persist(updated);
+    showSuccess();
+  };
 
-<p class="hero-bio" id="heroBio">
-كاتب ومفكر يرصد العالم بعيون النقد، يسكن بين سطور الروايات وكواليس السينما.
-</p>
+  const togglePrivate = async (id) => {
+    const updated = { ...data, articles: data.articles.map((a) => a.id === id ? { ...a, private: !a.private } : a) };
+    await persist(updated);
+    showSuccess();
+  };
 
-</section>
+  const editArticle = async (id) => {
+    const article = data.articles.find((a) => a.id === id);
+    const newTitle = prompt("عدل عنوان المقال", article.title);
+    if (newTitle === null) return;
+    const newContent = prompt("عدل المقال", article.content);
+    if (newContent === null) return;
+    const updated = { ...data, articles: data.articles.map((a) => a.id === id ? { ...a, title: newTitle, content: newContent } : a) };
+    await persist(updated);
+    showSuccess();
+  };
 
-<section class="about" id="about">
-<h2 id="aboutTitle">عن الموقع</h2>
-<p id="aboutText">هذا الموقع فضاء نقدي خاص، لا يكتب فيه سواي.</p>
-</section>
+  const openArticle = async (article) => {
+    const updated = { ...data, articles: data.articles.map((a) => a.id === article.id ? { ...a, reads: a.reads + 1 } : a) };
+    await persist(updated);
+    setReader(article);
+    window.scrollTo(0, 0);
+  };
 
-<div class="search-box">
-<input type="text" id="searchInput" placeholder="ابحث عن المقالات..." onkeyup="filterArticles()">
-</div>
+  if (!data) return <div style={{ background: "#0d0d0d", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", color: "#C9A84C", fontFamily: "Cairo,sans-serif", fontSize: "1.3rem", direction: "rtl" }}>جاري التحميل...</div>;
 
-<section class="articles" id="articles">
-<h2 class="section-title" id="articlesTitle">المقالات</h2>
-<div class="articles-grid" id="articlesGrid"></div>
-</section>
+  const publicArticles = data.articles.filter((a) => !a.private);
+  const filtered = publicArticles.filter((a) =>
+    a.title.toLowerCase().includes(search.toLowerCase()) ||
+    a.content.toLowerCase().includes(search.toLowerCase())
+  );
 
-<footer>
-<div id="footerText">جميع الحقوق محفوظة © 2026</div>
-<br>
-<div>
-Website by |
-<a href="https://www.instagram.com/thebalyy" target="_blank" class="footer-dev">أحمد بالي</a>
-</div>
-</footer>
+  const currentIndex = reader ? data.articles.findIndex((a) => a.id === reader.id) : -1;
+  const nextArticle = currentIndex >= 0 ? data.articles.slice(currentIndex + 1).find((a) => !a.private) : null;
 
-<div class="admin-panel" id="adminPanel">
-<div class="admin-box">
+  return (
+    <>
+      <style>{css}</style>
+      <div className="site">
+        {/* NAV */}
+        <nav>
+          <div className="logo" onClick={handleLogoClick}>أحمد بالي</div>
+          <div className="nav-ayah">
+            <span className="ayah-b">﴿</span>
+            <span>وَقُولُوا لِلنَّاسِ حُسْنًا</span>
+            <span className="ayah-b">﴾</span>
+          </div>
+          <div className="nav-links">
+            <a onClick={() => document.getElementById("about-sec")?.scrollIntoView({ behavior: "smooth" })}>عن الموقع</a>
+            <a onClick={() => document.getElementById("articles-sec")?.scrollIntoView({ behavior: "smooth" })}>المقالات</a>
+          </div>
+        </nav>
 
-<h2>لوحة التحكم</h2>
+        {/* HERO */}
+        <section className="hero">
+          <div className="avatar-frame">
+            {data.avatar ? <img src={data.avatar} alt="أحمد بالي" /> : <span className="avatar-placeholder">أ</span>}
+          </div>
+          <h1 className="hero-name">أحمد بالي <span className="verified">✓</span></h1>
+          <div className="hero-title">مخرج وروائي وسيناريست وناقد فني مصري</div>
+          <p className="hero-bio">{data.bio}</p>
+        </section>
 
-<input type="password" placeholder="كلمة المرور" id="adminPassword">
-<button onclick="loginAdmin()">دخول</button>
+        {/* ABOUT */}
+        <section className="about-sec" id="about-sec">
+          <h2>عن الموقع</h2>
+          <p>{data.about}</p>
+        </section>
 
-<div id="adminContent" style="display:none; margin-top:20px;">
-
-<div class="admin-section">
-<h3>الإعدادات</h3>
-<input type="file" id="avatarUpload">
-<textarea id="aboutInput" placeholder="تعديل عن الموقع"></textarea>
-<textarea id="bioInput" placeholder="تعديل النبذة التعريفية"></textarea>
-<button onclick="saveSettings()">حفظ الإعدادات</button>
-</div>
-
-<div class="admin-section">
-<h3>إضافة مقال</h3>
-<input type="text" id="articleTitle" placeholder="عنوان المقال">
-<textarea id="articleContent" placeholder="محتوى المقال" style="height:200px;"></textarea>
-<input type="file" id="articleImage" accept="image/*">
-<button onclick="publishArticle()">نشر المقال</button>
-</div>
-
-</div>
-</div>
-</div>
-
-<script>
-
-const translations = {
-  ar:{
-    aboutNav:'عن الموقع',
-    articlesNav:'المقالات',
-    heroName:'أحمد بالي',
-    heroTitle:'مخرج وروائي وسيناريست وناقد فني مصري',
-    heroBio:'كاتب ومفكر يرصد العالم بعيون النقد، يسكن بين سطور الروايات وكواليس السينما.',
-    aboutTitle:'عن الموقع',
-    aboutText:'هذا الموقع فضاء نقدي خاص، لا يكتب فيه سواي.',
-    articlesTitle:'المقالات',
-    footerText:'جميع الحقوق محفوظة © 2026',
-    search:'ابحث عن المقالات...'
-  },
-
-  en:{
-    aboutNav:'About',
-    articlesNav:'Articles',
-    heroName:'Ahmed Bali',
-    heroTitle:'Egyptian Director, Novelist, Screenwriter & Film Critic',
-    heroBio:'A writer and thinker observing the world through the eyes of criticism and storytelling.',
-    aboutTitle:'About The Website',
-    aboutText:'This website is a private critical space written solely by me.',
-    articlesTitle:'Articles',
-    footerText:'All Rights Reserved © 2026',
-    search:'Search articles...'
-  }
-};
-
-function setLanguage(lang){
-
-  document.documentElement.lang = lang;
-
-  if(lang === 'ar'){
-    document.documentElement.dir = 'rtl';
-  }else{
-    document.documentElement.dir = 'ltr';
-  }
-
-  document.getElementById('aboutNav').innerText = translations[lang].aboutNav;
-  document.getElementById('articlesNav').innerText = translations[lang].articlesNav;
-  document.getElementById('heroName').innerText = translations[lang].heroName;
-  document.getElementById('heroTitle').innerText = translations[lang].heroTitle;
-  document.getElementById('heroBio').innerText = translations[lang].heroBio;
-  document.getElementById('aboutTitle').innerText = translations[lang].aboutTitle;
-  document.getElementById('aboutText').innerText = translations[lang].aboutText;
-  document.getElementById('articlesTitle').innerText = translations[lang].articlesTitle;
-  document.getElementById('footerText').innerText = translations[lang].footerText;
-  document.getElementById('searchInput').placeholder = translations[lang].search;
-}
-
-let siteData = JSON.parse(localStorage.getItem('ahmedBaliSite')) || {
-  password:'ahmed2024',
-  avatar:null,
-  articles:[]
-};
-
-function saveData(){
-  localStorage.setItem('ahmedBaliSite', JSON.stringify(siteData));
-}
-
-function compressImage(file, maxWidth, quality, callback){
-
-  const img = new Image();
-  const url = URL.createObjectURL(file);
-
-  img.onload = function(){
-
-    const scale = Math.min(1, maxWidth / img.width);
-
-    const w = img.width * scale;
-    const h = img.height * scale;
-
-    const canvas = document.createElement('canvas');
-
-    canvas.width = w;
-    canvas.height = h;
-
-    canvas.getContext('2d').drawImage(img,0,0,w,h);
-
-    callback(canvas.toDataURL('image/jpeg', quality));
-  }
-
-  img.src = url;
-}
-
-function renderArticles(){
-
-  const grid = document.getElementById('articlesGrid');
-
-  grid.innerHTML = '';
-
-  if(!siteData.articles.length){
-    grid.innerHTML = '<p style="text-align:center;color:#888">لا توجد مقالات</p>';
-    return;
-  }
-
-  siteData.articles.forEach(article=>{
-
-    grid.innerHTML += `
-
-    <div class="article-card">
-
-      <div class="article-thumb" style="background-image:url('${article.image}')"></div>
-
-      <div class="article-content">
-
-        <div>
-          <h3>${article.title}</h3>
-          <div class="article-date">${article.date}</div>
-          <div class="article-excerpt">${article.content.substring(0,180)}...</div>
+        {/* SEARCH */}
+        <div className="search-box">
+          <input type="text" placeholder="ابحث عن المقالات..." value={search} onChange={(e) => setSearch(e.target.value)} />
         </div>
 
-        <div class="read-more">قراءة المقال →</div>
+        {/* ARTICLES */}
+        <section className="articles-sec" id="articles-sec">
+          <h2 className="sec-title">المقالات</h2>
+          <div className="articles-grid">
+            {filtered.length === 0 ? (
+              <p className="empty">لا توجد مقالات</p>
+            ) : (
+              filtered.map((article) => (
+                <div className="article-card" key={article.id} onClick={() => openArticle(article)}>
+                  <div className="article-thumb" style={article.image ? { backgroundImage: `url('${article.image}')` } : { background: "#222" }} />
+                  <div className="article-body">
+                    <div>
+                      <h3>{article.title}</h3>
+                      <div className="article-date">{article.date}</div>
+                      <div className="article-excerpt">{article.content.substring(0, 180)}...</div>
+                    </div>
+                    <div className="read-more">قراءة المقال →</div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </section>
 
+        {/* FOOTER */}
+        <footer>
+          <div>جميع الحقوق محفوظة لـ أحمد بالي © 2026</div>
+          <div className="footer-by">
+            <span>Website by</span>
+            <span style={{ opacity: .4 }}>|</span>
+            <a href="https://www.instagram.com/thebalyy?igsh=bnNsZ2hyYnVoYWw1" target="_blank" className="footer-dev">أحمد بالي</a>
+          </div>
+        </footer>
+
+        {/* READER */}
+        {reader && (
+          <div className="reader">
+            <button className="reader-close" onClick={() => setReader(null)}>×</button>
+            <div className="reader-inner">
+              <h1 className="reader-title">{reader.title}</h1>
+              <div className="reader-date">{reader.date}</div>
+              <div className="reader-content">{reader.content}</div>
+              <div className="author-box">
+                <div className="author-avatar">
+                  {data.avatar ? <img src={data.avatar} alt="أحمد بالي" /> : "أ"}
+                </div>
+                <div className="author-info">
+                  <h3>أحمد بالي <span className="verified">✓</span></h3>
+                  <p>تاريخ النشر: {reader.date}<br />عدد القراءات: {(data.articles.find(a => a.id === reader.id)?.reads) ?? reader.reads}</p>
+                </div>
+              </div>
+              {nextArticle && (
+                <div className="next-sec">
+                  <h4>المقال التالي</h4>
+                  <div className="next-link" onClick={() => openArticle(nextArticle)}>{nextArticle.title}</div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ADMIN */}
+        {adminOpen && (
+          <div className="admin-overlay" onClick={(e) => { if (e.target.classList.contains("admin-overlay")) { setAdminOpen(false); setAdminAuth(false); setPassInput(""); } }}>
+            <div className="admin-box">
+              <h2>لوحة التحكم</h2>
+              {!adminAuth ? (
+                <>
+                  <input className="admin-input" type="password" placeholder="كلمة المرور" value={passInput} onChange={(e) => setPassInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && loginAdmin()} />
+                  <button className="admin-btn" onClick={loginAdmin}>دخول</button>
+                </>
+              ) : (
+                <>
+                  {/* إعدادات */}
+                  <div className="admin-section">
+                    <h3>الإعدادات</h3>
+                    <div style={{ marginBottom: 14 }}>
+                      <label style={{ color: "#a5a5a5", fontSize: ".9rem", display: "block", marginBottom: 6 }}>الصورة الشخصية</label>
+                      <input className="admin-input" type="file" accept="image/*" onChange={(e) => setAvatarFile(e.target.files[0])} />
+                    </div>
+                    <textarea className="admin-input" placeholder="تعديل عن الموقع" value={aboutInput} onChange={(e) => setAboutInput(e.target.value)} style={{ height: 80 }} />
+                    <textarea className="admin-input" placeholder="تعديل النبذة التعريفية" value={bioInput} onChange={(e) => setBioInput(e.target.value)} style={{ height: 80 }} />
+                    <button className="admin-btn" onClick={saveSettings}>حفظ الإعدادات</button>
+                  </div>
+
+                  {/* إضافة مقال */}
+                  <div className="admin-section">
+                    <h3>إضافة مقال</h3>
+                    <input className="admin-input" type="text" placeholder="عنوان المقال" value={artTitle} onChange={(e) => setArtTitle(e.target.value)} />
+                    <textarea className="admin-input" placeholder="محتوى المقال" value={artContent} onChange={(e) => setArtContent(e.target.value)} style={{ height: 200 }} />
+                    <div style={{ marginBottom: 14 }}>
+                      <label style={{ color: "#a5a5a5", fontSize: ".9rem", display: "block", marginBottom: 6 }}>صورة المقال</label>
+                      <input className="admin-input" type="file" accept="image/*" onChange={(e) => setArtImageFile(e.target.files[0])} />
+                    </div>
+                    <select className="admin-input" value={artPrivate ? "true" : "false"} onChange={(e) => setArtPrivate(e.target.value === "true")}>
+                      <option value="false">مقال عام</option>
+                      <option value="true">مقال برايفيت</option>
+                    </select>
+                    <button className="admin-btn" onClick={publishArticle}>نشر المقال</button>
+                  </div>
+
+                  {/* إدارة المقالات */}
+                  <div className="admin-section">
+                    <h3>تعديل وحذف المقالات</h3>
+                    {data.articles.map((article) => (
+                      <div className="art-manage" key={article.id}>
+                        <h4>{article.title}</h4>
+                        <div className="art-status">{article.private ? "برايفيت" : "عام"} — {article.reads} قراءة</div>
+                        <button className="admin-btn" onClick={() => editArticle(article.id)}>تعديل</button>
+                        <button className="admin-btn" style={{ background: "#c0392b" }} onClick={() => deleteArticle(article.id)}>حذف</button>
+                        <button className="admin-btn" style={{ background: "#444" }} onClick={() => togglePrivate(article.id)}>{article.private ? "جعله عام" : "جعله برايفيت"}</button>
+                      </div>
+                    ))}
+                  </div>
+
+                  {success && <div className="success">تم الحفظ بنجاح ✓</div>}
+                </>
+              )}
+            </div>
+          </div>
+        )}
       </div>
-
-    </div>`;
-  });
+    </>
+  );
 }
-
-function filterArticles(){
-
-  const value = document.getElementById('searchInput').value.toLowerCase();
-
-  const cards = document.querySelectorAll('.article-card');
-
-  cards.forEach(card=>{
-
-    const text = card.innerText.toLowerCase();
-
-    card.style.display = text.includes(value) ? 'flex' : 'none';
-  });
-}
-
-let clicks = 0;
-
-secretLogo.onclick = ()=>{
-
-  clicks++;
-
-  if(clicks === 3){
-    adminPanel.classList.add('active');
-    clicks = 0;
-  }
-
-  setTimeout(()=>{
-    clicks = 0;
-  },1500);
-}
-
-window.onclick = (e)=>{
-  if(e.target.id === 'adminPanel'){
-    adminPanel.classList.remove('active');
-  }
-}
-
-function loginAdmin(){
-
-  if(adminPassword.value === siteData.password){
-    adminContent.style.display = 'block';
-  }else{
-    alert('كلمة المرور غير صحيحة');
-  }
-}
-
-avatarUpload.addEventListener('change', function(){
-
-  const file = this.files[0];
-
-  if(!file) return;
-
-  compressImage(file,400,.75,function(data){
-
-    siteData.avatar = data;
-
-    avatarFrame.innerHTML = `<img src="${data}">`;
-
-    saveData();
-  });
-});
-
-function saveSettings(){
-  alert('تم حفظ الإعدادات ✓');
-}
-
-function publishArticle(){
-
-  const title = articleTitle.value;
-  const content = articleContent.value;
-  const imageFile = articleImage.files[0];
-
-  if(!title || !content || !imageFile){
-    alert('اكمل البيانات');
-    return;
-  }
-
-  compressImage(imageFile,900,.75,function(data){
-
-    siteData.articles.unshift({
-      title,
-      content,
-      image:data,
-      date:new Date().toLocaleDateString('ar-EG')
-    });
-
-    saveData();
-    renderArticles();
-
-    articleTitle.value='';
-    articleContent.value='';
-    articleImage.value='';
-  });
-}
-
-renderArticles();
-setLanguage('ar');
-
-</script>
-
-</body>
-</html>
-```
-
-# مهم
-
-* اسم اللوجو لازم يكون:
-
-```html
-logo.png
-```
-
-* وتحطه جنب ملف الـ HTML مباشرة.
-* اللوجو لازم يكون PNG بخلفية شفافة.
