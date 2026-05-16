@@ -354,7 +354,95 @@ footer{ border-top:1px solid var(--border); padding:35px 6%; text-align:center; 
 .confirm-box-btns{ display:flex; gap:10px; }
 .confirm-box-btns button{ flex:1; }
 
-@media(max-width:900px){
+/* QURAN VERSE BANNER */
+.quran-banner{
+  text-align:center; padding:22px 6%;
+  background:linear-gradient(135deg,rgba(201,168,76,.07),rgba(201,168,76,.03));
+  border-top:1px solid rgba(201,168,76,.15);
+  border-bottom:1px solid rgba(201,168,76,.15);
+  display:flex; align-items:center; justify-content:center; gap:14px;
+}
+.quran-text{
+  font-family:'Amiri',serif; font-size:1.65rem; color:var(--gold);
+  letter-spacing:.04em; line-height:1.8;
+}
+.quran-bracket{
+  font-family:'Amiri',serif; font-size:2.2rem; color:rgba(201,168,76,.55); line-height:1;
+}
+
+/* READER AUTHOR BAR */
+.reader-author-bar{
+  display:flex; align-items:center; gap:14px;
+  margin-bottom:30px; padding:16px 20px;
+  background:rgba(201,168,76,.06); border:1px solid rgba(201,168,76,.15);
+  border-radius:14px; flex-wrap:wrap;
+}
+.reader-author-avatar{
+  width:52px; height:52px; border-radius:50%; overflow:hidden;
+  border:2px solid var(--gold); flex-shrink:0; background:#222;
+  display:flex; align-items:center; justify-content:center;
+}
+.reader-author-avatar img{ width:100%; height:100%; object-fit:cover; }
+.reader-author-info{ display:flex; flex-direction:column; gap:4px; flex:1; }
+.reader-author-name{
+  display:flex; align-items:center; gap:7px;
+  font-weight:700; font-size:1.05rem;
+}
+.verified-badge{
+  width:20px; height:20px; background:var(--gold); border-radius:50%;
+  display:inline-flex; align-items:center; justify-content:center;
+  font-size:.7rem; color:#111; flex-shrink:0;
+}
+.reader-author-meta{
+  display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+  font-size:.88rem; color:var(--muted);
+}
+.reader-author-meta span{ display:flex; align-items:center; gap:5px; }
+
+/* LIKE/DISLIKE */
+.reader-reactions{
+  display:flex; align-items:center; gap:14px;
+  margin-top:40px; padding:22px 0;
+  border-top:1px solid var(--border);
+}
+.reaction-btn{
+  display:flex; align-items:center; gap:9px;
+  padding:11px 22px; border-radius:30px; border:1px solid var(--border);
+  background:transparent; color:var(--text); cursor:pointer;
+  font-family:'Cairo',sans-serif; font-size:1rem; font-weight:600;
+  transition:.25s; user-select:none;
+}
+.reaction-btn:hover{ border-color:rgba(201,168,76,.5); background:rgba(201,168,76,.07); }
+.reaction-btn.liked{ background:rgba(76,175,125,.12); border-color:var(--green); color:var(--green); }
+.reaction-btn.disliked{ background:rgba(224,85,85,.1); border-color:var(--red); color:var(--red); }
+.reaction-btn svg{ width:20px; height:20px; }
+.reactions-label{ color:var(--muted); font-size:.9rem; margin-right:4px; }
+
+/* READER SHARE AREA */
+.reader-share-area{
+  display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+  margin-top:22px; padding:18px 20px;
+  background:#141414; border:1px solid var(--border); border-radius:14px;
+}
+.reader-share-area .share-label{
+  color:var(--muted); font-size:.9rem; white-space:nowrap;
+}
+.share-copy-btn{
+  display:inline-flex; align-items:center; gap:8px;
+  background:var(--gold); color:#111; border:none;
+  padding:10px 20px; border-radius:10px; font-weight:700; cursor:pointer;
+  font-family:'Cairo',sans-serif; font-size:.95rem; transition:.2s;
+}
+.share-copy-btn:hover{ opacity:.88; }
+.share-native-btn{
+  display:inline-flex; align-items:center; gap:8px;
+  background:transparent; color:var(--gold); border:1px solid rgba(201,168,76,.4);
+  padding:10px 20px; border-radius:10px; font-weight:700; cursor:pointer;
+  font-family:'Cairo',sans-serif; font-size:.95rem; transition:.2s;
+}
+.share-native-btn:hover{ background:rgba(201,168,76,.07); }
+
+
   .article-card{ flex-direction:column; }
   .article-thumb{ width:100%; min-width:100%; }
   .hero-name{ font-size:2.6rem; }
@@ -449,6 +537,13 @@ footer{ border-top:1px solid var(--border); padding:35px 6%; text-align:center; 
   <p class="hero-bio" id="heroBio">كاتب ومفكر يرصد العالم بعيون النقد</p>
 </section>
 
+<!-- QURAN VERSE BANNER -->
+<div class="quran-banner">
+  <span class="quran-bracket">﴿</span>
+  <span class="quran-text">وَقُولُوا لِلنَّاسِ حُسْنًا</span>
+  <span class="quran-bracket">﴾</span>
+</div>
+
 <section class="about" id="about">
   <h2 id="aboutTitle">عن الموقع</h2>
   <p id="aboutText">هذا الموقع فضاء نقدي خاص</p>
@@ -470,10 +565,52 @@ footer{ border-top:1px solid var(--border); padding:35px 6%; text-align:center; 
   <button class="reader-close" onclick="closeReader()">×</button>
   <div class="reader-container">
     <h1 class="reader-title" id="readerTitle"></h1>
-    <div class="reader-date" id="readerDate"></div>
+
+    <!-- AUTHOR BAR -->
+    <div class="reader-author-bar">
+      <div class="reader-author-avatar" id="readerAuthorAvatar">
+        <span style="font-size:1.5rem;color:var(--gold)">أ</span>
+      </div>
+      <div class="reader-author-info">
+        <div class="reader-author-name">
+          أحمد بالي
+          <span class="verified-badge" title="حساب موثق">✓</span>
+        </div>
+        <div class="reader-author-meta">
+          <span>📅 <span id="readerDate"></span></span>
+          <span>👁️ <span id="readerReadsCount">٠</span> قارئ</span>
+        </div>
+      </div>
+    </div>
+
     <div class="reader-content" id="readerContent"></div>
     <div id="externalHolder"></div>
-    <div><button class="share-btn" onclick="shareArticle()" id="shareBtn">مشاركة المقال</button></div>
+
+    <!-- LIKE / DISLIKE -->
+    <div class="reader-reactions">
+      <span class="reactions-label">هل أعجبك المقال؟</span>
+      <button class="reaction-btn" id="likeBtn" onclick="handleReaction('like')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+        <span id="likeCount">٠</span>
+      </button>
+      <button class="reaction-btn" id="dislikeBtn" onclick="handleReaction('dislike')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3H10z"/><path d="M17 2h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>
+      </button>
+    </div>
+
+    <!-- SHARE AREA -->
+    <div class="reader-share-area">
+      <span class="share-label">مشاركة المقال:</span>
+      <button class="share-copy-btn" onclick="copyArticleLink()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        نسخ الرابط
+      </button>
+      <button class="share-native-btn" onclick="shareArticle()" id="shareBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        مشاركة
+      </button>
+    </div>
+
   </div>
 </div>
 
@@ -652,33 +789,118 @@ waitForFirebase(()=>{
 
   window.filterArticles = ()=> renderArticles(window._siteData || {});
 
+  /* ---- IP FINGERPRINT ---- */
+  function getVisitorId(){
+    let id = localStorage.getItem("_vid");
+    if(!id){
+      id = "v_" + Math.random().toString(36).slice(2) + Date.now().toString(36);
+      localStorage.setItem("_vid", id);
+    }
+    return id;
+  }
+
+  window._currentArticleKey = null;
+
   window.openArticle = async function(key){
     const snap = await get(ref(db,`site/articles/${key}`));
     if(!snap.exists()) return;
     const a = snap.val();
     await update(ref(db,`site/articles/${key}`),{ reads:(a.reads||0)+1 });
+    window._currentArticleKey = key;
     window.currentArticleLink = window.location.href.split("#")[0] + "#article-" + key;
     document.getElementById("readerTitle").innerText = a.title;
     document.getElementById("readerDate").innerText = a.date;
+    document.getElementById("readerReadsCount").innerText = toArabicNum((a.reads||0)+1);
     document.getElementById("readerContent").innerText = a.content;
+
+    // sync author avatar
+    const av = (window._siteData||{}).avatarUrl;
+    const avEl = document.getElementById("readerAuthorAvatar");
+    avEl.innerHTML = av
+      ? `<img src="${av}">`
+      : `<span style="font-size:1.5rem;color:var(--gold)">أ</span>`;
+
     const holder = document.getElementById("externalHolder");
     holder.innerHTML = a.externalLink
       ? `<a class="external-link" href="${a.externalLink}" target="_blank">${window.langData[window.currentLang].critic}</a>`
       : "";
-    document.getElementById("shareBtn").innerText = window.langData[window.currentLang].share;
+
+    // reset reactions UI
+    document.getElementById("likeBtn").className = "reaction-btn";
+    document.getElementById("dislikeBtn").className = "reaction-btn";
+    document.getElementById("likeCount").innerText = toArabicNum(a.likes || 0);
+
+    // check visitor's existing vote
+    const vid = getVisitorId();
+    const voteSnap = await get(ref(db,`site/articles/${key}/voters/${vid}`));
+    if(voteSnap.exists()){
+      const v = voteSnap.val();
+      if(v === "like") document.getElementById("likeBtn").className = "reaction-btn liked";
+      if(v === "dislike") document.getElementById("dislikeBtn").className = "reaction-btn disliked";
+    }
+
     document.getElementById("readerPage").classList.add("active");
     window.scrollTo(0,0);
   };
 
-  window.closeReader = ()=> document.getElementById("readerPage").classList.remove("active");
+  function toArabicNum(n){
+    return String(n).replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[d]);
+  }
+
+  window.handleReaction = async function(type){
+    const key = window._currentArticleKey;
+    if(!key) return;
+    const vid = getVisitorId();
+    const voteRef = ref(db,`site/articles/${key}/voters/${vid}`);
+    const artRef  = ref(db,`site/articles/${key}`);
+    const voteSnap = await get(voteRef);
+    const artSnap  = await get(artRef);
+    const a = artSnap.val();
+    let likes    = a.likes    || 0;
+    let dislikes = a.dislikes || 0;
+
+    const prev = voteSnap.exists() ? voteSnap.val() : null;
+
+    if(prev === type){
+      // toggle off
+      if(type==="like") likes = Math.max(0, likes-1);
+      else dislikes = Math.max(0, dislikes-1);
+      await remove(voteRef);
+      await update(artRef,{likes,dislikes});
+      document.getElementById("likeBtn").className = "reaction-btn";
+      document.getElementById("dislikeBtn").className = "reaction-btn";
+    } else {
+      // switch or new
+      if(prev==="like") likes = Math.max(0, likes-1);
+      if(prev==="dislike") dislikes = Math.max(0, dislikes-1);
+      if(type==="like") likes++;
+      else dislikes++;
+      await set(voteRef, type);
+      await update(artRef,{likes,dislikes});
+      document.getElementById("likeBtn").className = "reaction-btn" + (type==="like"?" liked":"");
+      document.getElementById("dislikeBtn").className = "reaction-btn" + (type==="dislike"?" disliked":"");
+    }
+    document.getElementById("likeCount").innerText = toArabicNum(likes);
+  };
+
+  window.closeReader = ()=>{
+    document.getElementById("readerPage").classList.remove("active");
+    window._currentArticleKey = null;
+  };
 
   window.shareArticle = async function(){
+    const title = document.getElementById("readerTitle").innerText;
     if(navigator.share){
-      await navigator.share({ title: document.getElementById("readerTitle").innerText, url: window.currentArticleLink });
+      await navigator.share({ title, url: window.currentArticleLink });
     } else {
       navigator.clipboard.writeText(window.currentArticleLink);
-      alert("تم نسخ رابط المقال");
+      showToast("✅ تم نسخ الرابط");
     }
+  };
+
+  window.copyArticleLink = function(){
+    navigator.clipboard.writeText(window.currentArticleLink);
+    showToast("✅ تم نسخ رابط المقال");
   };
 
   /* ---- ADMIN ---- */
