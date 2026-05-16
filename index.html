@@ -901,7 +901,7 @@ body.light-mode .mobile-menu{ background:rgba(245,240,232,.98); }
   <h1 class="hero-name">أحمد بالي</h1>
   <div class="hero-subtitle" id="heroSubtitle">مخرج وروائي وسيناريست وناقد فني مصري</div>
   <div class="hero-tagline" id="heroTagline"></div>
-  <p class="hero-bio" id="heroBio">كاتب ومفكر يرصد العالم بعيون النقد</p>
+  <p class="hero-bio" id="heroBio"></p>
 
   <div class="hero-search">
     <input type="text" id="searchInput" placeholder="ابحث في المقالات..." oninput="filterArticles()" />
@@ -1076,12 +1076,12 @@ body.light-mode .mobile-menu{ background:rgba(245,240,232,.98); }
       <div class="form-group"><label>القسم</label>
         <select class="fi" id="newCategory" style="background:#161616;color:#fff;border:1px solid var(--border);border-radius:11px;padding:13px 15px;width:100%;font-family:'Cairo',sans-serif;outline:none;">
           <option value="">— بدون قسم —</option>
-          <option value="books">الكتب والأدب</option>
-          <option value="society">المجتمع والسياسة</option>
-          <option value="art">الفن</option>
-          <option value="cinema">السينما والأدب</option>
-          <option value="thought">الفكر والثقافة</option>
-          <option value="figures">شخصيات ورؤى</option>
+          <option value="books">أدبي</option>
+          <option value="society">مجتمعي</option>
+          <option value="art">فني</option>
+          <option value="cinema">سينمائي</option>
+          <option value="thought">فكري وثقافي</option>
+          <option value="figures">شخصيات</option>
         </select>
       </div>
       <div class="form-group"><label>محتوى المقال *</label><textarea id="newContent" placeholder="اكتب المقال هنا..."></textarea></div>
@@ -1146,12 +1146,14 @@ waitForFirebase(()=>{
     if(!id) return "";
     const lang=window.currentLang;
     const CATEGORIES=[
-      {id:"books",ar:"الكتب والأدب",en:"Books & Literature"},
-      {id:"society",ar:"المجتمع والسياسة",en:"Society & Politics"},
-      {id:"art",ar:"الفن",en:"Art"},
-      {id:"cinema",ar:"السينما والأدب",en:"Cinema & Literature"},
-      {id:"thought",ar:"الفكر والثقافة",en:"Thought & Culture"},
-      {id:"figures",ar:"شخصيات ورؤى",en:"Figures & Visions"},
+      [
+  {id:"literary", ar:"أدبي", en:"Literary"},
+  {id:"social", ar:"مجتمعي", en:"Social"},
+  {id:"artistic", ar:"فني", en:"Artistic"},
+  {id:"cinematic", ar:"سينمائي", en:"Cinematic"},
+  {id:"intellectual", ar:"فكري وثقافي", en:"Intellectual & Cultural"},
+  {id:"figures", ar:"شخصيات", en:"Figures"}
+]
     ];
     const c=CATEGORIES.find(x=>x.id===id);
     return c?c[lang]:"";
