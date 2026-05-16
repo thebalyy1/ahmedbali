@@ -713,12 +713,12 @@ body.light-mode .hero-bio{ color:#5a4a2a; }
 /* ─── HAMBURGER MENU ─────────────────── */
 .hamburger{
   display:none; flex-direction:column; justify-content:center; gap:5px;
-  width:36px; height:36px; border-radius:10px; border:1px solid var(--border);
-  background:transparent; cursor:pointer; padding:8px; transition:.2s;
+  width:36px; height:36px; min-width:36px; border-radius:10px; border:1px solid var(--border);
+  background:transparent; cursor:pointer; padding:9px 8px; transition:.2s; flex-shrink:0;
 }
 .hamburger:hover{ border-color:var(--border2); }
 .hamburger span{
-  display:block; height:2px; background:var(--text);
+  display:block; height:2px; width:100%; background:var(--text);
   border-radius:2px; transition:.3s;
 }
 .hamburger.open span:nth-child(1){ transform:translateY(7px) rotate(45deg); }
@@ -758,6 +758,8 @@ body.light-mode .mobile-menu{ background:rgba(245,240,232,.98); }
   nav{ padding:0 4%; }
   .nav-links{ display:none; }
   .hamburger{ display:flex; }
+  .nav-search-btn{ display:none; }
+  .lang-btn{ padding:6px 10px; font-size:.78rem; }
   footer{ flex-direction:column; text-align:center; }
 }
 </style>
@@ -898,7 +900,7 @@ body.light-mode .mobile-menu{ background:rgba(245,240,232,.98); }
 
   <h1 class="hero-name">أحمد بالي</h1>
   <div class="hero-subtitle" id="heroSubtitle">مخرج وروائي وسيناريست وناقد فني مصري</div>
-  <div class="hero-tagline" id="heroTagline"></div>
+  <div class="hero-tagline" id="heroTagline">"نقد لا يهدم.. بل نضي"</div>
   <p class="hero-bio" id="heroBio">كاتب ومفكر يرصد العالم بعيون النقد</p>
 
   <div class="hero-search">
