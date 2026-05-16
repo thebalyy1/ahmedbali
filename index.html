@@ -37,15 +37,21 @@ window.langData = {
     about:"عن الموقع", articles:"المقالات",
     search:"ابحث عن المقالات...", read:"قراءة المقال →",
     noArticles:"لا توجد مقالات", loading:"جاري تحميل المقالات...",
-    share:"مشاركة المقال", critic:"مشاهدة الرابط",
-    hero:"مخرج وروائي وسيناريست وناقد فني مصري"
+    share:"مشاركة", critic:"مشاهدة الرابط",
+    hero:"مخرج وروائي وسيناريست وناقد فني مصري",
+    readers:"قارئ", reactionsLabel:"هل أعجبك المقال؟",
+    copyLink:"نسخ الرابط", shareLabel:"مشاركة المقال:",
+    copiedToast:"✅ تم نسخ رابط المقال"
   },
   en:{
     about:"About", articles:"Articles",
     search:"Search articles...", read:"Read Article →",
     noArticles:"No articles found", loading:"Loading articles...",
-    share:"Share Article", critic:"Open Link",
-    hero:"Egyptian Director, Novelist, Screenwriter & Critic"
+    share:"Share", critic:"Open Link",
+    hero:"Egyptian Director, Novelist, Screenwriter & Critic",
+    readers:"readers", reactionsLabel:"Did you enjoy this article?",
+    copyLink:"Copy Link", shareLabel:"Share article:",
+    copiedToast:"✅ Link copied"
   }
 };
 
@@ -60,6 +66,18 @@ function applyLanguage(){
   document.getElementById("searchInput").placeholder = t.search;
   document.getElementById("heroTitle").innerText = t.hero;
   document.getElementById("langBtn").innerText = window.currentLang === "ar" ? "EN" : "AR";
+  // update reader UI strings
+  const t2 = window.langData[window.currentLang];
+  const rl = document.querySelector(".reactions-label");
+  if(rl) rl.innerText = t2.reactionsLabel;
+  const sl = document.querySelector(".share-label");
+  if(sl) sl.innerText = t2.shareLabel;
+  const cb = document.querySelector(".share-copy-btn");
+  if(cb){ const svg = cb.querySelector("svg"); cb.innerHTML = ""; if(svg) cb.appendChild(svg); cb.appendChild(document.createTextNode(" " + t2.copyLink)); }
+  const nb = document.getElementById("shareBtn");
+  if(nb){ const svg2 = nb.querySelector("svg"); nb.innerHTML = ""; if(svg2) nb.appendChild(svg2); nb.appendChild(document.createTextNode(" " + t2.share)); }
+  const readsSpan = document.getElementById("readerReadsSpan");
+  if(readsSpan) readsSpan.innerText = t2.readers;
   if(window.renderSite) window.renderSite(window._siteData || {});
 }
 
@@ -577,8 +595,8 @@ footer{ border-top:1px solid var(--border); padding:35px 6%; text-align:center; 
           <span class="verified-badge" title="حساب موثق">✓</span>
         </div>
         <div class="reader-author-meta">
-          <span>📅 <span id="readerDate"></span></span>
-          <span>👁️ <span id="readerReadsCount">٠</span> قارئ</span>
+          <span><span id="readerDate"></span></span>
+          <span><span id="readerReadsCount">٠</span> <span id="readerReadsSpan">قارئ</span></span>
         </div>
       </div>
     </div>
@@ -811,6 +829,8 @@ waitForFirebase(()=>{
     document.getElementById("readerTitle").innerText = a.title;
     document.getElementById("readerDate").innerText = a.date;
     document.getElementById("readerReadsCount").innerText = toArabicNum((a.reads||0)+1);
+    const rsp = document.getElementById("readerReadsSpan");
+    if(rsp) rsp.innerText = window.langData[window.currentLang].readers;
     document.getElementById("readerContent").innerText = a.content;
 
     // sync author avatar
@@ -826,6 +846,10 @@ waitForFirebase(()=>{
       : "";
 
     // reset reactions UI
+    const rlOpen = document.querySelector(".reactions-label");
+    if(rlOpen) rlOpen.innerText = window.langData[window.currentLang].reactionsLabel;
+    const slOpen = document.querySelector(".share-label");
+    if(slOpen) slOpen.innerText = window.langData[window.currentLang].shareLabel;
     document.getElementById("likeBtn").className = "reaction-btn";
     document.getElementById("dislikeBtn").className = "reaction-btn";
     document.getElementById("likeCount").innerText = toArabicNum(a.likes || 0);
@@ -900,7 +924,7 @@ waitForFirebase(()=>{
 
   window.copyArticleLink = function(){
     navigator.clipboard.writeText(window.currentArticleLink);
-    showToast("✅ تم نسخ رابط المقال");
+    showToast(window.langData[window.currentLang].copiedToast);
   };
 
   /* ---- ADMIN ---- */
