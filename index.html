@@ -38,7 +38,7 @@ window.langData = {
     search:"ابحث في المقالات...", read:"قراءة المقال →",
     noArticles:"لا توجد مقالات", loading:"جاري تحميل المقالات...",
     share:"مشاركة", critic:"مشاهدة الرابط",
-    hero:"كاتب و روائي و ناقد فني مصري",
+    hero:"كاتب مصري",
     readers:"قارئ", reactionsLabel:"هل أعجبك المقال؟",
     copyLink:"نسخ الرابط", shareLabel:"مشاركة المقال:",
     copiedToast:"✅ تم نسخ رابط المقال",
@@ -68,7 +68,7 @@ const CATEGORIES = [
   { id:"society", ar:"المجتمع", en:"Society",  icon:"" },
   { id:"art",     ar:"الفن",             en:"Art",                 icon:"" },
   { id:"cinema",  ar:"السينما",   en:"Cinema", icon:"" },
-  { id:"thought", ar:"الفكر و الثقافة",   en:"Thought & Culture",  icon:"" },
+  { id:"thought", ar:"الفكر والثقافة",   en:"Thought & Culture",  icon:"" },
   { id:"figures", ar:"شخصيات",      en:"Figures",  icon:"" },
 ];
 
@@ -856,7 +856,7 @@ body.light-mode .mobile-menu{ background:rgba(245,240,232,.98); }
         <option value="society">المجتمع</option>
         <option value="art">الفن</option>
         <option value="cinema">السينما</option>
-        <option value="thought">الفكر و الثقافة</option>
+        <option value="thought">الفكر والثقافة</option>
         <option value="figures">شخصيات</option>
       </select>
     </div>
@@ -954,7 +954,7 @@ body.light-mode .mobile-menu{ background:rgba(245,240,232,.98); }
   </div>
 
   <h1 class="hero-name">أحمد بالي</h1>
-  <div class="hero-subtitle" id="heroSubtitle">;كاتب و روائي و ناقد فني مصري</div>
+  <div class="hero-subtitle" id="heroSubtitle">كاتب مصري</div>
   <div class="hero-tagline" id="heroTagline"></div>
   <p class="hero-bio" id="heroBio"></p>
 
@@ -1074,7 +1074,7 @@ body.light-mode .mobile-menu{ background:rgba(245,240,232,.98); }
           <span style="font-size:1.6rem;color:var(--gold)">أ</span>
         </div>
         <div class="sidebar-author-name">أحمد بالي</div>
-        <div class="sidebar-author-bio" id="sidebarBio"></div>
+        <div class="sidebar-author-bio" id="sidebarBio">أنا أحمد محمد بالي، شغوف بمجال الإخراج السينمائي والكتابة الأدبية بمختلف أشكالها، بما في ذلك الرواية والسيناريو والشعر. لديّ مجموعة من القصائد والمقالات التي لم تُنشر بعد، وأعمل حاليًا على تأليف رواية بجانب دراستي لعلوم الحاسب.</div>
         <div class="sidebar-social">
           <a href="https://www.instagram.com/thebalyy" target="_blank" title="Instagram">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
@@ -1113,7 +1113,7 @@ body.light-mode .mobile-menu{ background:rgba(245,240,232,.98); }
     </div>
 
     <div class="contact-name">أحمد بالي</div>
-    <div class="contact-role">كاتب و روائي و ناقد فني مصري</div>
+    <div class="contact-role">كاتب مصري</div>
     <div class="contact-divider"></div>
     <div class="contact-label">تواصل معي عبر</div>
 
@@ -1182,12 +1182,12 @@ body.light-mode .mobile-menu{ background:rgba(245,240,232,.98); }
       <div class="form-group"><label>القسم</label>
         <select class="fi" id="newCategory" style="background:#161616;color:#fff;border:1px solid var(--border);border-radius:11px;padding:13px 15px;width:100%;font-family:'Cairo',sans-serif;outline:none;">
           <option value="">— بدون قسم —</option>
-          <option value="books">الكتب والأدب</option>
-          <option value="society">المجتمع والسياسة</option>
+          <option value="books">الأدب</option>
+          <option value="society">المجتمع</option>
           <option value="art">الفن</option>
-          <option value="cinema">السينما والأدب</option>
+          <option value="cinema">السينما</option>
           <option value="thought">الفكر والثقافة</option>
-          <option value="figures">شخصيات ورؤى</option>
+          <option value="figures">شخصيات</option>
         </select>
       </div>
       <div class="form-group"><label>محتوى المقال *</label><textarea id="newContent" placeholder="اكتب المقال هنا..."></textarea></div>
@@ -1288,7 +1288,6 @@ waitForFirebase(()=>{
   window.renderSite = function(data){
     document.getElementById("aboutText").innerText = data.about||"";
     document.getElementById("heroBio").innerText = data.bio||"";
-    document.getElementById("sidebarBio").innerText = data.bio||"";
     if(data.avatarUrl){
       document.getElementById("avatarFrame").innerHTML=`<img src="${data.avatarUrl}">`;
       document.getElementById("sidebarAvatar").innerHTML=`<img src="${data.avatarUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
