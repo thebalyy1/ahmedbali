@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>الكاتب أحمد بالي</title>
+<title>أحمد بالي — مقالات نقدية</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -710,6 +710,36 @@ body.light-mode .admin-nav{ background:#e5dfd4; }
 body.light-mode .reader-content{ color:#2a2010; }
 body.light-mode .hero-bio{ color:#5a4a2a; }
 
+/* ─── HAMBURGER MENU ─────────────────── */
+.hamburger{
+  display:none; flex-direction:column; justify-content:center; gap:5px;
+  width:36px; height:36px; border-radius:10px; border:1px solid var(--border);
+  background:transparent; cursor:pointer; padding:8px; transition:.2s;
+}
+.hamburger:hover{ border-color:var(--border2); }
+.hamburger span{
+  display:block; height:2px; background:var(--text);
+  border-radius:2px; transition:.3s;
+}
+.hamburger.open span:nth-child(1){ transform:translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2){ opacity:0; }
+.hamburger.open span:nth-child(3){ transform:translateY(-7px) rotate(-45deg); }
+
+.mobile-menu{
+  display:none; position:fixed; top:64px; left:0; right:0;
+  background:rgba(13,13,13,.98); backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border); z-index:998;
+  flex-direction:column; padding:12px 5% 20px;
+}
+.mobile-menu.open{ display:flex; }
+body.light-mode .mobile-menu{ background:rgba(245,240,232,.98); }
+.mobile-menu .nav-link{
+  padding:13px 8px; font-size:1rem; border-bottom:1px solid var(--border);
+  color:var(--muted); display:block;
+}
+.mobile-menu .nav-link:last-child{ border-bottom:none; }
+.mobile-menu .nav-link:hover{ color:var(--gold); }
+
 /* ─── RESPONSIVE ─────────────────────── */
 @media(max-width:900px){
   .reader-layout{ grid-template-columns:1fr; }
@@ -726,7 +756,8 @@ body.light-mode .hero-bio{ color:#5a4a2a; }
   .hero-quran{ font-size:1.5rem; }
   .reader-title{ font-size:1.8rem; }
   nav{ padding:0 4%; }
-  .nav-links .nav-link:not(:last-child){ display:none; }
+  .nav-links{ display:none; }
+  .hamburger{ display:flex; }
   footer{ flex-direction:column; text-align:center; }
 }
 </style>
@@ -822,8 +853,20 @@ body.light-mode .hero-bio{ color:#5a4a2a; }
     </button>
     <button class="theme-toggle" id="themeToggleBtn" title="تبديل المظهر" onclick="toggleTheme()">🌙</button>
     <button class="lang-btn" id="langBtn" onclick="toggleLanguage()">EN</button>
+    <button class="hamburger" id="hamburgerBtn" onclick="toggleMobileMenu()" aria-label="القائمة">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a class="nav-link" href="#" onclick="closeMobileMenu();scrollTo(0,0)">الرئيسية</a>
+  <a class="nav-link" href="#articles" onclick="closeMobileMenu()">المقالات</a>
+  <a class="nav-link" href="#categories" onclick="closeMobileMenu()">الأقسام</a>
+  <a class="nav-link" href="#about" onclick="closeMobileMenu()">عن أحمد بالي</a>
+  <a class="nav-link" href="https://www.instagram.com/thebalyy" target="_blank" onclick="closeMobileMenu()">تواصل معي</a>
+</div>
 
 <!-- Social Sidebar -->
 <div class="social-sidebar">
@@ -855,7 +898,7 @@ body.light-mode .hero-bio{ color:#5a4a2a; }
 
   <h1 class="hero-name">أحمد بالي</h1>
   <div class="hero-subtitle" id="heroSubtitle">مخرج وروائي وسيناريست وناقد فني مصري</div>
-  <div class="hero-tagline" id="heroTagline"></div>
+  <div class="hero-tagline" id="heroTagline">"نقد لا يهدم.. بل نضي"</div>
   <p class="hero-bio" id="heroBio">كاتب ومفكر يرصد العالم بعيون النقد</p>
 
   <div class="hero-search">
@@ -1501,6 +1544,28 @@ waitForFirebase(()=>{
   };
 
   window._openAdmin=openAdmin;
+});
+</script>
+
+<script>
+/* HAMBURGER MENU */
+window.toggleMobileMenu = function(){
+  const menu = document.getElementById("mobileMenu");
+  const btn = document.getElementById("hamburgerBtn");
+  menu.classList.toggle("open");
+  btn.classList.toggle("open");
+};
+window.closeMobileMenu = function(){
+  document.getElementById("mobileMenu").classList.remove("open");
+  document.getElementById("hamburgerBtn").classList.remove("open");
+};
+// Close on outside click
+document.addEventListener("click", function(e){
+  const menu = document.getElementById("mobileMenu");
+  const btn = document.getElementById("hamburgerBtn");
+  if(menu.classList.contains("open") && !menu.contains(e.target) && !btn.contains(e.target)){
+    closeMobileMenu();
+  }
 });
 </script>
 
