@@ -1381,6 +1381,9 @@ waitForFirebase(()=>{
     window._currentArticleKey=key;
     window.currentArticleLink=window.location.href.split("#")[0]+"#article-"+key;
 
+    // ── push hash to URL so sharing works ──
+    history.pushState({article:key}, "", "#article-"+key);
+
     document.getElementById("readerTitle").innerText=a.title;
     document.getElementById("readerDate").innerText=a.date;
     document.getElementById("readerDateInBar").innerText=a.date;
@@ -1484,6 +1487,7 @@ waitForFirebase(()=>{
   window.closeReader=()=>{
     document.getElementById("readerPage").classList.remove("active");
     window._currentArticleKey=null;
+    history.pushState({}, "", window.location.pathname);
   };
 
   window.shareArticle=async function(){
@@ -1652,6 +1656,37 @@ waitForFirebase(()=>{
   };
 
   window._openAdmin=openAdmin;
+
+  // ── Open article from URL hash on load ──
+  function checkHashOnLoad(){
+    const hash = window.location.hash;
+    if(hash && hash.startsWith("#article-")){
+      const key = hash.replace("#article-","");
+      if(key) window.openArticle(key);
+    }
+  }
+
+  // Wait for Firebase data then check hash
+  const _origRenderSite = window.renderSite;
+  window.renderSite = function(data){
+    _origRenderSite(data);
+    if(!window._hashChecked){
+      window._hashChecked = true;
+      checkHashOnLoad();
+    }
+  };
+
+  // Browser back/forward button support
+  window.addEventListener("popstate", function(e){
+    const hash = window.location.hash;
+    if(hash && hash.startsWith("#article-")){
+      const key = hash.replace("#article-","");
+      if(key) window.openArticle(key);
+    } else {
+      document.getElementById("readerPage").classList.remove("active");
+      window._currentArticleKey = null;
+    }
+  });
 });
 </script>
 
