@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>أحمد بالي — مقالات نقدية</title>
+<title>أحمد بالي</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -64,12 +64,12 @@ window.langData = {
 };
 
 const CATEGORIES = [
-  { id:"books",   ar:"الكتب والأدب",    en:"Books & Literature", icon:"" },
-  { id:"society", ar:"المجتمع والسياسة", en:"Society & Politics",  icon:"" },
+  { id:"books",   ar:"الأدب",    en:"Literature", icon:"" },
+  { id:"society", ar:"المجتمع", en:"Society",  icon:"" },
   { id:"art",     ar:"الفن",             en:"Art",                 icon:"" },
-  { id:"cinema",  ar:"السينما والأدب",   en:"Cinema & Literature", icon:"" },
-  { id:"thought", ar:"الفكر والثقافة",   en:"Thought & Culture",  icon:"" },
-  { id:"figures", ar:"شخصيات ورؤى",      en:"Figures & Visions",  icon:"" },
+  { id:"cinema",  ar:"السينما",   en:"Cinema", icon:"" },
+  { id:"thought", ar:"الفكر و الثقافة",   en:"Thought & Culture",  icon:"" },
+  { id:"figures", ar:"شخصيات",      en:"Figures",  icon:"" },
 ];
 
 window._activeCategory = null;
@@ -852,12 +852,12 @@ body.light-mode .mobile-menu{ background:rgba(245,240,232,.98); }
     <div class="form-group"><label>القسم</label>
       <select class="fi" id="editCategory" style="background:#161616;color:#fff;border:1px solid var(--border);border-radius:11px;padding:13px 15px;width:100%;font-family:'Cairo',sans-serif;outline:none;">
         <option value="">— بدون قسم —</option>
-        <option value="books">الكتب والأدب</option>
-        <option value="society">المجتمع والسياسة</option>
+        <option value="books">الأدب</option>
+        <option value="society">المجتمع</option>
         <option value="art">الفن</option>
-        <option value="cinema">السينما والأدب</option>
-        <option value="thought">الفكر والثقافة</option>
-        <option value="figures">شخصيات ورؤى</option>
+        <option value="cinema">السينما</option>
+        <option value="thought">الفكر و الثقافة</option>
+        <option value="figures">شخصيات</option>
       </select>
     </div>
     <div class="form-group"><label>المحتوى</label><textarea id="editContent" style="min-height:180px"></textarea></div>
@@ -954,9 +954,9 @@ body.light-mode .mobile-menu{ background:rgba(245,240,232,.98); }
   </div>
 
   <h1 class="hero-name">أحمد بالي</h1>
-  <div class="hero-subtitle" id="heroSubtitle">مخرج وروائي وسيناريست وناقد فني مصري</div>
-  <div class="hero-tagline" id="heroTagline">"نقد لا يهدم.. بل نضي"</div>
-  <p class="hero-bio" id="heroBio">كاتب ومفكر يرصد العالم بعيون النقد</p>
+  <div class="hero-subtitle" id="heroSubtitle">;كاتب و روائي و ناقد فني مصري</div>
+  <div class="hero-tagline" id="heroTagline"></div>
+  <p class="hero-bio" id="heroBio"></p>
 
   <div class="hero-search">
     <input type="text" id="searchInput" placeholder="ابحث في المقالات..." oninput="filterArticles()" />
@@ -1074,7 +1074,7 @@ body.light-mode .mobile-menu{ background:rgba(245,240,232,.98); }
           <span style="font-size:1.6rem;color:var(--gold)">أ</span>
         </div>
         <div class="sidebar-author-name">أحمد بالي</div>
-        <div class="sidebar-author-bio" id="sidebarBio">كاتب ومفكر يرصد العالم بعيون النقد</div>
+        <div class="sidebar-author-bio" id="sidebarBio"></div>
         <div class="sidebar-social">
           <a href="https://www.instagram.com/thebalyy" target="_blank" title="Instagram">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
@@ -1113,7 +1113,7 @@ body.light-mode .mobile-menu{ background:rgba(245,240,232,.98); }
     </div>
 
     <div class="contact-name">أحمد بالي</div>
-    <div class="contact-role">مخرج وروائي وسيناريست وناقد فني مصري</div>
+    <div class="contact-role">كاتب و روائي و ناقد فني مصري</div>
     <div class="contact-divider"></div>
     <div class="contact-label">تواصل معي عبر</div>
 
@@ -1252,12 +1252,12 @@ waitForFirebase(()=>{
     if(!id) return "";
     const lang=window.currentLang;
     const CATEGORIES=[
-      {id:"books",ar:"الكتب والأدب",en:"Books & Literature"},
-      {id:"society",ar:"المجتمع والسياسة",en:"Society & Politics"},
+      {id:"books",ar:"الأدب",en:"Literature"},
+      {id:"society",ar:"المجتمع",en:"Society"},
       {id:"art",ar:"الفن",en:"Art"},
-      {id:"cinema",ar:"السينما والأدب",en:"Cinema & Literature"},
+      {id:"cinema",ar:"السينما",en:"Cinema"},
       {id:"thought",ar:"الفكر والثقافة",en:"Thought & Culture"},
-      {id:"figures",ar:"شخصيات ورؤى",en:"Figures & Visions"},
+      {id:"figures",ar:"شخصيات",en:"Figures"},
     ];
     const c=CATEGORIES.find(x=>x.id===id);
     return c?c[lang]:"";
