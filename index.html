@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>أحمد بالي</title>
+<title>أحمد بالي — مقالات نقدية</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -710,6 +710,61 @@ body.light-mode .admin-nav{ background:#e5dfd4; }
 body.light-mode .reader-content{ color:#2a2010; }
 body.light-mode .hero-bio{ color:#5a4a2a; }
 
+/* ─── CONTACT PAGE ───────────────────── */
+.contact-page{
+  position:fixed; inset:0; background:var(--bg); z-index:9999;
+  overflow-y:auto; display:none;
+}
+.contact-page.active{ display:block; }
+.contact-page-inner{
+  max-width:520px; margin:0 auto; padding:80px 5% 60px;
+  display:flex; flex-direction:column; align-items:center; text-align:center;
+}
+.contact-close{
+  position:fixed; top:16px; right:16px; width:40px; height:40px;
+  border:none; border-radius:10px; background:var(--card); border:1px solid var(--border);
+  font-size:1.2rem; cursor:pointer; color:var(--text); z-index:10001;
+  display:flex; align-items:center; justify-content:center; transition:.2s;
+}
+.contact-close:hover{ border-color:var(--border2); color:var(--gold); }
+.contact-avatar-ring{
+  position:relative; width:130px; height:130px; margin-bottom:28px;
+}
+.contact-avatar-ring::before{
+  content:""; position:absolute; inset:-4px; border-radius:50%;
+  background:conic-gradient(var(--gold), transparent 60%, var(--gold));
+  animation:spin 8s linear infinite;
+}
+.contact-avatar-inner{
+  position:absolute; inset:3px; border-radius:50%; overflow:hidden;
+  background:#1a1a1a; display:flex; align-items:center; justify-content:center;
+}
+.contact-avatar-inner img{ width:100%; height:100%; object-fit:cover; }
+.contact-name{ font-size:2rem; font-weight:900; margin-bottom:6px; }
+.contact-role{ color:var(--gold); font-size:.95rem; margin-bottom:30px; opacity:.85; }
+.contact-divider{
+  width:60px; height:2px; background:var(--border2);
+  border-radius:2px; margin-bottom:30px;
+}
+.contact-label{ color:var(--muted); font-size:.88rem; letter-spacing:.08em; margin-bottom:20px; }
+.contact-social-grid{
+  display:flex; flex-direction:column; gap:14px; width:100%; max-width:340px;
+}
+.contact-social-link{
+  display:flex; align-items:center; gap:16px;
+  padding:16px 22px; background:var(--card); border:1px solid var(--border);
+  border-radius:14px; color:var(--text); font-weight:700; font-size:1rem;
+  transition:.25s; cursor:pointer;
+}
+.contact-social-link:hover{ border-color:var(--gold); background:rgba(201,168,76,.06); color:var(--gold); transform:translateY(-2px); }
+.contact-social-icon{
+  width:40px; height:40px; border-radius:10px; background:rgba(201,168,76,.1);
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.contact-social-info{ display:flex; flex-direction:column; align-items:flex-start; gap:2px; }
+.contact-social-name{ font-size:.95rem; font-weight:700; }
+.contact-social-handle{ font-size:.78rem; color:var(--muted); font-weight:400; }
+
 /* ─── HAMBURGER MENU ─────────────────── */
 .hamburger{
   display:none; flex-direction:column; justify-content:center; gap:5px;
@@ -846,7 +901,7 @@ body.light-mode .mobile-menu{ background:rgba(245,240,232,.98); }
     <a class="nav-link" href="#articles" id="articlesNav">المقالات</a>
     <a class="nav-link" href="#categories" id="sectionsNav">الأقسام</a>
     <a class="nav-link" href="#about" id="aboutNav">عن أحمد بالي</a>
-    <a class="nav-link" href="https://www.instagram.com/thebalyy" target="_blank" id="contactNav">تواصل معي</a>
+    <a class="nav-link" href="javascript:void(0)" onclick="openContactPage()" id="contactNav">تواصل معي</a>
   </div>
 
   <div class="nav-actions">
@@ -867,7 +922,7 @@ body.light-mode .mobile-menu{ background:rgba(245,240,232,.98); }
   <a class="nav-link" href="#articles" onclick="closeMobileMenu()">المقالات</a>
   <a class="nav-link" href="#categories" onclick="closeMobileMenu()">الأقسام</a>
   <a class="nav-link" href="#about" onclick="closeMobileMenu()">عن أحمد بالي</a>
-  <a class="nav-link" href="https://www.instagram.com/thebalyy" target="_blank" onclick="closeMobileMenu()">تواصل معي</a>
+  <a class="nav-link" href="javascript:void(0)" onclick="closeMobileMenu();openContactPage()">تواصل معي</a>
 </div>
 
 <!-- Social Sidebar -->
@@ -900,8 +955,8 @@ body.light-mode .mobile-menu{ background:rgba(245,240,232,.98); }
 
   <h1 class="hero-name">أحمد بالي</h1>
   <div class="hero-subtitle" id="heroSubtitle">مخرج وروائي وسيناريست وناقد فني مصري</div>
-  <div class="hero-tagline" id="heroTagline"></div>
-  <p class="hero-bio" id="heroBio"></p>
+  <div class="hero-tagline" id="heroTagline">"نقد لا يهدم.. بل نضي"</div>
+  <p class="hero-bio" id="heroBio">كاتب ومفكر يرصد العالم بعيون النقد</p>
 
   <div class="hero-search">
     <input type="text" id="searchInput" placeholder="ابحث في المقالات..." oninput="filterArticles()" />
@@ -1046,6 +1101,57 @@ body.light-mode .mobile-menu{ background:rgba(245,240,232,.98); }
   </div>
 </div>
 
+<!-- ═══════════════ CONTACT PAGE ═══════════════ -->
+<div class="contact-page" id="contactPage">
+  <button class="contact-close" onclick="closeContactPage()">×</button>
+  <div class="contact-page-inner">
+
+    <div class="contact-avatar-ring">
+      <div class="contact-avatar-inner" id="contactAvatar">
+        <span style="font-size:3rem;color:var(--gold)">أ</span>
+      </div>
+    </div>
+
+    <div class="contact-name">أحمد بالي</div>
+    <div class="contact-role">مخرج وروائي وسيناريست وناقد فني مصري</div>
+    <div class="contact-divider"></div>
+    <div class="contact-label">تواصل معي عبر</div>
+
+    <div class="contact-social-grid">
+      <a class="contact-social-link" href="https://www.instagram.com/thebalyy" target="_blank">
+        <div class="contact-social-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </div>
+        <div class="contact-social-info">
+          <span class="contact-social-name">Instagram</span>
+          <span class="contact-social-handle">@thebalyy</span>
+        </div>
+      </a>
+
+      <a class="contact-social-link" href="https://www.facebook.com/share/1Avf6HoD9q/" target="_blank">
+        <div class="contact-social-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--gold)"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </div>
+        <div class="contact-social-info">
+          <span class="contact-social-name">Facebook</span>
+          <span class="contact-social-handle">أحمد بالي</span>
+        </div>
+      </a>
+
+      <a class="contact-social-link" href="https://twitter.com" target="_blank">
+        <div class="contact-social-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--gold)"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </div>
+        <div class="contact-social-info">
+          <span class="contact-social-name">X (Twitter)</span>
+          <span class="contact-social-handle">@thebalyy</span>
+        </div>
+      </a>
+    </div>
+
+  </div>
+</div>
+
 <!-- ═══════════════ ADMIN PANEL ═══════════════ -->
 <div class="admin-panel" id="adminPanel">
   <div class="admin-nav">
@@ -1076,12 +1182,12 @@ body.light-mode .mobile-menu{ background:rgba(245,240,232,.98); }
       <div class="form-group"><label>القسم</label>
         <select class="fi" id="newCategory" style="background:#161616;color:#fff;border:1px solid var(--border);border-radius:11px;padding:13px 15px;width:100%;font-family:'Cairo',sans-serif;outline:none;">
           <option value="">— بدون قسم —</option>
-          <option value="books">أدبي</option>
-          <option value="society">مجتمعي</option>
-          <option value="art">فني</option>
-          <option value="cinema">سينمائي</option>
-          <option value="thought">فكري وثقافي</option>
-          <option value="figures">شخصيات</option>
+          <option value="books">الكتب والأدب</option>
+          <option value="society">المجتمع والسياسة</option>
+          <option value="art">الفن</option>
+          <option value="cinema">السينما والأدب</option>
+          <option value="thought">الفكر والثقافة</option>
+          <option value="figures">شخصيات ورؤى</option>
         </select>
       </div>
       <div class="form-group"><label>محتوى المقال *</label><textarea id="newContent" placeholder="اكتب المقال هنا..."></textarea></div>
@@ -1146,14 +1252,12 @@ waitForFirebase(()=>{
     if(!id) return "";
     const lang=window.currentLang;
     const CATEGORIES=[
-      [
-  {id:"literary", ar:"أدبي", en:"Literary"},
-  {id:"social", ar:"مجتمعي", en:"Social"},
-  {id:"artistic", ar:"فني", en:"Artistic"},
-  {id:"cinematic", ar:"سينمائي", en:"Cinematic"},
-  {id:"intellectual", ar:"فكري وثقافي", en:"Intellectual & Cultural"},
-  {id:"figures", ar:"شخصيات", en:"Figures"}
-]
+      {id:"books",ar:"الكتب والأدب",en:"Books & Literature"},
+      {id:"society",ar:"المجتمع والسياسة",en:"Society & Politics"},
+      {id:"art",ar:"الفن",en:"Art"},
+      {id:"cinema",ar:"السينما والأدب",en:"Cinema & Literature"},
+      {id:"thought",ar:"الفكر والثقافة",en:"Thought & Culture"},
+      {id:"figures",ar:"شخصيات ورؤى",en:"Figures & Visions"},
     ];
     const c=CATEGORIES.find(x=>x.id===id);
     return c?c[lang]:"";
@@ -1549,6 +1653,22 @@ waitForFirebase(()=>{
 
   window._openAdmin=openAdmin;
 });
+</script>
+
+<script>
+/* CONTACT PAGE */
+window.openContactPage = function(){
+  const page = document.getElementById("contactPage");
+  page.classList.add("active");
+  window.scrollTo(0,0);
+  // sync avatar from firebase data
+  const av = (window._siteData||{}).avatarUrl;
+  const el = document.getElementById("contactAvatar");
+  if(av && el) el.innerHTML = `<img src="${av}" style="width:100%;height:100%;object-fit:cover;">`;
+};
+window.closeContactPage = function(){
+  document.getElementById("contactPage").classList.remove("active");
+};
 </script>
 
 <script>
