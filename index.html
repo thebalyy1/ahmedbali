@@ -89,17 +89,6 @@ function applyLanguage(){
   document.getElementById("heroSubtitle").innerText  = t.hero;
   document.getElementById("langBtn").innerText = window.currentLang === "ar" ? "EN" : "AR";
 
-  // Fix decorative brackets direction based on language
-  const decoLeft = document.getElementById("heroDecoLeft");
-  const decoRight = document.getElementById("heroDecoRight");
-  if(decoLeft && decoRight){
-    if(window.currentLang === "ar"){
-      decoLeft.innerText = "﴾"; decoRight.innerText = "﴿";
-    } else {
-      decoLeft.innerText = "﴿"; decoRight.innerText = "﴾";
-    }
-  }
-
   // Fix Quran verse brackets in hero
   const qLeft = document.querySelector(".hero-quran .hero-quran-brackets:first-child");
   const qRight = document.querySelector(".hero-quran .hero-quran-brackets:last-child");
@@ -138,10 +127,10 @@ function renderCategories(){
   const container = document.getElementById("categoriesBar");
   if(!container) return;
   container.innerHTML = CATEGORIES.map(c=>`
-    <div class="cat-card ${window._activeCategory===c.id?'active':''}" onclick="filterByCategory('${c.id}')">
+    <div class="cat-card ${window._activeCategory===c.id?'active':''}" onclick="openCategoryPlaylist('${c.id}')">
       <span class="cat-icon">${c.icon}</span>
       <span class="cat-label">${c[lang]}</span>
-      <span class="cat-count" id="catCount-${c.id}">—</span>
+      <span class="cat-article-count" id="catCount-${c.id}">—</span>
     </div>
   `).join("");
 }
@@ -423,8 +412,12 @@ nav{
 .reader-page{
   position:fixed; inset:0; background:#0a0a0a; z-index:9999;
   overflow-y:auto; display:none;
+  opacity:0;
+  transform:translateY(30px);
+  transition:opacity .35s cubic-bezier(.4,0,.2,1), transform .35s cubic-bezier(.4,0,.2,1);
 }
 .reader-page.active{ display:block; }
+.reader-page.visible{ opacity:1; transform:translateY(0); }
 .reader-close{
   position:fixed; top:16px; right:16px; width:40px; height:40px;
   border:none; border-radius:10px; background:var(--card); border:1px solid var(--border);
@@ -710,6 +703,148 @@ body.light-mode .admin-nav{ background:#e5dfd4; }
 body.light-mode .reader-content{ color:#2a2010; }
 body.light-mode .hero-bio{ color:#5a4a2a; }
 
+/* ─── CATEGORY PLAYLIST PAGE ─────────── */
+.playlist-page{
+  position:fixed; inset:0; background:var(--bg); z-index:9998;
+  overflow-y:auto;
+  display:none;
+  opacity:0;
+  transform:translateY(30px);
+  transition:opacity .35s cubic-bezier(.4,0,.2,1), transform .35s cubic-bezier(.4,0,.2,1);
+}
+.playlist-page.active{ display:block; }
+.playlist-page.visible{ opacity:1; transform:translateY(0); }
+
+.playlist-header{
+  position:sticky; top:0; z-index:10;
+  background:rgba(13,13,13,.92); backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--border);
+  padding:0 5%; height:64px;
+  display:flex; align-items:center; gap:16px;
+}
+body.light-mode .playlist-header{ background:rgba(245,240,232,.95); }
+
+.playlist-back-btn{
+  width:38px; height:38px; border-radius:10px; border:1px solid var(--border);
+  background:transparent; color:var(--text); cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  font-size:1rem; transition:.2s; flex-shrink:0;
+}
+.playlist-back-btn:hover{ border-color:var(--border2); color:var(--gold); }
+
+.playlist-header-info{ display:flex; align-items:center; gap:12px; flex:1; }
+.playlist-header-icon{
+  width:40px; height:40px; border-radius:10px;
+  background:rgba(201,168,76,.12); border:1px solid var(--border2);
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.3rem;
+}
+.playlist-header-title{ font-size:1.05rem; font-weight:900; }
+.playlist-header-count{
+  font-size:.78rem; color:var(--gold); margin-top:2px;
+  font-weight:600;
+}
+
+.playlist-body{
+  max-width:800px; margin:0 auto; padding:40px 5% 80px;
+}
+
+.playlist-hero{
+  display:flex; align-items:flex-start; gap:0;
+  margin-bottom:36px; padding:28px 30px;
+  background:var(--card); border:1px solid var(--border2);
+  border-radius:20px;
+  position:relative; overflow:hidden;
+}
+.playlist-hero::before{
+  content:""; position:absolute; inset:0;
+  background:radial-gradient(ellipse 60% 80% at 10% 50%, rgba(201,168,76,.06), transparent);
+  pointer-events:none;
+}
+.playlist-hero-text{}
+.playlist-hero-name{
+  font-size:2rem; font-weight:900; margin-bottom:6px;
+  background:linear-gradient(135deg, var(--text) 60%, var(--gold));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+.playlist-hero-desc{ color:var(--muted); font-size:.9rem; line-height:1.8; }
+.playlist-hero-badge{
+  position:absolute; top:18px; left:18px;
+  background:rgba(201,168,76,.12); border:1px solid var(--border2);
+  color:var(--gold); padding:5px 13px; border-radius:20px;
+  font-size:.75rem; font-weight:700;
+}
+
+/* playlist items */
+.playlist-list{ display:flex; flex-direction:column; gap:0; }
+
+.playlist-item{
+  display:flex; align-items:center; gap:16px;
+  padding:16px 18px; border-radius:14px;
+  cursor:pointer; transition:.22s;
+  position:relative;
+  opacity:0;
+  transform:translateX(20px);
+  transition:opacity .3s ease, transform .3s ease, background .2s, border-color .2s;
+}
+.playlist-item.loaded{ opacity:1; transform:translateX(0); }
+.playlist-item:hover{ background:rgba(201,168,76,.05); }
+.playlist-item:not(:last-child)::after{
+  content:""; position:absolute;
+  bottom:0; right:74px; left:0;
+  height:1px; background:var(--border);
+}
+
+.playlist-item-num{
+  width:32px; text-align:center; flex-shrink:0;
+  font-size:.85rem; font-weight:700;
+  color:var(--muted); font-family:'Cairo',sans-serif;
+}
+.playlist-item-thumb{
+  width:58px; height:52px; border-radius:10px;
+  background-size:cover; background-position:center;
+  background-color:var(--card2); flex-shrink:0;
+  border:1px solid var(--border);
+}
+.playlist-item-body{ flex:1; min-width:0; }
+.playlist-item-title{
+  font-size:.97rem; font-weight:700; margin-bottom:5px;
+  line-height:1.4; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  transition:color .2s;
+}
+.playlist-item:hover .playlist-item-title{ color:var(--gold); }
+.playlist-item-meta{
+  display:flex; align-items:center; gap:10px;
+  font-size:.77rem; color:var(--muted); flex-wrap:wrap;
+}
+.playlist-item-meta span{ display:flex; align-items:center; gap:3px; }
+.playlist-item-play{
+  width:36px; height:36px; border-radius:50%;
+  background:rgba(201,168,76,.1); border:1px solid var(--border2);
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0; transition:.2s; color:var(--gold);
+}
+.playlist-item:hover .playlist-item-play{
+  background:var(--gold); color:#111;
+  box-shadow:0 0 18px rgba(201,168,76,.35);
+}
+
+/* cat-card update: show count badge */
+.cat-article-count{
+  display:inline-flex; align-items:center; justify-content:center;
+  background:rgba(201,168,76,.15); color:var(--gold);
+  font-size:.7rem; font-weight:700; padding:2px 8px;
+  border-radius:10px; margin-top:2px;
+  min-width:32px;
+}
+
+@media(max-width:640px){
+  .playlist-hero{ flex-direction:column; text-align:center; align-items:flex-start; padding:22px 20px; }
+  .playlist-hero-badge{ top:12px; left:12px; }
+  .playlist-item-num{ display:none; }
+  .playlist-item-title{ font-size:.92rem; }
+}
+
 /* ─── CONTACT PAGE ───────────────────── */
 .contact-page{
   position:fixed; inset:0; background:var(--bg); z-index:9999;
@@ -940,9 +1075,6 @@ body.light-mode .mobile-menu{ background:rgba(245,240,232,.98); }
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-deco-left" id="heroDecoLeft">﴾</div>
-  <div class="hero-deco-right" id="heroDecoRight">﴿</div>
-
   <div class="avatar-ring">
     <div class="avatar-inner" id="avatarFrame">
       <span style="font-size:2.5rem;color:var(--gold)">أ</span>
@@ -1101,6 +1233,31 @@ body.light-mode .mobile-menu{ background:rgba(245,240,232,.98); }
   </div>
 </div>
 
+<!-- ═══════════════ CATEGORY PLAYLIST PAGE ═══════════════ -->
+<div class="playlist-page" id="playlistPage">
+  <div class="playlist-header">
+    <button class="playlist-back-btn" onclick="closePlaylist()" title="رجوع">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="playlist-header-info">
+      <div>
+        <div class="playlist-header-title" id="playlistHeaderTitle"></div>
+        <div class="playlist-header-count" id="playlistHeaderCount"></div>
+      </div>
+    </div>
+  </div>
+  <div class="playlist-body">
+    <div class="playlist-hero">
+      <div class="playlist-hero-text">
+        <div class="playlist-hero-name" id="playlistHeroName"></div>
+        <div class="playlist-hero-desc" id="playlistHeroDesc"></div>
+      </div>
+      <div class="playlist-hero-badge" id="playlistHeroBadge"></div>
+    </div>
+    <div class="playlist-list" id="playlistList"></div>
+  </div>
+</div>
+
 <!-- ═══════════════ CONTACT PAGE ═══════════════ -->
 <div class="contact-page" id="contactPage">
   <button class="contact-close" onclick="closeContactPage()">×</button>
@@ -1168,6 +1325,7 @@ body.light-mode .mobile-menu{ background:rgba(245,240,232,.98); }
       <button class="admin-tab" onclick="switchTab('tab-new')">➕ مقال جديد</button>
       <button class="admin-tab" onclick="switchTab('tab-profile')">🖼️ الملف الشخصي</button>
       <button class="admin-tab" onclick="switchTab('tab-about')">ℹ️ عن الموقع</button>
+      <button class="admin-tab" onclick="switchTab('tab-catdescs')">📋 نبذات الأقسام</button>
     </div>
 
     <div class="tab-section active" id="tab-articles">
@@ -1221,6 +1379,13 @@ body.light-mode .mobile-menu{ background:rgba(245,240,232,.98); }
         <textarea id="aboutTextAdmin" placeholder="اكتب نص عن الموقع..." style="min-height:180px"></textarea>
         <button class="admin-btn btn-gold btn-sm" style="margin-top:10px" onclick="saveAbout()">💾 حفظ</button>
       </div>
+    </div>
+
+    <div class="tab-section" id="tab-catdescs">
+      <h3 style="margin-bottom:6px;color:var(--gold)">نبذات الأقسام</h3>
+      <p style="color:var(--muted);font-size:.88rem;margin-bottom:24px">هذه النبذة تظهر في صفحة البلاي ليست لكل قسم عند الضغط عليه.</p>
+      <div id="catDescsForm"></div>
+      <button class="admin-btn btn-gold" style="padding:11px 28px;font-size:.97rem;margin-top:8px" onclick="saveCatDescs()">💾 حفظ نبذات الأقسام</button>
     </div>
   </div>
 </div>
@@ -1429,8 +1594,13 @@ waitForFirebase(()=>{
     // related articles
     loadRelatedArticles(key, a.category);
 
+    // track source: playlist or main
+    const fromPlaylist = document.getElementById("playlistPage").classList.contains("active");
+    window._readerSource = fromPlaylist ? "playlist" : "main";
+
     document.getElementById("readerPage").classList.add("active");
     window.scrollTo(0,0);
+    requestAnimationFrame(()=>{ requestAnimationFrame(()=>{ document.getElementById("readerPage").classList.add("visible"); }); });
   };
 
   function loadRelatedArticles(currentKey, category){
@@ -1484,9 +1654,17 @@ waitForFirebase(()=>{
   };
 
   window.closeReader=()=>{
-    document.getElementById("readerPage").classList.remove("active");
-    window._currentArticleKey=null;
-    history.pushState({}, "", window.location.pathname);
+    const page = document.getElementById("readerPage");
+    page.classList.remove("visible");
+    const fromPlaylist = window._readerSource === "playlist";
+    setTimeout(()=>{
+      page.classList.remove("active");
+      window._currentArticleKey=null;
+      if(!fromPlaylist){
+        history.pushState({}, "", window.location.pathname);
+      }
+      // if from playlist, leave playlist visible — nothing extra needed
+    }, 350);
   };
 
   window.shareArticle=async function(){
@@ -1523,7 +1701,36 @@ waitForFirebase(()=>{
     document.getElementById("aboutTextAdmin").value=data.about||"";
     if(data.avatarUrl) document.getElementById("avatarPreview").innerHTML=`<img src="${data.avatarUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
     renderAdminArticles(data);
+
+    // Build catDescs form
+    const CAT_LIST=[
+      {id:"books",ar:"الأدب"},
+      {id:"society",ar:"المجتمع"},
+      {id:"art",ar:"الفن"},
+      {id:"cinema",ar:"السينما"},
+      {id:"thought",ar:"الفكر والثقافة"},
+      {id:"figures",ar:"شخصيات"},
+    ];
+    const saved=data.catDescs||{};
+    const form=document.getElementById("catDescsForm");
+    form.innerHTML=CAT_LIST.map(c=>`
+      <div class="form-group">
+        <label style="font-weight:700;color:var(--text)">${c.ar}</label>
+        <textarea class="cat-desc-input" data-cat="${c.id}" style="min-height:80px" placeholder="نبذة قسم ${c.ar}...">${saved[c.id]||""}</textarea>
+      </div>
+    `).join("");
   }
+
+  window.saveCatDescs=async function(){
+    const descs={};
+    document.querySelectorAll(".cat-desc-input").forEach(el=>{
+      descs[el.dataset.cat]=el.value.trim();
+    });
+    try {
+      await update(ref(db,"site"),{catDescs:descs});
+      showToast("✅ تم حفظ نبذات الأقسام");
+    } catch(e){ showToast("حدث خطأ أثناء الحفظ","error"); }
+  };
 
   function renderAdminArticles(data){
     const list=document.getElementById("adminArticlesList");
@@ -1650,7 +1857,7 @@ waitForFirebase(()=>{
     document.querySelectorAll(".tab-section").forEach(s=>s.classList.remove("active"));
     document.querySelectorAll(".admin-tab").forEach(b=>b.classList.remove("active"));
     document.getElementById(id).classList.add("active");
-    const idx=["tab-articles","tab-new","tab-profile","tab-about"].indexOf(id);
+    const idx=["tab-articles","tab-new","tab-profile","tab-about","tab-catdescs"].indexOf(id);
     document.querySelectorAll(".admin-tab")[idx].classList.add("active");
   };
 
@@ -1703,6 +1910,106 @@ window.openContactPage = function(){
 window.closeContactPage = function(){
   document.getElementById("contactPage").classList.remove("active");
 };
+
+/* ═══════════════ CATEGORY PLAYLIST ═══════════════ */
+(function(){
+  const CATEGORIES = [
+    { id:"books",   ar:"الأدب",           en:"Literature",       icon:"📚", desc_ar:"مقالات في الأدب العربي والعالمي، النقد، والكتابة الإبداعية.", desc_en:"Articles on Arabic and world literature, criticism, and creative writing." },
+    { id:"society", ar:"المجتمع",         en:"Society",          icon:"🌍", desc_ar:"رؤى وتأملات في قضايا المجتمع والإنسان المعاصر.", desc_en:"Insights and reflections on society and contemporary human issues." },
+    { id:"art",     ar:"الفن",            en:"Art",              icon:"🎨", desc_ar:"نقد ومقالات في الفنون البصرية والتشكيلية.", desc_en:"Criticism and articles on visual and plastic arts." },
+    { id:"cinema",  ar:"السينما",         en:"Cinema",           icon:"🎬", desc_ar:"مقالات نقدية في السينما العربية والعالمية.", desc_en:"Critical articles on Arab and world cinema." },
+    { id:"thought", ar:"الفكر والثقافة", en:"Thought & Culture", icon:"💡", desc_ar:"تأملات في الفكر والفلسفة والثقافة الإنسانية.", desc_en:"Reflections on thought, philosophy, and human culture." },
+    { id:"figures", ar:"شخصيات",         en:"Figures",          icon:"👤", desc_ar:"كتابات عن شخصيات أثرت في الثقافة والفكر والفن.", desc_en:"Writings about figures who influenced culture, thought, and art." },
+  ];
+
+  window.openCategoryPlaylist = function(catId){
+    const lang = window.currentLang;
+    const cat = CATEGORIES.find(c => c.id === catId);
+    if(!cat) return;
+
+    const data = window._siteData || {};
+    const articles = Object.entries(data.articles||{})
+      .map(([k,v])=>({...v,_key:k}))
+      .filter(a => !a.private && a.category === catId)
+      .sort((a,b) => b._ts - a._ts);
+
+    const count = articles.length;
+    const countLabel = lang==="ar" ? count+" مقال" : count+" article"+(count!==1?"s":"");
+
+    // Description: prefer admin-saved, fallback to default
+    const savedDescs = data.catDescs || {};
+    const desc = savedDescs[catId] || cat["desc_"+lang];
+
+    // Fill header
+    document.getElementById("playlistHeaderTitle").innerText = cat[lang];
+    document.getElementById("playlistHeaderCount").innerText = countLabel;
+
+    // Fill hero
+    document.getElementById("playlistHeroName").innerText = cat[lang];
+    document.getElementById("playlistHeroDesc").innerText = desc;
+    document.getElementById("playlistHeroBadge").innerText = countLabel;
+
+    // Fill list
+    const list = document.getElementById("playlistList");
+    list.innerHTML = "";
+
+    if(!articles.length){
+      list.innerHTML = `<div style="text-align:center;padding:60px 0;color:var(--muted);font-size:.95rem">${lang==="ar"?"لا توجد مقالات في هذا القسم بعد":"No articles in this section yet"}</div>`;
+    } else {
+      articles.forEach((a, i) => {
+        const words = (a.content||"").split(/\s+/).length;
+        const mins = Math.max(1, Math.round(words/200));
+        const readLabel = lang==="ar" ? mins+" دقائق قراءة" : mins+" min read";
+        const readsLabel = lang==="ar" ? (a.reads||0)+" قارئ" : (a.reads||0)+" readers";
+
+        const item = document.createElement("div");
+        item.className = "playlist-item";
+        item.innerHTML = `
+          <div class="playlist-item-num">${i+1}</div>
+          <div class="playlist-item-thumb" style="background-image:url('${a.imageUrl||""}')"></div>
+          <div class="playlist-item-body">
+            <div class="playlist-item-title">${a.title}</div>
+            <div class="playlist-item-meta">
+              <span>${a.date}</span>
+              <span style="color:var(--border2)">·</span>
+              <span>${readLabel}</span>
+              <span style="color:var(--border2)">·</span>
+              <span>${readsLabel}</span>
+            </div>
+          </div>
+          <div class="playlist-item-play">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </div>`;
+        item.onclick = () => {
+          window.openArticle(a._key);
+        };
+        list.appendChild(item);
+
+        // staggered entrance animation
+        setTimeout(() => item.classList.add("loaded"), 60 + i * 55);
+      });
+    }
+
+    // Show page with animation
+    const page = document.getElementById("playlistPage");
+    page.style.display = "block";
+    window.scrollTo(0,0);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        page.classList.add("active","visible");
+      });
+    });
+  };
+
+  window.closePlaylist = function(){
+    const page = document.getElementById("playlistPage");
+    page.classList.remove("visible");
+    setTimeout(() => {
+      page.classList.remove("active");
+      page.style.display = "none";
+    }, 350);
+  };
+})();
 </script>
 
 <script>
@@ -1791,6 +2098,5 @@ window.confirmPass=async function(){
 document.getElementById("passOverlay").addEventListener("click",function(e){ if(e.target===this) closePassModal(); });
 document.getElementById("editModal").addEventListener("click",function(e){ if(e.target===this) window.closeEditModal(); });
 </script>
-
 </body>
 </html>
